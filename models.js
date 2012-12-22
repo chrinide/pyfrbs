@@ -1,23 +1,15 @@
-var mongoose = require('mongoose').Mongoose;
-
-mongoose.model('opus', {
-	  properties: [
-		'author_o', 
-		'author_t', 
-		'translator', 
-		'title_o', 
-		'title_t', 
-		'date_o', 
-		'date_t',
-		'source',
-		'comment',
-		'tags'
-	  ],
-	  indexes: [
-	    'title'
-	  ]
-});
-
-exports.opus = function(db) {
-	  return db.model('opus');
+exports.defineModels = function defineModels(mongoose) {
+  Opus = new mongoose.Schema({
+	'author_o': String,
+	'author_t': String,
+	'translator': String, 
+	'title_o': String, 
+	'title_t': String, 
+	'date_o': String, 
+	'date_t': String,
+	'source': String,
+	'comment': String,
+	'tags': [String]
+  });
+  mongoose.model('Opus', Opus);
 };
