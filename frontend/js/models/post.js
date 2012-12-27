@@ -9,12 +9,12 @@ var app = app || {};
 		 * user: User.id
 		 * date: string
 		 * opus: Opus.id
-		 * tags: string
+		 * tags: [string]
 		 * summary: string
 		 */
 
 		defaults: {
-			tags: '',
+			tags: [],
 			summary: ''
 		}
 
