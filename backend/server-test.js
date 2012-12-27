@@ -81,3 +81,25 @@ describe('GET /logout', function() {
 		})
     })
 });
+
+describe('GET /opuses', function() {
+	it('200', function(done) {
+		request(app)
+		.get('/opuses')
+		.expect(200)
+		.end(function(err, res) {
+			done();
+		})
+    })
+});
+
+describe('GET /authors', function() {
+	it('200', function(done) {
+		request(app)
+		.get('/authors')
+		.expect(200)
+		.end(function(err, res) {
+			done();
+		})
+    })
+});
