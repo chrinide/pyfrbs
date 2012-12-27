@@ -5,13 +5,9 @@ var app = app || {};
 
 	app.Translator = Backbone.Model.extend({
 
-		/* id: unique
-		 * name: string
+		/* id: ObjectId
+		 * name: String
 		 */
-
-		defaults: {
-			name: ''
-		}
 
 	});
 

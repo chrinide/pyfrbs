@@ -5,14 +5,10 @@ var app = app || {};
 
 	app.Author = Backbone.Model.extend({
 
-		/* id: unique
-		 * name: string
-		 * original: Author.id
+		/* id: ObjectId
+		 * name: String
+		 * original: ObjectId
 		 */
-
-		defaults: {
-			name: ''
-		}
 
 	});
 

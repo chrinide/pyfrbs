@@ -1,5 +1,4 @@
 #!/bin/sh
-mongod -v --dbpath `pwd`/data/db &
-sleep 3
-#./node_modules/expresso/bin/expresso test.js 
-node server.js &
+mongod --dbpath `pwd`/data/db &
+sleep 2
+./node_modules/mocha/bin/mocha -b server-test.js && (node server.js &)

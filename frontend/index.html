@@ -7,13 +7,16 @@
 	<link rel="stylesheet" href="css/bootstrap-responsive.css">
 </head>
 <body>
-	<section id="43app">
+	<section id="app-section">
 		<div class="container">
 			<div class="controls">
 				<header id="header">
-					<input id="new-post" class="input-large" type="text" placeholder="новая запись" autofocus>
+					<input id="new-post-opus" class="input-large" type="text" placeholder="opus" autofocus>
+					<input id="new-post-tags" class="input-large" type="text" placeholder="tags">
+					<input id="new-post-summary" class="input-large" type="text" placeholder="summary">
+					<button id="new-post" type="button" class="btn btn-primary">Add</button>
 				</header>
-				<section id="main">
+				<section id="main-section">
 					<ul id="post-list"></ul>
 				</section>
 			</div>
@@ -21,9 +24,8 @@
 	</section>
 	<script type="text/template" id="post-template">
 		<div class="view">
-			<label><%- summary %></label>
+			<label><%- opus %><%- tags %><%- summary %></label>
 		</div>
-		<input class="input-large" type="text" value="<%- summary %>">
 	</script>
 	<script src="js/lib/jquery.min.js"></script>
 	<script src="js/lib/bootstrap.min.js"></script>

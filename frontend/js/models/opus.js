@@ -5,18 +5,13 @@ var app = app || {};
 
 	app.Opus = Backbone.Model.extend({
 
-		/* id: unique
-		 * title: string
-		 * year: string
-		 * author: Author.id
-		 * original: Opus.id
-		 * translator: Translator.id
+		/* id: ObjectId
+		 * title: String
+		 * year: Number
+		 * author: ObjectId
+		 * original: ObjectId
+		 * translator: ObjectId
 		 */
-
-		defaults: {
-			title: 'Untitled',
-			year: 'unknown'
-		}
 
 	});
 

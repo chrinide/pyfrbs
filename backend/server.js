@@ -5,8 +5,7 @@ var express = require('express'),
 	crypto = require('crypto');
 
 function hash(pwd, salt, fn) {
-	if (3 == arguments.length) {
-		crypto.pbkdf2(pwd, salt, 12000, 128, fn);
+	if (3 == arguments.length) { crypto.pbkdf2(pwd, salt, 12000, 128, fn);
 	} else {
 		fn = salt;
 		crypto.randomBytes(len, function(err, salt) {
@@ -43,13 +42,13 @@ var UserSchema = new mongoose.Schema({
 	'hash': String
 });
 
-var User = mongoose.model('User', UserSchema);
+var User = app.User = mongoose.model('User', UserSchema);
 
 function auth(req, res, next) {
 	if (req.session.user) {
 		next();
 	} else {
-		res.send(403);
+		res.send(401);
 	}
 }
 
@@ -112,12 +111,13 @@ app.get('/posts', function(req, res) {
 		if (!err) {
 			res.send(result);
 		} else {
+			res.send(500);
 			console.log(err);
 		}
 	});
 });
 
-app.post('/posts', function(req, res) {
+app.post('/posts', auth, function(req, res) {
 	var post = new Post({
 		opus: req.body.opus, 
 		date: Date.now(), 
@@ -128,6 +128,7 @@ app.post('/posts', function(req, res) {
 		if (!err) {
 			res.send(post);
 		} else {
+			res.send(500);
 			console.log(err);
 		}
 	});
@@ -139,30 +140,33 @@ app.get('/posts/:id', function(req, res) {
 			if (!err) {
 				res.send(result);
 			} else {
+				res.send(404);
 				console.log(err);
 			}
 		}
 	);
 });
 
-app.put('/posts/:id', function(req, res) {
+app.put('/posts/:id', auth, function(req, res) {
 	Post.findByIdAndUpdate(req.params.id, { $set: { opus: req.body.opus, date: Date.now(), summary: req.body.summary, tags: req.body.tags } }, 
 		function(err, result) {
 			if (!err) {
 				res.send(result);
 			} else {
+				res.send(500);
 				console.log(err);
 			}
 		}
 	);
 });
 
-app.delete('/posts/:id', function(req, res) {
+app.delete('/posts/:id', auth, function(req, res) {
 	Post.findByIdAndRemove(req.params.id, 
 		function(err, result) {
 			if (!err) {
 				res.send({});
 			} else {
+				res.send(500);
 				console.log(err);
 			}
 		}
@@ -184,6 +188,7 @@ app.get('/opuses', function(req, res) {
 		if (!err) {
 			res.send(result);
 		} else {
+			res.send(500);
 			console.log(err);
 		}
 	});
@@ -201,6 +206,7 @@ app.get('/authors', function(req, res) {
 		if (!err) {
 			res.send(result);
 		} else {
+			res.send(500);
 			console.log(err);
 		}
 	});

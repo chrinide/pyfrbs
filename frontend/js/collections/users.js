@@ -4,11 +4,8 @@ var app = app || {};
 	'use strict';
 
 	var UserList = Backbone.Collection.extend({
-
 		model: app.User,
-
-		localStorage: new Store('users')
-
+		url: '/users'
 	});
 
 	app.Users = new UserList();

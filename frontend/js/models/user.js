@@ -5,13 +5,11 @@ var app = app || {};
 
 	app.User = Backbone.Model.extend({
 
-		/* id: unique
-		 * name: string
+		/* id: ObjectId
+		 * name: String
+		 * salt: String
+		 * hash: String
 		 */
-
-		defaults: {
-			name: ''
-		}
 
 	});
 

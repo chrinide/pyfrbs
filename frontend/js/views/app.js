@@ -5,29 +5,25 @@ $(function( $ ) {
 
 	app.AppView = Backbone.View.extend({
 
-		el: '#43app',
+		el: '#app-section',
 
 		events: {
-			'keypress #new-post': 'createOnEnter',
+			'click #new-post': 'create'
 		},
 
 		initialize: function() {
-			this.input = this.$('#new-post');
-			this.$main = this.$('#main');
-
-			app.Posts.on( 'add', this.addOne, this );
-			app.Posts.on( 'reset', this.addAll, this );
-			app.Posts.on( 'filter', this.filterAll, this );
-			app.Posts.on( 'all', this.render, this );
-
+			app.Posts.on('add', this.addOne, this);
+			app.Posts.on('reset', this.addAll, this);
+			app.Posts.on('filter', this.filterAll, this);
+			app.Posts.on('all', this.render, this);
 			app.Posts.fetch();
 		},
 
 		render: function() {
-			if ( app.Posts.length ) {
-				this.$main.show();
+			if (app.Posts.length) {
+				this.$('#main-section').show();
 			} else {
-				this.$main.hide();
+				this.$('#main-section').hide();
 			}
 		},
 
@@ -49,19 +45,12 @@ $(function( $ ) {
 			app.Posts.each(this.filterOne, this);
 		},
 
-		newAttributes: function() {
-			return {
-				summary: this.input.val().trim()
-			};
-		},
-
-		createOnEnter: function( e ) {
-			if ( e.which !== ENTER_KEY || !this.input.val().trim() ) {
-				return;
-			}
-
-			app.Posts.create( this.newAttributes() );
-			this.input.val('');
+		create: function() {
+			app.Posts.create({ 
+				opus: this.$('#new-post-opus').val().trim(),
+				summary: this.$('#new-post-summary').val().trim(),
+				tags: this.$('#new-post-tags').val().trim()
+			});
 		}
 
 	});
