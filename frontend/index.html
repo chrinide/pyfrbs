@@ -1,29 +1,29 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<title>43</title>
-	<link rel="stylesheet" href="css/bootstrap.min.css" media="screen">
-	<!--[if IE]>
-	<script src="js/ie.js"></script>
-	<![endif]-->
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/bootstrap-responsive.css">
 </head>
 <body>
 	<section id="43app">
-		<legend>Читальный зал</legend>
-		<header id="header">
-			<input id="new-post" placeholder="новая запись" autofocus>
-		</header>
-		<section id="main">
-			<ul id="post-list"></ul>
-		</section>
+		<div class="container">
+			<div class="controls">
+				<header id="header">
+					<input id="new-post" class="input-large" type="text" placeholder="новая запись" autofocus>
+				</header>
+				<section id="main">
+					<ul id="post-list"></ul>
+				</section>
+			</div>
+		</div>
 	</section>
 	<script type="text/template" id="post-template">
 		<div class="view">
 			<label><%- summary %></label>
 		</div>
-		<input class="edit" value="<%- summary %>">
+		<input class="input-large" type="text" value="<%- summary %>">
 	</script>
 	<script src="js/lib/jquery.min.js"></script>
 	<script src="js/lib/bootstrap.min.js"></script>
