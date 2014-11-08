@@ -1,0 +1,1 @@
+select distinct variable.name, variable.min, variable.max, term.value, term.points, function.type, hedge.value, hedge.result from variable, variable_terms, term, function, variable_hedges, hedge where variable.id = variable_terms.variable and term.id = variable_terms.term;

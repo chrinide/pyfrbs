@@ -1,0 +1,11 @@
+insert into function values (1, "трапеция");
+insert into function values (1, 'трапеция');
+insert into hedge values (1, 'не', '1-x');
+insert into hedge values (2, 'очень', 'x^2');
+insert into variable values (1, 'возраст', 0, 100);
+insert into term values (1, 'молодой', 1, '15:20:25:30');
+insert into term values (2, 'старый', 1, '60:65:80:85');
+insert into variable_terms values (1, 1);
+insert into variable_terms values (1, 2);
+insert into variable_hedges values (1, 1);
+insert into variable_hedges values (1, 2);
