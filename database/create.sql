@@ -1,29 +1,54 @@
-create table variable (
-id int primary key,
-name varchar(255),
-min int, 
-max int
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+GRANT USAGE ON SCHEMA public TO user1;
+CREATE TABLE variable (
+	id INT PRIMARY KEY,
+	name VARCHAR(255),
+	min REAL, 
+	max REAL 
 );
-create table function (
-id int primary key,
-type varchar(255)
+CREATE TABLE function (
+	id INT PRIMARY KEY,
+	type VARCHAR(255)
 );
-create table term (
-id int primary key,
-value varchar(255),
-function int references function(id),
-points varchar(255)
+CREATE TABLE term (
+	id INT PRIMARY KEY,
+	value VARCHAR(255),
+	function_id INT NOT NULL REFERENCES function(id),
+	points VARCHAR(255)
 );
-create table variable_terms (
-variable int references variable(id),
-term int references term(id)
+CREATE TABLE variable_term (
+	variable_id INT NOT NULL REFERENCES variable(id),
+	term_id INT NOT NULL REFERENCES term(id)
 );
-create table hedge (
-id int primary key,
-value varchar(255), 
-result varchar(255)
+CREATE TABLE hedge (
+	id INT PRIMARY KEY,
+	value VARCHAR(255),
+	result VARCHAR(255)
 );
-create table variable_hedges (
-variable int references variable(id),
-hedge int references hedge(id)
+CREATE TABLE variable_hedge (
+	variable_id INT NOT NULL REFERENCES variable(id),
+	hedge_id INT NOT NULL REFERENCES hedge(id)
 );
+CREATE TABLE type (
+	id INT PRIMARY KEY,
+	name VARCHAR(255)
+);
+CREATE TABLE node (
+	id INT PRIMARY KEY,
+	type_id INT NOT NULL REFERENCES type(id),
+	variable_id INT REFERENCES variable(id),
+	term_id INT REFERENCES term(id),
+	hedge_id INT REFERENCES hedge(id)
+);
+CREATE TABLE closure (
+	ancestor_id INT NOT NULL REFERENCES node(id),
+	descendant_id INT NOT NULL REFERENCES node(id),
+	PRIMARY KEY (ancestor_id, descendant_id)
+);
+CREATE TABLE rule (
+	id INT PRIMARY KEY,
+	antecedent_id INT NOT NULL REFERENCES node(id),
+	consequent_id INT NOT NULL REFERENCES node(id)
+);
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO user1;
