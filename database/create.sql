@@ -37,9 +37,9 @@ CREATE TABLE type (
 CREATE TABLE node (
 	id INT PRIMARY KEY,
 	type_id INT NOT NULL REFERENCES type(id),
-	variable_id INT REFERENCES variable(id),
-	term_id INT REFERENCES term(id),
-	hedge_id INT REFERENCES hedge(id)
+	variable_id INT,
+	term_id INT,
+	hedge_id INT
 );
 CREATE TABLE closure (
 	ancestor_id INT NOT NULL REFERENCES node(id),
