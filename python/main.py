@@ -166,6 +166,10 @@ class Window(QMainWindow):
         self.onVariableSelected()
 
     def onDeleteVariableClicked(self):
+        cur = conn.cursor()
+        cur.execute('DELETE FROM variable WHERE name = %s;', (self.uiVariablesCombo.currentText(),))
+        conn.commit()
+        cur.close()
         self.uiRangeMinEdit.clear()
         self.uiRangeMaxEdit.clear()
         self.uiVariablesCombo.removeItem(self.uiVariablesCombo.currentIndex())
@@ -175,6 +179,21 @@ class Window(QMainWindow):
 
     def commitVariable(self):
         self.uiCommitVariableButton.setEnabled(False)
+        cur = conn.cursor()
+        cur.execute('SELECT id FROM variable WHERE name = %s', (self.uiVariablesCombo.currentText(),))
+        variable_id = cur.fetchone()
+        if (variable_id):
+            cur.execute('UPDATE variable SET min = %s, max = %s WHERE id = %s;', (self.uiRangeMinEdit.text(), self.uiRangeMaxEdit.text(), variable_id))
+        else:
+            cur.execute('INSERT INTO variable (name, min, max) VALUES (%s, %s, %s);', (self.uiVariablesCombo.currentText(), self.uiRangeMinEdit.text(), self.uiRangeMaxEdit.text()))
+        cur.execute('DELETE FROM variable_term WHERE variable_id = %s;', (variable_id,))
+        for i in range(0, self.uiTermsList.count()):
+            cur.execute('INSERT INTO variable_term (variable_id, term_id) VALUES (%s, (SELECT id AS term_id FROM term WHERE value = %s))', (variable_id, self.uiTermsList.item(i).text()))
+        cur.execute('DELETE FROM variable_hedge WHERE variable_id = %s;', (variable_id,))
+        for j in range(0, self.uiHedgesList.count()):
+            cur.execute('INSERT INTO variable_hedge (variable_id, hedge_id) VALUES (%s, (SELECT id FROM hedge WHERE value = %s))', (variable_id, self.uiHedgesList.item(j).text()))
+        conn.commit()
+        cur.close()
 
 if __name__ == "__main__":
     conn = psycopg2.connect(host='10.0.0.1', database='fuzzy', user='user1', password='pass1')
