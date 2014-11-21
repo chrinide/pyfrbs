@@ -343,7 +343,10 @@
      <attribute name="title">
       <string>Термы</string>
      </attribute>
-     <widget class="QPushButton" name="delete_variable_2">
+     <widget class="QPushButton" name="uiDeleteTermButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>280</x>
@@ -356,7 +359,7 @@
        <string>Удалить</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="variables_2">
+     <widget class="QComboBox" name="uiTermCombo">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -369,7 +372,7 @@
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QLabel" name="label_4">
+     <widget class="QLabel" name="uiTermLabel">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -382,7 +385,7 @@
        <string>Атомарный терм:</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="create_variable_2">
+     <widget class="QPushButton" name="uiCreateTermButton">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -395,7 +398,10 @@
        <string>Создать</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="rename_variable_2">
+     <widget class="QPushButton" name="uiRenameTermButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>140</x>
@@ -408,7 +414,7 @@
        <string>Переименовать</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_5">
+     <widget class="QLabel" name="uiFunctionLabel">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -421,7 +427,10 @@
        <string>Функция принадлежности:</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="variables_3">
+     <widget class="QComboBox" name="uiFunctionCombo">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -434,7 +443,7 @@
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QLabel" name="label_6">
+     <widget class="QLabel" name="uiPointsLabel">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -447,7 +456,10 @@
        <string>Характерные точки:</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit">
+     <widget class="QLineEdit" name="uiPointsEdit">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -457,12 +469,28 @@
        </rect>
       </property>
      </widget>
+     <widget class="QPushButton" name="uiCommitTermButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>450</y>
+        <width>391</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Сохранить изменения терма</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="uiHedgesTab">
      <attribute name="title">
       <string>Модификаторы</string>
      </attribute>
-     <widget class="QPushButton" name="create_variable_3">
+     <widget class="QPushButton" name="uiCreateHedgeButton">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -475,7 +503,10 @@
        <string>Создать</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="rename_variable_3">
+     <widget class="QPushButton" name="uiRenameHedgeButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>140</x>
@@ -488,7 +519,7 @@
        <string>Переименовать</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="variables_4">
+     <widget class="QComboBox" name="uiHedgeCombo">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -501,7 +532,10 @@
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit_2">
+     <widget class="QLineEdit" name="uiResultEdit">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -511,7 +545,10 @@
        </rect>
       </property>
      </widget>
-     <widget class="QPushButton" name="delete_variable_3">
+     <widget class="QPushButton" name="uiDeleteHedgeButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>280</x>
@@ -524,7 +561,7 @@
        <string>Удалить</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_7">
+     <widget class="QLabel" name="uiResultLabel">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -537,7 +574,7 @@
        <string>Значение:</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_8">
+     <widget class="QLabel" name="uiHedgeLabel">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -548,6 +585,22 @@
       </property>
       <property name="text">
        <string>Модификатор:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uiCommitHedgeButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>450</y>
+        <width>391</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Сохранить изменения модификатора</string>
       </property>
      </widget>
     </widget>
