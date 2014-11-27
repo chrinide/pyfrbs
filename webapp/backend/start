@@ -1,4 +1,0 @@
-#!/bin/sh
-mongod --dbpath `pwd`/data/db &
-sleep 2
-./node_modules/mocha/bin/mocha -b server-test.js && (node server.js &)
