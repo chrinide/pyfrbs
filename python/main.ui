@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>430</width>
+    <width>450</width>
     <height>550</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>430</width>
+    <width>450</width>
     <height>550</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>430</width>
+    <width>450</width>
     <height>550</height>
    </size>
   </property>
@@ -34,7 +34,7 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>411</width>
+      <width>431</width>
       <height>531</height>
      </rect>
     </property>
@@ -50,7 +50,7 @@
        <rect>
         <x>10</x>
         <y>65</y>
-        <width>121</width>
+        <width>131</width>
         <height>25</height>
        </rect>
       </property>
@@ -66,7 +66,7 @@
        <rect>
         <x>10</x>
         <y>220</y>
-        <width>291</width>
+        <width>311</width>
         <height>71</height>
        </rect>
       </property>
@@ -80,7 +80,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>310</x>
+        <x>330</x>
         <y>190</y>
         <width>91</width>
         <height>25</height>
@@ -98,7 +98,7 @@
        <rect>
         <x>10</x>
         <y>330</y>
-        <width>291</width>
+        <width>311</width>
         <height>24</height>
        </rect>
       </property>
@@ -137,7 +137,7 @@
        <rect>
         <x>10</x>
         <y>190</y>
-        <width>291</width>
+        <width>311</width>
         <height>24</height>
        </rect>
       </property>
@@ -148,7 +148,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>310</x>
+        <x>330</x>
         <y>220</y>
         <width>91</width>
         <height>25</height>
@@ -164,7 +164,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>310</x>
+        <x>330</x>
         <y>330</y>
         <width>91</width>
         <height>25</height>
@@ -180,7 +180,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>310</x>
+        <x>330</x>
         <y>360</y>
         <width>91</width>
         <height>25</height>
@@ -196,9 +196,9 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>280</x>
+        <x>290</x>
         <y>65</y>
-        <width>121</width>
+        <width>131</width>
         <height>25</height>
        </rect>
       </property>
@@ -212,7 +212,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>140</x>
+        <x>150</x>
         <y>65</y>
         <width>131</width>
         <height>25</height>
@@ -227,7 +227,7 @@
        <rect>
         <x>10</x>
         <y>35</y>
-        <width>391</width>
+        <width>411</width>
         <height>24</height>
        </rect>
       </property>
@@ -256,7 +256,7 @@
        <rect>
         <x>10</x>
         <y>360</y>
-        <width>291</width>
+        <width>311</width>
         <height>71</height>
        </rect>
       </property>
@@ -282,7 +282,7 @@
        <rect>
         <x>10</x>
         <y>130</y>
-        <width>181</width>
+        <width>191</width>
         <height>24</height>
        </rect>
       </property>
@@ -302,9 +302,9 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>220</x>
+        <x>230</x>
         <y>130</y>
-        <width>181</width>
+        <width>191</width>
         <height>24</height>
        </rect>
       </property>
@@ -312,7 +312,7 @@
      <widget class="QLabel" name="uiRangeSepLabel">
       <property name="geometry">
        <rect>
-        <x>200</x>
+        <x>210</x>
         <y>130</y>
         <width>16</width>
         <height>20</height>
@@ -330,7 +330,7 @@
        <rect>
         <x>10</x>
         <y>450</y>
-        <width>391</width>
+        <width>411</width>
         <height>41</height>
        </rect>
       </property>
@@ -349,9 +349,9 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>280</x>
+        <x>290</x>
         <y>65</y>
-        <width>121</width>
+        <width>131</width>
         <height>25</height>
        </rect>
       </property>
@@ -364,7 +364,7 @@
        <rect>
         <x>10</x>
         <y>35</y>
-        <width>391</width>
+        <width>411</width>
         <height>24</height>
        </rect>
       </property>
@@ -390,7 +390,7 @@
        <rect>
         <x>10</x>
         <y>65</y>
-        <width>121</width>
+        <width>131</width>
         <height>25</height>
        </rect>
       </property>
@@ -404,7 +404,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>140</x>
+        <x>150</x>
         <y>65</y>
         <width>131</width>
         <height>25</height>
@@ -435,7 +435,7 @@
        <rect>
         <x>10</x>
         <y>130</y>
-        <width>391</width>
+        <width>411</width>
         <height>24</height>
        </rect>
       </property>
@@ -464,7 +464,7 @@
        <rect>
         <x>10</x>
         <y>190</y>
-        <width>391</width>
+        <width>411</width>
         <height>24</height>
        </rect>
       </property>
@@ -477,7 +477,7 @@
        <rect>
         <x>10</x>
         <y>450</y>
-        <width>391</width>
+        <width>411</width>
         <height>41</height>
        </rect>
       </property>
@@ -495,7 +495,7 @@
        <rect>
         <x>10</x>
         <y>65</y>
-        <width>121</width>
+        <width>131</width>
         <height>25</height>
        </rect>
       </property>
@@ -509,7 +509,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>140</x>
+        <x>150</x>
         <y>65</y>
         <width>131</width>
         <height>25</height>
@@ -524,7 +524,7 @@
        <rect>
         <x>10</x>
         <y>35</y>
-        <width>391</width>
+        <width>411</width>
         <height>24</height>
        </rect>
       </property>
@@ -540,7 +540,7 @@
        <rect>
         <x>10</x>
         <y>130</y>
-        <width>391</width>
+        <width>411</width>
         <height>24</height>
        </rect>
       </property>
@@ -551,9 +551,9 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>280</x>
+        <x>290</x>
         <y>65</y>
-        <width>121</width>
+        <width>131</width>
         <height>25</height>
        </rect>
       </property>
@@ -595,12 +595,288 @@
        <rect>
         <x>10</x>
         <y>450</y>
-        <width>391</width>
+        <width>411</width>
         <height>41</height>
        </rect>
       </property>
       <property name="text">
        <string>Сохранить изменения модификатора</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="uiRulesTab">
+     <attribute name="title">
+      <string>Правила</string>
+     </attribute>
+     <widget class="QPushButton" name="uiCreateRuleButton">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>65</y>
+        <width>131</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Создать</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uiRenameRuleButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>65</y>
+        <width>131</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Переименовать</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uiCommitRuleButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>450</y>
+        <width>411</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Сохранить изменения правила</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="uiRulesCombo">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>35</y>
+        <width>411</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="editable">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="uiAntecedentNodesCombo">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>130</y>
+        <width>201</width>
+        <height>24</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uiAddConsequentNodeButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>300</y>
+        <width>91</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Добавить</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="uiConsequentLabel">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>280</y>
+        <width>221</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Консеквент правила:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uiAddAntecedentNodeButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>130</y>
+        <width>91</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Добавить</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="uiConsequentNodesCombo">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>300</y>
+        <width>201</width>
+        <height>24</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uiRemoveConsequentNodeButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>330</y>
+        <width>91</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Убрать</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uiDeleteRuleButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>290</x>
+        <y>65</y>
+        <width>131</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Удалить</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="uiAntecedentLabel">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>110</y>
+        <width>241</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Антецедент правила:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="uiRuleLabel">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>15</y>
+        <width>291</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Нечёткое логическое правило:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uiRemoveAntecedentNodeButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>160</y>
+        <width>91</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Убрать</string>
+      </property>
+     </widget>
+     <widget class="QTreeWidget" name="uiAntecedentTree">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>160</y>
+        <width>311</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="headerHidden">
+       <bool>true</bool>
+      </property>
+      <column>
+       <property name="text">
+        <string notr="true">1</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QTreeWidget" name="uiConsequentTree">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>330</y>
+        <width>311</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="headerHidden">
+       <bool>true</bool>
+      </property>
+      <column>
+       <property name="text">
+        <string notr="true">1</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QComboBox" name="uiAntecedentNodeTypeCombo">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>130</y>
+        <width>101</width>
+        <height>24</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="uiConsequentNodeTypeCombo">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>300</y>
+        <width>101</width>
+        <height>24</height>
+       </rect>
       </property>
      </widget>
     </widget>
