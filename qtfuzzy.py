@@ -12,7 +12,7 @@ class Window(QMainWindow):
     def __init__(self, *args):
         super(Window, self).__init__(*args)
 
-        loadUi('main.ui', self)
+        loadUi('qtfuzzy.ui', self)
 
         self.loadVariables()
         self.loadTerms()
@@ -432,17 +432,36 @@ class Window(QMainWindow):
         cur.close()
         if (root):
             item = QTreeWidgetItem()
-            item.setText(0, '%s' % root[0])
+            item.setText(0, '%s' % root[1])
+            item.setText(1, '%s' % root[0])
             self.uiAntecedentTree.addTopLevelItem(item)
             cur = conn.cursor()
-            cur.execute('SELECT * FROM nodes JOIN closures ON nodes.id = closures.descendant_id WHERE closures.ancestor_id IN (SELECT antecedent_id FROM rules WHERE name = %s) ORDER BY parent_id ASC;', (self.uiRulesCombo.currentText(),))
+            cur.execute('SELECT nodes.id, nodes.parent_id, types.name FROM nodes, types, closures WHERE nodes.id = closures.descendant_id AND closures.ancestor_id IN (SELECT antecedent_id FROM rules WHERE name = %s) AND nodes.type_id = types.id ORDER BY parent_id ASC;', (self.uiRulesCombo.currentText(),))
             nodes = cur.fetchall()
             cur.close()
             for node in nodes:
                 if node[0] != node[1]:
-                    parents = self.uiAntecedentTree.findItems('%s' % node[1], Qt.MatchExactly | Qt.MatchRecursive)
+                    if (node[2] == 'variable'):
+                        cur = conn.cursor()
+                        cur.execute('SELECT variables.name FROM variables, nodes WHERE variables.id = nodes.variable_id AND nodes.id = %s;', (node[0],))
+                        name = cur.fetchone()
+                        cur.close()
+                    elif (node[2] == 'hedge'):
+                        cur = conn.cursor()
+                        cur.execute('SELECT hedges.value FROM hedges, nodes WHERE hedges.id = nodes.hedge_id AND nodes.id = %s;', (node[0],))
+                        name = cur.fetchone()
+                        cur.close()
+                    elif (node[2] == 'term'):
+                        cur = conn.cursor()
+                        cur.execute('SELECT terms.value FROM terms, nodes WHERE terms.id = nodes.term_id AND nodes.id = %s;', (node[0],))
+                        name = cur.fetchone()
+                        cur.close()
+                    else:
+                        name = node[2]
+                    parents = self.uiAntecedentTree.findItems('%s' % node[1], Qt.MatchExactly | Qt.MatchRecursive, 1)
                     item = QTreeWidgetItem()
-                    item.setText(0, '%s' % node[0])
+                    item.setText(0, '%s' % name)
+                    item.setText(1, '%s' % node[0])
                     parents[0].addChild(item)
 
         cur = conn.cursor()
@@ -451,17 +470,36 @@ class Window(QMainWindow):
         cur.close()
         if (root):
             item = QTreeWidgetItem()
-            item.setText(0, '%s' % root[0])
+            item.setText(0, '%s' % root[1])
+            item.setText(1, '%s' % root[0])
             self.uiConsequentTree.addTopLevelItem(item)
             cur = conn.cursor()
-            cur.execute('SELECT * FROM nodes JOIN closures ON nodes.id = closures.descendant_id WHERE closures.ancestor_id IN (SELECT consequent_id FROM rules WHERE name = %s) ORDER BY parent_id ASC;', (self.uiRulesCombo.currentText(),))
+            cur.execute('SELECT nodes.id, nodes.parent_id, types.name FROM nodes, types, closures WHERE nodes.id = closures.descendant_id AND closures.ancestor_id IN (SELECT consequent_id FROM rules WHERE name = %s) AND nodes.type_id = types.id ORDER BY parent_id ASC;', (self.uiRulesCombo.currentText(),))
             nodes = cur.fetchall()
             cur.close()
             for node in nodes:
                 if node[0] != node[1]:
-                    parents = self.uiConsequentTree.findItems('%s' % node[1], Qt.MatchExactly | Qt.MatchRecursive)
+                    if (node[2] == 'variable'):
+                        cur = conn.cursor()
+                        cur.execute('SELECT variables.name FROM variables, nodes WHERE variables.id = nodes.variable_id AND nodes.id = %s;', (node[0],))
+                        name = cur.fetchone()
+                        cur.close()
+                    elif (node[2] == 'hedge'):
+                        cur = conn.cursor()
+                        cur.execute('SELECT hedges.value FROM hedges, nodes WHERE hedges.id = nodes.hedge_id AND nodes.id = %s;', (node[0],))
+                        name = cur.fetchone()
+                        cur.close()
+                    elif (node[2] == 'term'):
+                        cur = conn.cursor()
+                        cur.execute('SELECT terms.value FROM terms, nodes WHERE terms.id = nodes.term_id AND nodes.id = %s;', (node[0],))
+                        name = cur.fetchone()
+                        cur.close()
+                    else:
+                        name = node[2]
+                    parents = self.uiConsequentTree.findItems('%s' % node[1], Qt.MatchExactly | Qt.MatchRecursive, 1)
                     item = QTreeWidgetItem()
-                    item.setText(0, '%s' % node[0])
+                    item.setText(0, '%s' % name)
+                    item.setText(1, '%s' % node[0])
                     parents[0].addChild(item)
 
         self.uiRenameRuleButton.setEnabled(True)

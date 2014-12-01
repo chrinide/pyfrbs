@@ -811,48 +811,6 @@
        <string>Убрать</string>
       </property>
      </widget>
-     <widget class="QTreeWidget" name="uiAntecedentTree">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>160</y>
-        <width>311</width>
-        <height>101</height>
-       </rect>
-      </property>
-      <property name="headerHidden">
-       <bool>true</bool>
-      </property>
-      <column>
-       <property name="text">
-        <string notr="true">1</string>
-       </property>
-      </column>
-     </widget>
-     <widget class="QTreeWidget" name="uiConsequentTree">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>330</y>
-        <width>311</width>
-        <height>101</height>
-       </rect>
-      </property>
-      <property name="headerHidden">
-       <bool>true</bool>
-      </property>
-      <column>
-       <property name="text">
-        <string notr="true">1</string>
-       </property>
-      </column>
-     </widget>
      <widget class="QComboBox" name="uiAntecedentNodeTypeCombo">
       <property name="enabled">
        <bool>false</bool>
@@ -878,6 +836,76 @@
         <height>24</height>
        </rect>
       </property>
+     </widget>
+     <widget class="QTreeWidget" name="uiAntecedentTree">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>160</y>
+        <width>311</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <attribute name="headerVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="headerDefaultSectionSize">
+       <number>350</number>
+      </attribute>
+      <attribute name="headerMinimumSectionSize">
+       <number>0</number>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>1</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>2</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QTreeWidget" name="uiConsequentTree">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>330</y>
+        <width>311</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <attribute name="headerVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="headerDefaultSectionSize">
+       <number>350</number>
+      </attribute>
+      <attribute name="headerMinimumSectionSize">
+       <number>0</number>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>1</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>2</string>
+       </property>
+      </column>
      </widget>
     </widget>
    </widget>
