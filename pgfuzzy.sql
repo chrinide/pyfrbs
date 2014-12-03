@@ -2,9 +2,20 @@ DROP SCHEMA public CASCADE;
 CREATE SCHEMA public;
 GRANT USAGE ON SCHEMA public TO user1;
 
+CREATE TABLE synonims (
+	id SERIAL PRIMARY KEY,
+	group_id INT NOT NULL,
+	lemma VARCHAR(255),
+	grammemes VARCHAR(255),
+	hits INT,
+	is_variable BOOLEAN,
+	is_term BOOLEAN,
+	is_hedge BOOLEAN
+);
+
 CREATE TABLE variables (
 	id SERIAL PRIMARY KEY,
-	name VARCHAR(255),
+	name_id INT NOT NULL,
 	min REAL, 
 	max REAL 
 );
@@ -16,7 +27,7 @@ CREATE TABLE functions (
 
 CREATE TABLE terms (
 	id SERIAL PRIMARY KEY,
-	value VARCHAR(255),
+	name_id INT NOT NULL,
 	function_id INT NOT NULL REFERENCES functions(id),
 	points VARCHAR(255)
 );
@@ -28,7 +39,7 @@ CREATE TABLE variables_terms (
 
 CREATE TABLE hedges (
 	id SERIAL PRIMARY KEY,
-	value VARCHAR(255),
+	name_id INT NOT NULL,
 	result VARCHAR(255)
 );
 
@@ -67,26 +78,38 @@ CREATE TABLE rules (
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO user1;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO user1;
 
-INSERT INTO variables (name, min, max) VALUES 
-	('возраст', 0, 100),
-	('время', 0, 24),
-	('активность', 0, 10);
+INSERT INTO synonims (group_id, lemma, grammemes, hits, is_variable, is_term, is_hedge) VALUES
+	(1, 'возраст', 'сущ еч', 1, true, false, false),
+	(1, 'годы', 'сущ мч', 1, true, false, false),
+	(2, 'время', 'сущ еч', 1, true, false, false),
+	(2, 'часы', 'сущ мч', 1, true, false, false),
+	(3, 'активность', 'сущ еч', 1, true, false, false),
+	(4, 'молодой', 'прил', 1, false, true, false),
+	(4, 'юный', 'прил', 1, false, true, false),
+	(5, 'поздний', 'прил', 1, false, true, false),
+	(6, 'низкий', 'прил', 1, false, true, false),
+	(7, 'не', 'част', 1, false, false, true);
+
+INSERT INTO variables (name_id, min, max) VALUES 
+	(1, 0, 100),
+	(2, 0, 24),
+	(3, 0, 10);
 
 INSERT INTO functions (type) VALUES 
 	('трапеция');
 
-INSERT INTO terms (value, function_id, points) VALUES 
-	('молодой', 1, '15:20:25:30'),
-	('позднее', 1, '0:1:3:4'),
-	('низкая', 1, '0:1:2:3');
+INSERT INTO terms (name_id, function_id, points) VALUES 
+	(4, 1, '15;20;25;30'),
+	(5, 1, '0;1;3;4'),
+	(6, 1, '0;1;2;3');
 
 INSERT INTO variables_terms (variable_id, term_id) VALUES
 	(1, 1),
 	(2, 2),
 	(3, 3);
 
-INSERT INTO hedges (value, result) VALUES 
-	('не', '1 - x');
+INSERT INTO hedges (name_id, result) VALUES 
+	(7, '1 - x');
 
 INSERT INTO variables_hedges (variable_id, hedge_id) VALUES 
 	(1, 1);
@@ -117,4 +140,4 @@ INSERT INTO closures (ancestor_id, descendant_id) VALUES
 	(10, 12), (11, 11), (12, 12);
 
 INSERT INTO rules (name, antecedent_id, consequent_id) VALUES 
-	('возраст не молодой и время позднее -> активность низкая', 1, 10);
+	('возраст не молодой и время позднее, активность низкая', 1, 10);
