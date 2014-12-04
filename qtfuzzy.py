@@ -5,7 +5,7 @@ import psycopg2
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QDoubleValidator
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTreeWidgetItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QListWidgetItem, QTreeWidgetItem
 from PyQt5.uic import loadUi
 
 class Window(QMainWindow):
@@ -69,21 +69,30 @@ class Window(QMainWindow):
 
         self.uiTabs.currentChanged.connect(self.onTabChanged)
 
+    def getLemmas(self, group):
+        cur = conn.cursor()
+        cur.execute('SELECT lemma FROM synonims WHERE group_id = %s ORDER BY hits DESC;', (group,))
+        lemmas = []
+        for row in cur.fetchall():
+            lemmas.append(row[0])
+        cur.close()
+        return lemmas
+
     def loadVariables(self):
         self.uiVariablesCombo.clear()
         cur = conn.cursor()
-        cur.execute('SELECT name FROM variables;')
-        for item in cur.fetchall():
-            self.uiVariablesCombo.addItem(item[0])
+        cur.execute('SELECT name_id FROM variables;')
+        for row in cur.fetchall():
+            self.uiVariablesCombo.addItem(', '.join(self.getLemmas(row[0])), row[0])
         cur.close()
         self.uiVariablesCombo.setCurrentIndex(-1)
 
     def loadTerms(self):
         self.uiTermsCombo.clear()
         cur = conn.cursor()
-        cur.execute('SELECT value FROM terms;')
-        for item in cur.fetchall():
-            self.uiTermsCombo.addItem(item[0])
+        cur.execute('SELECT name_id FROM terms;')
+        for row in cur.fetchall():
+            self.uiTermsCombo.addItem(', '.join(self.getLemmas(row[0])), row[0])
         cur.close()
         self.uiTermsCombo.setCurrentIndex(-1)
         self.uiAddTermButton.setEnabled(False)
@@ -91,18 +100,18 @@ class Window(QMainWindow):
     def loadTerms2(self):
         self.uiTermCombo.clear()
         cur = conn.cursor()
-        cur.execute('SELECT value FROM terms;')
-        for item in cur.fetchall():
-            self.uiTermCombo.addItem(item[0])
+        cur.execute('SELECT name_id FROM terms;')
+        for row in cur.fetchall():
+            self.uiTermCombo.addItem(', '.join(self.getLemmas(row[0])), row[0])
         cur.close()
         self.uiTermCombo.setCurrentIndex(-1)
 
     def loadHedges(self):
         self.uiHedgesCombo.clear()
         cur = conn.cursor()
-        cur.execute('SELECT value FROM hedges;')
-        for item in cur.fetchall():
-            self.uiHedgesCombo.addItem(item[0])
+        cur.execute('SELECT name_id FROM hedges;')
+        for row in cur.fetchall():
+            self.uiHedgesCombo.addItem(', '.join(self.getLemmas(row[0])), row[0])
         cur.close()
         self.uiHedgesCombo.setCurrentIndex(-1)
         self.uiAddHedgeButton.setEnabled(False)
@@ -110,9 +119,9 @@ class Window(QMainWindow):
     def loadHedges2(self):
         self.uiHedgeCombo.clear()
         cur = conn.cursor()
-        cur.execute('SELECT value FROM hedges;')
-        for item in cur.fetchall():
-            self.uiHedgeCombo.addItem(item[0])
+        cur.execute('SELECT name_id FROM hedges;')
+        for row in cur.fetchall():
+            self.uiHedgeCombo.addItem(', '.join(self.getLemmas(row[0])), row[0])
         cur.close()
         self.uiHedgeCombo.setCurrentIndex(-1)
 
@@ -120,8 +129,8 @@ class Window(QMainWindow):
         self.uiFunctionCombo.clear()
         cur = conn.cursor()
         cur.execute('SELECT type FROM functions;')
-        for item in cur.fetchall():
-            self.uiFunctionCombo.addItem(item[0])
+        for row in cur.fetchall():
+            self.uiFunctionCombo.addItem(row[0])
         cur.close()
         self.uiFunctionCombo.setCurrentIndex(-1)
 
@@ -129,8 +138,8 @@ class Window(QMainWindow):
         self.uiRulesCombo.clear()
         cur = conn.cursor()
         cur.execute('SELECT name FROM rules;')
-        for item in cur.fetchall():
-            self.uiRulesCombo.addItem(item[0])
+        for row in cur.fetchall():
+            self.uiRulesCombo.addItem(row[0])
         cur.close()
         self.uiRulesCombo.setCurrentIndex(-1)
 
@@ -163,21 +172,25 @@ class Window(QMainWindow):
             return
 
         cur = conn.cursor()
-        cur.execute('SELECT terms.value FROM variables, terms, variables_terms WHERE variables.name = %s AND variables.id = variables_terms.variable_id AND terms.id = variables_terms.term_id;', (self.uiVariablesCombo.currentText(),))
-        for item in cur.fetchall():
-            self.uiTermsList.addItem(item[0])
+        cur.execute('SELECT terms.name_id FROM variables, terms, variables_terms WHERE variables.name_id = %s AND variables.id = variables_terms.variable_id AND terms.id = variables_terms.term_id;', (self.uiVariablesCombo.currentData(),))
+        for row in cur.fetchall():
+            item = QListWidgetItem(', '.join(self.getLemmas(row[0])))
+            item.setData(Qt.UserRole, row[0])
+            self.uiTermsList.addItem(item)
         cur.close()
         self.loadTerms()
 
         cur = conn.cursor()
-        cur.execute('SELECT hedges.value FROM variables, hedges, variables_hedges WHERE variables.name = %s AND variables.id = variables_hedges.variable_id AND hedges.id = variables_hedges.hedge_id;', (self.uiVariablesCombo.currentText(),))
-        for item in cur.fetchall():
-            self.uiHedgesList.addItem(item[0])
+        cur.execute('SELECT hedges.name_id FROM variables, hedges, variables_hedges WHERE variables.name_id = %s AND variables.id = variables_hedges.variable_id AND hedges.id = variables_hedges.hedge_id;', (self.uiVariablesCombo.currentData(),))
+        for row in cur.fetchall():
+            item = QListWidgetItem(', '.join(self.getLemmas(row[0])))
+            item.setData(Qt.UserRole, row[0])
+            self.uiHedgesList.addItem(item)
         cur.close()
         self.loadHedges()
 
         cur = conn.cursor()
-        cur.execute('SELECT variables.min, variables.max FROM variables WHERE variables.name = %s;', (self.uiVariablesCombo.currentText(),))
+        cur.execute('SELECT variables.min, variables.max FROM variables WHERE variables.name_id = %s;', (self.uiVariablesCombo.currentData(),))
         range = cur.fetchone()
         if (range):
             self.uiRangeMinEdit.setText('%s' % range[0])
@@ -202,8 +215,15 @@ class Window(QMainWindow):
         self.uiRemoveTermButton.setEnabled(True)
 
     def onAddTermClicked(self):
-        if (not self.uiTermsList.findItems(self.uiTermsCombo.currentText(), Qt.MatchExactly)):
-            self.uiTermsList.addItem(self.uiTermsCombo.currentText())
+        found = False
+        for index in range(self.uiTermsList.count()):
+            if (self.uiTermsList.item(index).data(Qt.UserRole) == self.uiTermsCombo.currentData()):
+                found = True
+                break
+        if (not found):
+            item = QListWidgetItem(self.uiTermsCombo.currentText())
+            item.setData(Qt.UserRole, self.uiTermsCombo.currentData())
+            self.uiTermsList.addItem(item)
             self.uiCommitVariableButton.setEnabled(True)
 
     def onRemoveTermClicked(self):
@@ -219,8 +239,15 @@ class Window(QMainWindow):
         self.uiRemoveHedgeButton.setEnabled(True)
 
     def onAddHedgeClicked(self):
-        if (not self.uiHedgesList.findItems(self.uiHedgesCombo.currentText(), Qt.MatchExactly)):
-            self.uiHedgesList.addItem(self.uiHedgesCombo.currentText())
+        found = False
+        for index in range(self.uiHedgesList.count()):
+            if (self.uiHedgesList.item(index).data(Qt.UserRole) == self.uiHedgesCombo.currentData()):
+                found = True
+                break
+        if (not found):
+            item = QListWidgetItem(self.uiHedgesCombo.currentText())
+            item.setData(Qt.UserRole, self.uiHedgesCombo.currentData())
+            self.uiHedgesList.addItem(item)
             self.uiCommitVariableButton.setEnabled(True)
 
     def onRemoveHedgeClicked(self):
@@ -243,7 +270,8 @@ class Window(QMainWindow):
 
     def onDeleteVariableClicked(self):
         cur = conn.cursor()
-        cur.execute('DELETE FROM variables WHERE name = %s;', (self.uiVariablesCombo.currentText(),))
+        # TODO: delete name_id from synonims too?
+        cur.execute('DELETE FROM variables WHERE name_id = %s;', (self.uiVariablesCombo.currentData(),))
         conn.commit()
         cur.close()
         self.uiVariablesCombo.removeItem(self.uiVariablesCombo.currentIndex())
@@ -254,18 +282,18 @@ class Window(QMainWindow):
     def commitVariable(self):
         self.uiCommitVariableButton.setEnabled(False)
         cur = conn.cursor()
-        cur.execute('SELECT id FROM variables WHERE name = %s', (self.uiVariablesCombo.currentText(),))
+        cur.execute('SELECT id FROM variables WHERE name_id = %s', (self.uiVariablesCombo.currentData(),))
         variable_id = cur.fetchone()
         if (variable_id):
             cur.execute('UPDATE variables SET min = %s, max = %s WHERE id = %s;', (self.uiRangeMinEdit.text(), self.uiRangeMaxEdit.text(), variable_id))
         else:
-            cur.execute('INSERT INTO variables (name, min, max) VALUES (%s, %s, %s);', (self.uiVariablesCombo.currentText(), self.uiRangeMinEdit.text(), self.uiRangeMaxEdit.text()))
+            cur.execute('INSERT INTO variables (name_id, min, max) VALUES (%s, %s, %s);', (self.uiVariablesCombo.currentData(), self.uiRangeMinEdit.text(), self.uiRangeMaxEdit.text()))
         cur.execute('DELETE FROM variables_terms WHERE variable_id = %s;', (variable_id,))
         for i in range(0, self.uiTermsList.count()):
-            cur.execute('INSERT INTO variables_terms (variable_id, term_id) VALUES (%s, (SELECT id AS term_id FROM terms WHERE value = %s))', (variable_id, self.uiTermsList.item(i).text()))
+            cur.execute('INSERT INTO variables_terms (variable_id, term_id) VALUES (%s, (SELECT id AS term_id FROM terms WHERE name_id = %s))', (variable_id, self.uiTermsList.item(i).data(Qt.UserRole)))
         cur.execute('DELETE FROM variables_hedges WHERE variable_id = %s;', (variable_id,))
         for j in range(0, self.uiHedgesList.count()):
-            cur.execute('INSERT INTO variables_hedges (variable_id, hedge_id) VALUES (%s, (SELECT id FROM hedges WHERE value = %s))', (variable_id, self.uiHedgesList.item(j).text()))
+            cur.execute('INSERT INTO variables_hedges (variable_id, hedge_id) VALUES (%s, (SELECT id FROM hedges WHERE name_id = %s))', (variable_id, self.uiHedgesList.item(j).data(Qt.UserRole)))
         conn.commit()
         cur.close()
 
