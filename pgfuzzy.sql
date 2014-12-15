@@ -2,20 +2,24 @@ DROP SCHEMA public CASCADE;
 CREATE SCHEMA public;
 GRANT USAGE ON SCHEMA public TO user1;
 
-CREATE TABLE synonims (
+CREATE TABLE groups (
 	id SERIAL PRIMARY KEY,
-	group_id INT NOT NULL,
-	lemma VARCHAR(255),
-	grammemes VARCHAR(255),
-	hits INT,
 	is_variable BOOLEAN,
 	is_term BOOLEAN,
 	is_hedge BOOLEAN
 );
 
+CREATE TABLE synonims (
+	id SERIAL PRIMARY KEY,
+	group_id INT NOT NULL REFERENCES groups(id),
+	lemma VARCHAR(255),
+	grammemes VARCHAR(255),
+	hits INT
+);
+
 CREATE TABLE variables (
 	id SERIAL PRIMARY KEY,
-	name_id INT NOT NULL,
+	name_id INT NOT NULL REFERENCES groups(id),
 	min REAL, 
 	max REAL 
 );
@@ -27,7 +31,7 @@ CREATE TABLE functions (
 
 CREATE TABLE terms (
 	id SERIAL PRIMARY KEY,
-	name_id INT NOT NULL,
+	name_id INT NOT NULL REFERENCES groups(id),
 	function_id INT NOT NULL REFERENCES functions(id),
 	points VARCHAR(255)
 );
@@ -39,7 +43,7 @@ CREATE TABLE variables_terms (
 
 CREATE TABLE hedges (
 	id SERIAL PRIMARY KEY,
-	name_id INT NOT NULL,
+	name_id INT NOT NULL REFERENCES groups(id),
 	result VARCHAR(255)
 );
 
@@ -57,9 +61,9 @@ CREATE TABLE nodes (
 	id SERIAL PRIMARY KEY,
 	parent_id INT NOT NULL REFERENCES nodes(id),
 	type_id INT NOT NULL REFERENCES types(id),
-	variable_id INT,
-	term_id INT,
-	hedge_id INT
+	variable_id INT NULL REFERENCES variables(id),
+	term_id INT NULL REFERENCES terms(id),
+	hedge_id INT NULL REFERENCES hedges(id)
 );
 
 CREATE TABLE closures (
@@ -78,17 +82,26 @@ CREATE TABLE rules (
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO user1;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO user1;
 
-INSERT INTO synonims (group_id, lemma, grammemes, hits, is_variable, is_term, is_hedge) VALUES
-	(1, 'возраст', 'сущ еч', 1, true, false, false),
-	(1, 'годы', 'сущ мч', 1, true, false, false),
-	(2, 'время', 'сущ еч', 1, true, false, false),
-	(2, 'часы', 'сущ мч', 1, true, false, false),
-	(3, 'активность', 'сущ еч', 1, true, false, false),
-	(4, 'молодой', 'прил', 1, false, true, false),
-	(4, 'юный', 'прил', 1, false, true, false),
-	(5, 'поздний', 'прил', 1, false, true, false),
-	(6, 'низкий', 'прил', 1, false, true, false),
-	(7, 'не', 'част', 1, false, false, true);
+INSERT INTO groups (id, is_variable, is_term, is_hedge) VALUES
+	(1, true, false, false),
+	(2, true, false, false),
+	(3, true, false, false),
+	(4, false, true, false),
+	(5, false, true, false),
+	(6, false, true, false),
+	(7, false, false, true);
+
+INSERT INTO synonims (group_id, lemma, grammemes, hits) VALUES
+	(1, 'возраст', 'сущ еч', 1),
+	(1, 'годы', 'сущ мч', 1),
+	(2, 'время', 'сущ еч', 1),
+	(2, 'часы', 'сущ мч', 1),
+	(3, 'активность', 'сущ еч', 1),
+	(4, 'молодой', 'прил', 1),
+	(4, 'юный', 'прил', 1),
+	(5, 'поздний', 'прил', 1),
+	(6, 'низкий', 'прил', 1),
+	(7, 'не', 'част', 1);
 
 INSERT INTO variables (name_id, min, max) VALUES 
 	(1, 0, 100),
@@ -127,10 +140,12 @@ INSERT INTO types (name) VALUES
 	('variable_not');
 
 INSERT INTO nodes (id, parent_id, type_id, variable_id, term_id, hedge_id) VALUES
-	(1, 1, 8, 0, 0, 0), (2, 1, 5, 0, 0, 0), (3, 2, 3, 1, 0, 0), 
-	(4, 2, 4, 0, 0, 0), (5, 4, 2, 0, 0, 1), (6, 4, 1, 0, 1, 0), 
-	(7, 1, 5, 0, 0, 0), (8, 7, 3, 2, 0, 0), (9, 7, 1, 0, 2, 0), 
-	(10, 10, 5, 0, 0, 0), (11, 10, 3, 3, 0, 0), (12, 10, 1, 0, 3, 0);
+	(1, 1, 8, null, null, null), (2, 1, 5, null, null, null), 
+	(3, 2, 3, 1, null, null), (4, 2, 4, null, null, null), 
+	(5, 4, 2, null, null, 1), (6, 4, 1, null, 1, null), 
+	(7, 1, 5, null, null, null), (8, 7, 3, 2, null, null), 
+	(9, 7, 1, null, 2, null), (10, 10, 5, null, null, null), 
+	(11, 10, 3, 3, null, null), (12, 10, 1, null, 3, null);
 
 INSERT INTO closures (ancestor_id, descendant_id) VALUES
 	(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7),

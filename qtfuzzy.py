@@ -314,7 +314,7 @@ class Window(QMainWindow):
 
         self.uiFunctionCombo.blockSignals(True)
         cur = conn.cursor()
-        cur.execute('SELECT functions.type FROM terms, functions WHERE functions.id = terms.function_id AND terms.value = %s;', (self.uiTermCombo.currentText(),))
+        cur.execute('SELECT functions.type FROM terms, functions WHERE functions.id = terms.function_id AND terms.name_id = %s;', (self.uiTermCombo.currentData(),))
         type = cur.fetchone()
         if (type):
             self.uiFunctionCombo.setCurrentText(type[0])
@@ -323,7 +323,7 @@ class Window(QMainWindow):
         self.uiFunctionCombo.blockSignals(False)
 
         cur = conn.cursor()
-        cur.execute('SELECT points FROM terms WHERE value = %s;', (self.uiTermCombo.currentText(),))
+        cur.execute('SELECT points FROM terms WHERE name_id = %s;', (self.uiTermCombo.currentData(),))
         points = cur.fetchone()
         if (points):
             self.uiPointsEdit.setText('%s' % points[0])
@@ -349,8 +349,9 @@ class Window(QMainWindow):
         self.uiFunctionCombo.setFocus()
 
     def onDeleteTermClicked(self):
+        # TODO: delete from synonims too?
         cur = conn.cursor()
-        cur.execute('DELETE FROM terms WHERE value = %s;', (self.uiTermCombo.currentText(),))
+        cur.execute('DELETE FROM terms WHERE name_id = %s;', (self.uiTermCombo.currentData(),))
         conn.commit()
         cur.close()
         self.uiTermCombo.removeItem(self.uiTermCombo.currentIndex())
@@ -365,12 +366,12 @@ class Window(QMainWindow):
     def commitTerm(self):
         self.uiCommitTermButton.setEnabled(False)
         cur = conn.cursor()
-        cur.execute('SELECT id FROM terms WHERE value = %s', (self.uiTermCombo.currentText(),))
+        cur.execute('SELECT id FROM terms WHERE name_id = %s', (self.uiTermCombo.currentData(),))
         term_id = cur.fetchone()
         if (term_id):
             cur.execute('UPDATE terms SET function_id = (SELECT id FROM functions WHERE type = %s), points = %s WHERE id = %s;', (self.uiFunctionCombo.currentText(), self.uiPointsEdit.text(), term_id))
         else:
-            cur.execute('INSERT INTO terms (value, function_id, points) VALUES (%s, (SELECT id FROM functions WHERE type = %s), %s);', (self.uiTermCombo.currentText(), self.uiFunctionCombo.currentText(), self.uiPointsEdit.text()))
+            cur.execute('INSERT INTO terms (name_id, function_id, points) VALUES (%s, (SELECT id FROM functions WHERE type = %s), %s);', (self.uiTermCombo.currentData(), self.uiFunctionCombo.currentText(), self.uiPointsEdit.text()))
         conn.commit()
         cur.close()
 
