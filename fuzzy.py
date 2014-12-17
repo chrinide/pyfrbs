@@ -12,7 +12,7 @@ class Window(QMainWindow):
     def __init__(self, *args):
         super(Window, self).__init__(*args)
 
-        loadUi('qtfuzzy.ui', self)
+        loadUi('fuzzy.ui', self)
 
         # Initialize variables tab
 
