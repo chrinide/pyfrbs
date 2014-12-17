@@ -26,7 +26,7 @@ CREATE TABLE variables (
 
 CREATE TABLE functions (
 	id SERIAL PRIMARY KEY,
-	type VARCHAR(255)
+	name VARCHAR(255)
 );
 
 CREATE TABLE terms (
@@ -61,22 +61,22 @@ CREATE TABLE nodes (
 	id SERIAL PRIMARY KEY,
 	parent_id INT NOT NULL REFERENCES nodes(id),
 	type_id INT NOT NULL REFERENCES types(id),
-	variable_id INT NULL REFERENCES variables(id),
-	term_id INT NULL REFERENCES terms(id),
-	hedge_id INT NULL REFERENCES hedges(id)
+	variable_id INT NULL REFERENCES variables(id) ON DELETE CASCADE,
+	term_id INT NULL REFERENCES terms(id) ON DELETE CASCADE,
+	hedge_id INT NULL REFERENCES hedges(id) ON DELETE CASCADE
 );
 
 CREATE TABLE closures (
-	ancestor_id INT NOT NULL REFERENCES nodes(id),
-	descendant_id INT NOT NULL REFERENCES nodes(id),
+	ancestor_id INT NOT NULL REFERENCES nodes(id) ON DELETE CASCADE,
+	descendant_id INT NOT NULL REFERENCES nodes(id) ON DELETE CASCADE,
 	PRIMARY KEY (ancestor_id, descendant_id)
 );
 
 CREATE TABLE rules (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(255),
-	antecedent_id INT NOT NULL REFERENCES nodes(id),
-	consequent_id INT NOT NULL REFERENCES nodes(id)
+	antecedent_id INT NOT NULL REFERENCES nodes(id) ON DELETE CASCADE,
+	consequent_id INT NOT NULL REFERENCES nodes(id) ON DELETE CASCADE
 );
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO user1;
@@ -108,7 +108,7 @@ INSERT INTO variables (name_id, min, max) VALUES
 	(2, 0, 24),
 	(3, 0, 10);
 
-INSERT INTO functions (type) VALUES 
+INSERT INTO functions (name) VALUES 
 	('трапеция');
 
 INSERT INTO terms (name_id, function_id, points) VALUES 
