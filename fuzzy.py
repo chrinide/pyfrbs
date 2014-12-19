@@ -12,6 +12,8 @@ class Window(QMainWindow):
     def __init__(self, *args):
         super(Window, self).__init__(*args)
 
+        self.conn = psycopg2.connect(host='127.0.0.1', database='fuzzy', user='user1', password='pass1')
+
         loadUi('fuzzy.ui', self)
 
         # Initialize variables tab
@@ -77,7 +79,7 @@ class Window(QMainWindow):
         self.uiTabs.currentChanged.connect(self.onTabChanged)
 
     def getLemmas(self, group):
-        cur = conn.cursor()
+        cur = self.conn.cursor()
         cur.execute('SELECT lemma FROM synonims WHERE group_id = %s ORDER BY hits DESC;', (group,))
         lemmas = []
         for row in cur.fetchall():
@@ -87,7 +89,7 @@ class Window(QMainWindow):
 
     def fillComboWithGroups(self, combo, table):
         combo.clear()
-        cur = conn.cursor()
+        cur = self.conn.cursor()
         # TODO: proper parameter passing
         cur.execute('SELECT id, name_id FROM %s;' % table)
         for row in cur.fetchall():
@@ -97,7 +99,7 @@ class Window(QMainWindow):
 
     def fillComboWithNames(self, combo, table):
         combo.clear()
-        cur = conn.cursor()
+        cur = self.conn.cursor()
         # TODO: proper parameter passing
         cur.execute('SELECT id, name FROM %s;' % table)
         for row in cur.fetchall():
@@ -141,7 +143,7 @@ class Window(QMainWindow):
             self.uiHedgesList.setEnabled(False)
             return
 
-        cur = conn.cursor()
+        cur = self.conn.cursor()
         cur.execute('SELECT terms.id, terms.name_id FROM variables, terms, variables_terms WHERE variables.id = %s AND variables.id = variables_terms.variable_id AND terms.id = variables_terms.term_id;', (self.uiVariablesCombo.currentData(),))
         for row in cur.fetchall():
             item = QListWidgetItem(', '.join(self.getLemmas(row[1])))
@@ -150,7 +152,7 @@ class Window(QMainWindow):
         cur.close()
         self.loadTerms()
 
-        cur = conn.cursor()
+        cur = self.conn.cursor()
         cur.execute('SELECT hedges.id, hedges.name_id FROM variables, hedges, variables_hedges WHERE variables.id = %s AND variables.id = variables_hedges.variable_id AND hedges.id = variables_hedges.hedge_id;', (self.uiVariablesCombo.currentData(),))
         for row in cur.fetchall():
             item = QListWidgetItem(', '.join(self.getLemmas(row[1])))
@@ -159,7 +161,7 @@ class Window(QMainWindow):
         cur.close()
         self.loadHedges()
 
-        cur = conn.cursor()
+        cur = self.conn.cursor()
         cur.execute('SELECT variables.min, variables.max FROM variables WHERE variables.id = %s;', (self.uiVariablesCombo.currentData(),))
         range = cur.fetchone()
         if (range):
@@ -240,10 +242,10 @@ class Window(QMainWindow):
         self.onVariableSelected()
 
     def onDeleteVariableClicked(self):
-        cur = conn.cursor()
+        cur = self.conn.cursor()
         # TODO: delete name_id from synonims too?
         cur.execute('DELETE FROM variables WHERE id = %s;', (self.uiVariablesCombo.currentData(),))
-        conn.commit()
+        self.conn.commit()
         cur.close()
         self.uiVariablesCombo.removeItem(self.uiVariablesCombo.currentIndex())
 
@@ -252,7 +254,7 @@ class Window(QMainWindow):
 
     def commitVariable(self):
         self.uiCommitVariableButton.setEnabled(False)
-        cur = conn.cursor()
+        cur = self.conn.cursor()
         variable_id = self.uiVariablesCombo.currentData()
         if (variable_id):
             cur.execute('UPDATE variables SET min = %s, max = %s WHERE id = %s;', (self.uiRangeMinEdit.text(), self.uiRangeMaxEdit.text(), variable_id))
@@ -267,7 +269,7 @@ class Window(QMainWindow):
         cur.execute('DELETE FROM variables_hedges WHERE variable_id = %s;', (variable_id,))
         for j in range(0, self.uiHedgesList.count()):
             cur.execute('INSERT INTO variables_hedges (variable_id, hedge_id) VALUES (%s, %s);', (variable_id, self.uiHedgesList.item(j).data(Qt.UserRole)))
-        conn.commit()
+        self.conn.commit()
         cur.close()
 
     def onTerm2Selected(self):
@@ -286,7 +288,7 @@ class Window(QMainWindow):
             return
 
         self.uiFunctionCombo.blockSignals(True)
-        cur = conn.cursor()
+        cur = self.conn.cursor()
         cur.execute('SELECT functions.name FROM terms, functions WHERE functions.id = terms.function_id AND terms.name_id = %s;', (self.uiTermCombo.currentData(),))
         name = cur.fetchone()
         if (name):
@@ -295,7 +297,7 @@ class Window(QMainWindow):
             self.uiFunctionCombo.setCurrentIndex(-1)
         self.uiFunctionCombo.blockSignals(False)
 
-        cur = conn.cursor()
+        cur = self.conn.cursor()
         cur.execute('SELECT points FROM terms WHERE name_id = %s;', (self.uiTermCombo.currentData(),))
         points = cur.fetchone()
         if (points):
@@ -323,9 +325,9 @@ class Window(QMainWindow):
 
     def onDeleteTermClicked(self):
         # TODO: delete from synonims too?
-        cur = conn.cursor()
+        cur = self.conn.cursor()
         cur.execute('DELETE FROM terms WHERE name_id = %s;', (self.uiTermCombo.currentData(),))
-        conn.commit()
+        self.conn.commit()
         cur.close()
         self.uiTermCombo.removeItem(self.uiTermCombo.currentIndex())
 
@@ -338,14 +340,14 @@ class Window(QMainWindow):
 
     def commitTerm(self):
         self.uiCommitTermButton.setEnabled(False)
-        cur = conn.cursor()
+        cur = self.conn.cursor()
         cur.execute('SELECT id FROM terms WHERE name_id = %s', (self.uiTermCombo.currentData(),))
         term_id = cur.fetchone()
         if (term_id):
             cur.execute('UPDATE terms SET function_id = (SELECT id FROM functions WHERE name = %s), points = %s WHERE id = %s;', (self.uiFunctionCombo.currentText(), self.uiPointsEdit.text(), term_id))
         else:
             cur.execute('INSERT INTO terms (name_id, function_id, points) VALUES (%s, (SELECT id FROM functions WHERE name = %s), %s);', (self.uiTermCombo.currentData(), self.uiFunctionCombo.currentText(), self.uiPointsEdit.text()))
-        conn.commit()
+        self.conn.commit()
         cur.close()
 
     def onHedge2Selected(self):
@@ -361,7 +363,7 @@ class Window(QMainWindow):
             self.uiResultEdit.setEnabled(False)
             return
 
-        cur = conn.cursor()
+        cur = self.conn.cursor()
         cur.execute('SELECT result FROM hedges WHERE value = %s;', (self.uiHedgeCombo.currentText(),))
         result = cur.fetchone()
         if (result):
@@ -387,9 +389,9 @@ class Window(QMainWindow):
         self.uiResultEdit.setFocus()
 
     def onDeleteHedgeClicked(self):
-        cur = conn.cursor()
+        cur = self.conn.cursor()
         cur.execute('DELETE FROM hedges WHERE value = %s;', (self.uiHedgeCombo.currentText(),))
-        conn.commit()
+        self.conn.commit()
         cur.close()
         self.uiHedgeCombo.removeItem(self.uiHedgeCombo.currentIndex())
 
@@ -398,14 +400,14 @@ class Window(QMainWindow):
 
     def commitHedge(self):
         self.uiCommitHedgeButton.setEnabled(False)
-        cur = conn.cursor()
+        cur = self.conn.cursor()
         cur.execute('SELECT id FROM hedges WHERE value = %s', (self.uiHedgeCombo.currentText(),))
         hedge_id = cur.fetchone()
         if (hedge_id):
             cur.execute('UPDATE hedges SET result = %s WHERE id = %s;', (self.uiResultEdit.text(), hedge_id))
         else:
             cur.execute('INSERT INTO hedges (value, result) VALUES (%s, %s);', (self.uiHedgeCombo.currentText(), self.uiResultEdit.text()))
-        conn.commit()
+        self.conn.commit()
         cur.close()
 
     def onRuleSelected(self):
@@ -428,7 +430,7 @@ class Window(QMainWindow):
             self.uiConsequentTree.setEnabled(False)
             return
 
-        cur = conn.cursor()
+        cur = self.conn.cursor()
         cur.execute('SELECT nodes.id, types.name FROM rules, nodes, types WHERE rules.name = %s AND rules.antecedent_id = nodes.id AND types.id = nodes.type_id;', (self.uiRulesCombo.currentText(),))
         root = cur.fetchone()
         cur.close()
@@ -437,24 +439,24 @@ class Window(QMainWindow):
             item.setText(0, '%s' % root[1])
             item.setText(1, '%s' % root[0])
             self.uiAntecedentTree.addTopLevelItem(item)
-            cur = conn.cursor()
+            cur = self.conn.cursor()
             cur.execute('SELECT nodes.id, nodes.parent_id, types.name FROM nodes, types, closures WHERE nodes.id = closures.descendant_id AND closures.ancestor_id IN (SELECT antecedent_id FROM rules WHERE name = %s) AND nodes.type_id = types.id ORDER BY parent_id ASC;', (self.uiRulesCombo.currentText(),))
             nodes = cur.fetchall()
             cur.close()
             for node in nodes:
                 if node[0] != node[1]:
                     if (node[2] == 'variable'):
-                        cur = conn.cursor()
+                        cur = self.conn.cursor()
                         cur.execute('SELECT variables.name FROM variables, nodes WHERE variables.id = nodes.variable_id AND nodes.id = %s;', (node[0],))
                         name = cur.fetchone()
                         cur.close()
                     elif (node[2] == 'hedge'):
-                        cur = conn.cursor()
+                        cur = self.conn.cursor()
                         cur.execute('SELECT hedges.value FROM hedges, nodes WHERE hedges.id = nodes.hedge_id AND nodes.id = %s;', (node[0],))
                         name = cur.fetchone()
                         cur.close()
                     elif (node[2] == 'term'):
-                        cur = conn.cursor()
+                        cur = self.conn.cursor()
                         cur.execute('SELECT terms.value FROM terms, nodes WHERE terms.id = nodes.term_id AND nodes.id = %s;', (node[0],))
                         name = cur.fetchone()
                         cur.close()
@@ -466,7 +468,7 @@ class Window(QMainWindow):
                     item.setText(1, '%s' % node[0])
                     parents[0].addChild(item)
 
-        cur = conn.cursor()
+        cur = self.conn.cursor()
         cur.execute('SELECT nodes.id, types.name FROM rules, nodes, types WHERE rules.name = %s AND rules.consequent_id = nodes.id AND types.id = nodes.type_id;', (self.uiRulesCombo.currentText(),))
         root = cur.fetchone()
         cur.close()
@@ -475,24 +477,24 @@ class Window(QMainWindow):
             item.setText(0, '%s' % root[1])
             item.setText(1, '%s' % root[0])
             self.uiConsequentTree.addTopLevelItem(item)
-            cur = conn.cursor()
+            cur = self.conn.cursor()
             cur.execute('SELECT nodes.id, nodes.parent_id, types.name FROM nodes, types, closures WHERE nodes.id = closures.descendant_id AND closures.ancestor_id IN (SELECT consequent_id FROM rules WHERE name = %s) AND nodes.type_id = types.id ORDER BY parent_id ASC;', (self.uiRulesCombo.currentText(),))
             nodes = cur.fetchall()
             cur.close()
             for node in nodes:
                 if node[0] != node[1]:
                     if (node[2] == 'variable'):
-                        cur = conn.cursor()
+                        cur = self.conn.cursor()
                         cur.execute('SELECT variables.name FROM variables, nodes WHERE variables.id = nodes.variable_id AND nodes.id = %s;', (node[0],))
                         name = cur.fetchone()
                         cur.close()
                     elif (node[2] == 'hedge'):
-                        cur = conn.cursor()
+                        cur = self.conn.cursor()
                         cur.execute('SELECT hedges.value FROM hedges, nodes WHERE hedges.id = nodes.hedge_id AND nodes.id = %s;', (node[0],))
                         name = cur.fetchone()
                         cur.close()
                     elif (node[2] == 'term'):
-                        cur = conn.cursor()
+                        cur = self.conn.cursor()
                         cur.execute('SELECT terms.value FROM terms, nodes WHERE terms.id = nodes.term_id AND nodes.id = %s;', (node[0],))
                         name = cur.fetchone()
                         cur.close()
@@ -522,9 +524,9 @@ class Window(QMainWindow):
         self.onRuleSelected()
 
     def onDeleteRuleClicked(self):
-        cur = conn.cursor()
+        cur = self.conn.cursor()
         cur.execute('DELETE FROM rules WHERE name = %s;', (self.uiRulesCombo.currentText(),))
-        conn.commit()
+        self.conn.commit()
         cur.close()
         self.uiRulesCombo.removeItem(self.uiRulesCombo.currentIndex())
 
@@ -537,10 +539,11 @@ class Window(QMainWindow):
             self.loadHedges()
             self.onVariableSelected()
 
+    def __del__(self):
+        self.conn.close()
+
 if __name__ == "__main__":
-    conn = psycopg2.connect(host='127.0.0.1', database='fuzzy', user='user1', password='pass1')
     app = QApplication(sys.argv)
     widget = Window()
     widget.show()
     sys.exit(app.exec_())
-    conn.close()
