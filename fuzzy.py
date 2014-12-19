@@ -76,6 +76,9 @@ class Window(QMainWindow):
 
         self.uiCommitRuleButton.clicked.connect(self.commitRule)
 
+        # Initialize main window
+
+        self.uiTabs.setCurrentIndex(0)
         self.uiTabs.currentChanged.connect(self.onTabChanged)
 
     def getLemmas(self, group):
