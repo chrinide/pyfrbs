@@ -88,14 +88,14 @@ CREATE TABLE rules (
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO user1;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO user1;
 
-INSERT INTO groups (id, is_variable, is_term, is_hedge) VALUES
-	(1, true, false, false),
-	(2, true, false, false),
-	(3, true, false, false),
-	(4, false, true, false),
-	(5, false, true, false),
-	(6, false, true, false),
-	(7, false, false, true);
+INSERT INTO groups (is_variable, is_term, is_hedge) VALUES
+	(true, false, false),
+	(true, false, false),
+	(true, false, false),
+	(false, true, false),
+	(false, true, false),
+	(false, true, false),
+	(false, false, true);
 
 INSERT INTO synonims (group_id, lemma, grammemes, hits) VALUES
 	(1, 'возраст', 'сущ еч', 1),
