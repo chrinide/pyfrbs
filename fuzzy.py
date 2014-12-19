@@ -44,22 +44,22 @@ class Window(QMainWindow):
 
         # Initialize terms tab
 
-        self.fillComboWithLemmas(self.uiTermCombo, 'terms')
-        self.uiTermCombo.currentIndexChanged.connect(self.onTerm2Selected)
+        self.fillComboWithLemmas(self.uiTerms2Combo, 'terms')
+        self.uiTerms2Combo.currentIndexChanged.connect(self.onTerm2Selected)
         self.uiCreateTermButton.clicked.connect(self.onCreateTermClicked)
         self.uiDeleteTermButton.clicked.connect(self.onDeleteTermClicked)
 
         self.fillComboWithNames(self.uiFunctionCombo, 'functions')
         self.uiFunctionCombo.currentIndexChanged.connect(self.onFunctionSelected)
 
-        self.uiPointsEdit.textEdited.connect(self.onPointsChanged)
+        self.uiPointsEdit.textEdited.connect(self.checkPoints)
 
         self.uiCommitTermButton.clicked.connect(self.commitTerm)
 
         # Initialize hedges tab
 
-        self.fillComboWithLemmas(self.uiHedgeCombo, 'hedges')
-        self.uiHedgeCombo.currentIndexChanged.connect(self.onHedge2Selected)
+        self.fillComboWithLemmas(self.uiHedgesCombo, 'hedges')
+        self.uiHedgesCombo.currentIndexChanged.connect(self.onHedge2Selected)
         self.uiCreateHedgeButton.clicked.connect(self.onCreateHedgeClicked)
         self.uiDeleteHedgeButton.clicked.connect(self.onDeleteHedgeClicked)
 
@@ -281,37 +281,37 @@ class Window(QMainWindow):
     # Actions on terms tab
 
     def onTerm2Selected(self):
-        if (self.uiTermCombo.isEditable() == True):
+        if (self.uiTerms2Combo.isEditable() == True):
             return
 
         self.uiCommitTermButton.setEnabled(False)
 
-        if (self.uiTermCombo.currentIndex() == -1):
+        self.uiPointsEdit.clear()
+
+        if (self.uiTerms2Combo.currentIndex() == -1):
             self.uiRenameTermButton.setEnabled(False)
             self.uiDeleteTermButton.setEnabled(False)
             self.uiFunctionCombo.setCurrentIndex(-1)
             self.uiFunctionCombo.setEnabled(False)
-            self.uiPointsEdit.clear()
             self.uiPointsEdit.setEnabled(False)
             return
 
-        self.uiFunctionCombo.blockSignals(True)
-        cur = self.conn.cursor()
-        cur.execute('SELECT functions.name FROM terms, functions WHERE functions.id = terms.function_id AND terms.name_id = %s;', (self.uiTermCombo.currentData(),))
-        name = cur.fetchone()
-        if (name):
-            self.uiFunctionCombo.setCurrentText(name[0])
-        else:
-            self.uiFunctionCombo.setCurrentIndex(-1)
-        self.uiFunctionCombo.blockSignals(False)
+        if (self.uiTerms2Combo.currentData() != 0):
+            self.uiFunctionCombo.blockSignals(True)
+            cur = self.conn.cursor()
+            cur.execute('SELECT functions.name FROM terms, functions WHERE functions.id = terms.function_id AND terms.id = %s;', (self.uiTerms2Combo.currentData(),))
+            name = cur.fetchone()
+            if (name):
+                self.uiFunctionCombo.setCurrentText(name[0])
+            else:
+                self.uiFunctionCombo.setCurrentIndex(-1)
+            self.uiFunctionCombo.blockSignals(False)
 
-        cur = self.conn.cursor()
-        cur.execute('SELECT points FROM terms WHERE name_id = %s;', (self.uiTermCombo.currentData(),))
-        points = cur.fetchone()
-        if (points):
-            self.uiPointsEdit.setText('%s' % points[0])
-        else:
-            self.uiPointsEdit.clear()
+            cur = self.conn.cursor()
+            cur.execute('SELECT points FROM terms WHERE id = %s;', (self.uiTerms2Combo.currentData(),))
+            points = cur.fetchone()
+            if (points):
+                self.uiPointsEdit.setText('%s' % points[0])
 
         self.uiRenameTermButton.setEnabled(True)
         self.uiDeleteTermButton.setEnabled(True)
@@ -319,52 +319,62 @@ class Window(QMainWindow):
         self.uiFunctionCombo.setEnabled(True)
 
     def onCreateTermClicked(self):
-        self.uiTermCombo.setCurrentIndex(-1)
-        self.uiTermCombo.setEditable(True)
-        self.uiTermCombo.lineEdit().returnPressed.connect(self.onTermEntered)
-        self.uiTermCombo.setFocus()
+        self.uiTerms2Combo.setCurrentIndex(-1)
+        self.uiTerms2Combo.setEditable(True)
+        self.uiTerms2Combo.lineEdit().returnPressed.connect(self.onTermEntered)
+        self.uiTerms2Combo.setFocus()
         self.uiCreateTermButton.setEnabled(False)
 
     def onTermEntered(self):
-        self.uiTermCombo.setEditable(False)
+        self.uiTerms2Combo.setEditable(False)
         self.uiCreateTermButton.setEnabled(True)
+        self.uiTerms2Combo.setItemData(self.uiTerms2Combo.currentIndex(), 0)
         self.onTerm2Selected()
         self.uiFunctionCombo.setFocus()
 
     def onDeleteTermClicked(self):
-        # TODO: delete from synonims too?
         cur = self.conn.cursor()
-        cur.execute('DELETE FROM terms WHERE name_id = %s;', (self.uiTermCombo.currentData(),))
+        cur.execute('DELETE FROM terms WHERE id = %s;', (self.uiTerms2Combo.currentData(),))
         self.conn.commit()
         cur.close()
-        self.uiTermCombo.removeItem(self.uiTermCombo.currentIndex())
+        self.uiTerms2Combo.removeItem(self.uiTerms2Combo.currentIndex())
 
-    def onPointsChanged(self):
-        self.uiCommitTermButton.setEnabled(True)
+    def checkPoints(self):
+        if (self.uiPointsEdit.text() != ''):
+            self.uiCommitTermButton.setEnabled(True)
+        else:
+            self.uiCommitTermButton.setEnabled(False)
 
     def onFunctionSelected(self):
         if (self.uiFunctionCombo.currentIndex() != -1):
-            self.uiCommitTermButton.setEnabled(True)
+            self.checkPoints()
 
     def commitTerm(self):
         self.uiCommitTermButton.setEnabled(False)
         cur = self.conn.cursor()
-        cur.execute('SELECT id FROM terms WHERE name_id = %s', (self.uiTermCombo.currentData(),))
-        term_id = cur.fetchone()
+        term_id = self.uiTerms2Combo.currentData()
         if (term_id):
-            cur.execute('UPDATE terms SET function_id = (SELECT id FROM functions WHERE name = %s), points = %s WHERE id = %s;', (self.uiFunctionCombo.currentText(), self.uiPointsEdit.text(), term_id))
+            cur.execute('UPDATE terms SET function_id = %s, points = %s WHERE id = %s;', (self.uiFunctionCombo.currentData(), self.uiPointsEdit.text(), term_id))
         else:
-            cur.execute('INSERT INTO terms (name_id, function_id, points) VALUES (%s, (SELECT id FROM functions WHERE name = %s), %s);', (self.uiTermCombo.currentData(), self.uiFunctionCombo.currentText(), self.uiPointsEdit.text()))
+            cur.execute('INSERT INTO groups (is_variable, is_term, is_hedge) VALUES (false, true, false) RETURNING id;')
+            group_id = cur.fetchone()[0]
+            for lemma in self.uiTerms2Combo.currentText().replace(' ', '').split(','):
+                cur.execute('INSERT INTO synonims (group_id, lemma, grammemes, hits) VALUES (%s, %s, %s, 0);', (group_id, lemma, ''));
+            cur.execute('INSERT INTO terms (name_id, function_id, points) VALUES (%s, %s, %s) RETURNING id;', (group_id, self.uiFunctionCombo.currentData(), self.uiPointsEdit.text()))
+            term_id = cur.fetchone()[0]
+            self.uiTerms2Combo.setItemData(self.uiTerms2Combo.currentIndex(), term_id)
         self.conn.commit()
         cur.close()
 
+    # Actions on hedges tab
+
     def onHedge2Selected(self):
-        if (self.uiHedgeCombo.isEditable() == True):
+        if (self.uiHedgesCombo.isEditable() == True):
             return
 
         self.uiCommitHedgeButton.setEnabled(False)
 
-        if (self.uiHedgeCombo.currentIndex() == -1):
+        if (self.uiHedgesCombo.currentIndex() == -1):
             self.uiRenameHedgeButton.setEnabled(False)
             self.uiDeleteHedgeButton.setEnabled(False)
             self.uiResultEdit.clear()
@@ -372,7 +382,7 @@ class Window(QMainWindow):
             return
 
         cur = self.conn.cursor()
-        cur.execute('SELECT result FROM hedges WHERE value = %s;', (self.uiHedgeCombo.currentText(),))
+        cur.execute('SELECT result FROM hedges WHERE value = %s;', (self.uiHedgesCombo.currentText(),))
         result = cur.fetchone()
         if (result):
             self.uiResultEdit.setText('%s' % result[0])
@@ -384,24 +394,24 @@ class Window(QMainWindow):
         self.uiResultEdit.setEnabled(True)
 
     def onCreateHedgeClicked(self):
-        self.uiHedgeCombo.setCurrentIndex(-1)
-        self.uiHedgeCombo.setEditable(True)
-        self.uiHedgeCombo.lineEdit().returnPressed.connect(self.onHedgeEntered)
-        self.uiHedgeCombo.setFocus()
+        self.uiHedgesCombo.setCurrentIndex(-1)
+        self.uiHedgesCombo.setEditable(True)
+        self.uiHedgesCombo.lineEdit().returnPressed.connect(self.onHedgeEntered)
+        self.uiHedgesCombo.setFocus()
         self.uiCreateHedgeButton.setEnabled(False)
 
     def onHedgeEntered(self):
-        self.uiHedgeCombo.setEditable(False)
+        self.uiHedgesCombo.setEditable(False)
         self.uiCreateHedgeButton.setEnabled(True)
         self.onHedge2Selected()
         self.uiResultEdit.setFocus()
 
     def onDeleteHedgeClicked(self):
         cur = self.conn.cursor()
-        cur.execute('DELETE FROM hedges WHERE value = %s;', (self.uiHedgeCombo.currentText(),))
+        cur.execute('DELETE FROM hedges WHERE value = %s;', (self.uiHedgesCombo.currentText(),))
         self.conn.commit()
         cur.close()
-        self.uiHedgeCombo.removeItem(self.uiHedgeCombo.currentIndex())
+        self.uiHedgesCombo.removeItem(self.uiHedgesCombo.currentIndex())
 
     def onResultChanged(self):
         self.uiCommitHedgeButton.setEnabled(True)
@@ -409,12 +419,12 @@ class Window(QMainWindow):
     def commitHedge(self):
         self.uiCommitHedgeButton.setEnabled(False)
         cur = self.conn.cursor()
-        cur.execute('SELECT id FROM hedges WHERE value = %s', (self.uiHedgeCombo.currentText(),))
+        cur.execute('SELECT id FROM hedges WHERE value = %s', (self.uiHedgesCombo.currentText(),))
         hedge_id = cur.fetchone()
         if (hedge_id):
             cur.execute('UPDATE hedges SET result = %s WHERE id = %s;', (self.uiResultEdit.text(), hedge_id))
         else:
-            cur.execute('INSERT INTO hedges (value, result) VALUES (%s, %s);', (self.uiHedgeCombo.currentText(), self.uiResultEdit.text()))
+            cur.execute('INSERT INTO hedges (value, result) VALUES (%s, %s);', (self.uiHedgesCombo.currentText(), self.uiResultEdit.text()))
         self.conn.commit()
         cur.close()
 
