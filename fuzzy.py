@@ -58,12 +58,12 @@ class Window(QMainWindow):
 
         # Initialize hedges tab
 
-        self.fillComboWithLemmas(self.uiHedgesCombo, 'hedges')
-        self.uiHedgesCombo.currentIndexChanged.connect(self.onHedge2Selected)
+        self.fillComboWithLemmas(self.uiHedges2Combo, 'hedges')
+        self.uiHedges2Combo.currentIndexChanged.connect(self.onHedge2Selected)
         self.uiCreateHedgeButton.clicked.connect(self.onCreateHedgeClicked)
         self.uiDeleteHedgeButton.clicked.connect(self.onDeleteHedgeClicked)
 
-        self.uiResultEdit.textEdited.connect(self.onResultChanged)
+        self.uiResultEdit.textEdited.connect(self.checkResult)
 
         self.uiCommitHedgeButton.clicked.connect(self.commitHedge)
 
@@ -369,64 +369,75 @@ class Window(QMainWindow):
     # Actions on hedges tab
 
     def onHedge2Selected(self):
-        if (self.uiHedgesCombo.isEditable() == True):
+        if (self.uiHedges2Combo.isEditable() == True):
             return
 
         self.uiCommitHedgeButton.setEnabled(False)
 
-        if (self.uiHedgesCombo.currentIndex() == -1):
+        self.uiResultEdit.clear()
+
+        if (self.uiHedges2Combo.currentIndex() == -1):
             self.uiRenameHedgeButton.setEnabled(False)
             self.uiDeleteHedgeButton.setEnabled(False)
-            self.uiResultEdit.clear()
             self.uiResultEdit.setEnabled(False)
             return
 
-        cur = self.conn.cursor()
-        cur.execute('SELECT result FROM hedges WHERE value = %s;', (self.uiHedgesCombo.currentText(),))
-        result = cur.fetchone()
-        if (result):
-            self.uiResultEdit.setText('%s' % result[0])
-        else:
-            self.uiResultEdit.clear()
+        if (self.uiHedges2Combo.currentData() != 0):
+            cur = self.conn.cursor()
+            cur.execute('SELECT result FROM hedges WHERE id = %s;', (self.uiHedges2Combo.currentData(),))
+            result = cur.fetchone()
+            if (result):
+                self.uiResultEdit.setText('%s' % result[0])
 
         self.uiRenameHedgeButton.setEnabled(True)
         self.uiDeleteHedgeButton.setEnabled(True)
         self.uiResultEdit.setEnabled(True)
 
     def onCreateHedgeClicked(self):
-        self.uiHedgesCombo.setCurrentIndex(-1)
-        self.uiHedgesCombo.setEditable(True)
-        self.uiHedgesCombo.lineEdit().returnPressed.connect(self.onHedgeEntered)
-        self.uiHedgesCombo.setFocus()
+        self.uiHedges2Combo.setCurrentIndex(-1)
+        self.uiHedges2Combo.setEditable(True)
+        self.uiHedges2Combo.lineEdit().returnPressed.connect(self.onHedgeEntered)
+        self.uiHedges2Combo.setFocus()
         self.uiCreateHedgeButton.setEnabled(False)
 
     def onHedgeEntered(self):
-        self.uiHedgesCombo.setEditable(False)
+        self.uiHedges2Combo.setEditable(False)
         self.uiCreateHedgeButton.setEnabled(True)
+        self.uiHedges2Combo.setItemData(self.uiHedges2Combo.currentIndex(), 0)
         self.onHedge2Selected()
         self.uiResultEdit.setFocus()
 
     def onDeleteHedgeClicked(self):
         cur = self.conn.cursor()
-        cur.execute('DELETE FROM hedges WHERE value = %s;', (self.uiHedgesCombo.currentText(),))
+        cur.execute('DELETE FROM hedges WHERE id = %s;', (self.uiHedges2Combo.currentData(),))
         self.conn.commit()
         cur.close()
-        self.uiHedgesCombo.removeItem(self.uiHedgesCombo.currentIndex())
+        self.uiHedges2Combo.removeItem(self.uiHedges2Combo.currentIndex())
 
-    def onResultChanged(self):
-        self.uiCommitHedgeButton.setEnabled(True)
+    def checkResult(self):
+        if (self.uiResultEdit.text() != ''):
+            self.uiCommitHedgeButton.setEnabled(True)
+        else:
+            self.uiCommitHedgeButton.setEnabled(False)
 
     def commitHedge(self):
         self.uiCommitHedgeButton.setEnabled(False)
         cur = self.conn.cursor()
-        cur.execute('SELECT id FROM hedges WHERE value = %s', (self.uiHedgesCombo.currentText(),))
-        hedge_id = cur.fetchone()
+        hedge_id = self.uiHedges2Combo.currentData()
         if (hedge_id):
             cur.execute('UPDATE hedges SET result = %s WHERE id = %s;', (self.uiResultEdit.text(), hedge_id))
         else:
-            cur.execute('INSERT INTO hedges (value, result) VALUES (%s, %s);', (self.uiHedgesCombo.currentText(), self.uiResultEdit.text()))
+            cur.execute('INSERT INTO groups (is_variable, is_term, is_hedge) VALUES (false, false, true) RETURNING id;')
+            group_id = cur.fetchone()[0]
+            for lemma in self.uiHedges2Combo.currentText().replace(' ', '').split(','):
+                cur.execute('INSERT INTO synonims (group_id, lemma, grammemes, hits) VALUES (%s, %s, %s, 0);', (group_id, lemma, ''));
+            cur.execute('INSERT INTO hedges (name_id, result) VALUES (%s, %s) RETURNING id;', (group_id, self.uiResultEdit.text()))
+            hedge_id = cur.fetchone()[0]
+            self.uiHedges2Combo.setItemData(self.uiHedges2Combo.currentIndex(), hedge_id)
         self.conn.commit()
         cur.close()
+
+    # Actions on rules tab
 
     def onRuleSelected(self):
         if (self.uiRulesCombo.isEditable() == True):

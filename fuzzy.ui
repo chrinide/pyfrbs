@@ -519,7 +519,7 @@
        <string>Переименовать</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="uiHedgesCombo_2">
+     <widget class="QComboBox" name="uiHedges2Combo">
       <property name="geometry">
        <rect>
         <x>10</x>
