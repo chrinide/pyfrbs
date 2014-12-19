@@ -20,6 +20,8 @@ CREATE TABLE synonims (
 CREATE TABLE variables (
 	id SERIAL PRIMARY KEY,
 	name_id INT NOT NULL REFERENCES groups(id),
+	name VARCHAR(255),
+	validated BOOLEAN,
 	min REAL, 
 	max REAL 
 );
@@ -32,6 +34,8 @@ CREATE TABLE functions (
 CREATE TABLE terms (
 	id SERIAL PRIMARY KEY,
 	name_id INT NOT NULL REFERENCES groups(id),
+	name VARCHAR(255),
+	validated BOOLEAN,
 	function_id INT NOT NULL REFERENCES functions(id),
 	points VARCHAR(255)
 );
@@ -44,6 +48,8 @@ CREATE TABLE variables_terms (
 CREATE TABLE hedges (
 	id SERIAL PRIMARY KEY,
 	name_id INT NOT NULL REFERENCES groups(id),
+	name VARCHAR(255),
+	validated BOOLEAN,
 	result VARCHAR(255)
 );
 
@@ -103,26 +109,26 @@ INSERT INTO synonims (group_id, lemma, grammemes, hits) VALUES
 	(6, 'низкий', 'прил', 1),
 	(7, 'не', 'част', 1);
 
-INSERT INTO variables (name_id, min, max) VALUES 
-	(1, 0, 100),
-	(2, 0, 24),
-	(3, 0, 10);
+INSERT INTO variables (name_id, name, validated, min, max) VALUES 
+	(1, '', false, 0, 100),
+	(2, '', false, 0, 24),
+	(3, '', false, 0, 10);
 
 INSERT INTO functions (name) VALUES 
 	('трапеция');
 
-INSERT INTO terms (name_id, function_id, points) VALUES 
-	(4, 1, '15;20;25;30'),
-	(5, 1, '0;1;3;4'),
-	(6, 1, '0;1;2;3');
+INSERT INTO terms (name_id, name, validated, function_id, points) VALUES 
+	(4, '', false, 1, '15;20;25;30'),
+	(5, '', false, 1, '0;1;3;4'),
+	(6, '', false, 1, '0;1;2;3');
 
 INSERT INTO variables_terms (variable_id, term_id) VALUES
 	(1, 1),
 	(2, 2),
 	(3, 3);
 
-INSERT INTO hedges (name_id, result) VALUES 
-	(7, '1 - x');
+INSERT INTO hedges (name_id, name, validated, result) VALUES 
+	(7, '', false, '1 - x');
 
 INSERT INTO variables_hedges (variable_id, hedge_id) VALUES 
 	(1, 1);
