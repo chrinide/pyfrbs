@@ -509,10 +509,12 @@ class Window(QMainWindow):
         self.loadTree(self.uiAntecedentTree, 'antecedent', self.uiRulesCombo.currentData())
         self.loadTree(self.uiConsequentTree, 'consequent', self.uiRulesCombo.currentData())
 
+        if (self.uiAntecedentTree.topLevelItemCount() == 0):
+            self.uiAntecedentNodeTypesCombo.setEnabled(True)
+
         self.uiRenameRuleButton.setEnabled(True)
         self.uiDeleteRuleButton.setEnabled(True)
         self.uiAntecedentTree.setEnabled(True)
-        self.uiAntecedentNodeTypesCombo.setEnabled(True)
         self.uiConsequentTree.setEnabled(True)
 
     def onCreateRuleClicked(self):
@@ -536,14 +538,16 @@ class Window(QMainWindow):
         self.uiRulesCombo.removeItem(self.uiRulesCombo.currentIndex())
 
     def onAntecedentNodeTypeSelected(self):
+        self.uiAntecedentNodesCombo.clear()
+        self.uiAntecedentNodesCombo.setEnabled(False)
+        if (self.uiAntecedentNodeTypesCombo.currentIndex() == -1):
+            return
         self.uiAntecedentNodesCombo.blockSignals(True)
         if (self.uiAntecedentNodeTypesCombo.currentText() in ('variable', 'term', 'hedge')):
             self.fillComboWithLemmas(self.uiAntecedentNodesCombo, self.uiAntecedentNodeTypesCombo.currentText() + 's')
             self.uiAntecedentNodesCombo.setEnabled(True)
             self.uiAddAntecedentNodeButton.setEnabled(False)
         else:
-            self.uiAntecedentNodesCombo.clear()
-            self.uiAntecedentNodesCombo.setEnabled(False)
             self.uiAddAntecedentNodeButton.setEnabled(True)
         self.uiAntecedentNodesCombo.blockSignals(False)
 
@@ -579,9 +583,12 @@ class Window(QMainWindow):
             self.uiAntecedentTree.currentItem().addChild(item)
         else:
             self.uiAntecedentTree.addTopLevelItem(item)
+            self.uiAntecedentNodeTypesCombo.setCurrentIndex(-1)
+            self.uiAntecedentNodeTypesCombo.setEnabled(False)
         self.uiCommitRuleButton.setEnabled(True)
 
     def onAntecedentNodeSelected(self):
+        self.uiAntecedentNodeTypesCombo.setEnabled(True)
         self.uiRemoveAntecedentNodeButton.setEnabled(True)
 
     def onRemoveAntecedentNodeClicked(self):
