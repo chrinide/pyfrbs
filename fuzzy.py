@@ -439,6 +439,46 @@ class Window(QMainWindow):
 
     # Actions on rules tab
 
+    def loadTree(self, tree, name, rule_id):
+        cur = self.conn.cursor()
+        query = 'SELECT nodes.id, types.name FROM rules, nodes, types WHERE rules.%s_id = nodes.id' % name
+        cur.execute(query + ' AND rules.id = %s AND types.id = nodes.type_id;', (rule_id,))
+        root = cur.fetchone()
+        cur.close()
+        if (root):
+            item = QTreeWidgetItem()
+            item.setText(0, '%s' % root[1])
+            item.setText(1, '%s' % root[0])
+            tree.addTopLevelItem(item)
+            cur = self.conn.cursor()
+            cur.execute('SELECT nodes.id, nodes.parent_id, types.name FROM nodes, types, closures WHERE nodes.id = closures.descendant_id AND closures.ancestor_id = %s AND nodes.type_id = types.id ORDER BY parent_id ASC;', (root[0],))
+            nodes = cur.fetchall()
+            cur.close()
+            for node in nodes:
+                if node[0] != node[1]:
+                    if (node[2] == 'variable'):
+                        cur = self.conn.cursor()
+                        cur.execute('SELECT variables.name_id FROM variables, nodes WHERE variables.id = nodes.variable_id AND nodes.id = %s;', (node[0],))
+                        name = '%s (' % node[2] + ', '.join(self.getLemmas(cur.fetchone()[0])) + ')'
+                        cur.close()
+                    elif (node[2] == 'hedge'):
+                        cur = self.conn.cursor()
+                        cur.execute('SELECT hedges.name_id FROM hedges, nodes WHERE hedges.id = nodes.hedge_id AND nodes.id = %s;', (node[0],))
+                        name = '%s (' % node[2] + ', '.join(self.getLemmas(cur.fetchone()[0])) + ')'
+                        cur.close()
+                    elif (node[2] == 'term'):
+                        cur = self.conn.cursor()
+                        cur.execute('SELECT terms.name_id FROM terms, nodes WHERE terms.id = nodes.term_id AND nodes.id = %s;', (node[0],))
+                        name = '%s (' % node[2] + ', '.join(self.getLemmas(cur.fetchone()[0])) + ')'
+                        cur.close()
+                    else:
+                        name = node[2]
+                    parents = tree.findItems('%s' % node[1], Qt.MatchExactly | Qt.MatchRecursive, 1)
+                    item = QTreeWidgetItem()
+                    item.setText(0, '%s' % name)
+                    item.setText(1, '%s' % node[0])
+                    parents[0].addChild(item)
+
     def onRuleSelected(self):
         if (self.uiRulesCombo.isEditable() == True):
             return
@@ -459,81 +499,8 @@ class Window(QMainWindow):
             self.uiConsequentTree.setEnabled(False)
             return
 
-        cur = self.conn.cursor()
-        cur.execute('SELECT nodes.id, types.name FROM rules, nodes, types WHERE rules.name = %s AND rules.antecedent_id = nodes.id AND types.id = nodes.type_id;', (self.uiRulesCombo.currentText(),))
-        root = cur.fetchone()
-        cur.close()
-        if (root):
-            item = QTreeWidgetItem()
-            item.setText(0, '%s' % root[1])
-            item.setText(1, '%s' % root[0])
-            self.uiAntecedentTree.addTopLevelItem(item)
-            cur = self.conn.cursor()
-            cur.execute('SELECT nodes.id, nodes.parent_id, types.name FROM nodes, types, closures WHERE nodes.id = closures.descendant_id AND closures.ancestor_id IN (SELECT antecedent_id FROM rules WHERE name = %s) AND nodes.type_id = types.id ORDER BY parent_id ASC;', (self.uiRulesCombo.currentText(),))
-            nodes = cur.fetchall()
-            cur.close()
-            for node in nodes:
-                if node[0] != node[1]:
-                    if (node[2] == 'variable'):
-                        cur = self.conn.cursor()
-                        cur.execute('SELECT variables.name FROM variables, nodes WHERE variables.id = nodes.variable_id AND nodes.id = %s;', (node[0],))
-                        name = cur.fetchone()
-                        cur.close()
-                    elif (node[2] == 'hedge'):
-                        cur = self.conn.cursor()
-                        cur.execute('SELECT hedges.value FROM hedges, nodes WHERE hedges.id = nodes.hedge_id AND nodes.id = %s;', (node[0],))
-                        name = cur.fetchone()
-                        cur.close()
-                    elif (node[2] == 'term'):
-                        cur = self.conn.cursor()
-                        cur.execute('SELECT terms.value FROM terms, nodes WHERE terms.id = nodes.term_id AND nodes.id = %s;', (node[0],))
-                        name = cur.fetchone()
-                        cur.close()
-                    else:
-                        name = node[2]
-                    parents = self.uiAntecedentTree.findItems('%s' % node[1], Qt.MatchExactly | Qt.MatchRecursive, 1)
-                    item = QTreeWidgetItem()
-                    item.setText(0, '%s' % name)
-                    item.setText(1, '%s' % node[0])
-                    parents[0].addChild(item)
-
-        cur = self.conn.cursor()
-        cur.execute('SELECT nodes.id, types.name FROM rules, nodes, types WHERE rules.name = %s AND rules.consequent_id = nodes.id AND types.id = nodes.type_id;', (self.uiRulesCombo.currentText(),))
-        root = cur.fetchone()
-        cur.close()
-        if (root):
-            item = QTreeWidgetItem()
-            item.setText(0, '%s' % root[1])
-            item.setText(1, '%s' % root[0])
-            self.uiConsequentTree.addTopLevelItem(item)
-            cur = self.conn.cursor()
-            cur.execute('SELECT nodes.id, nodes.parent_id, types.name FROM nodes, types, closures WHERE nodes.id = closures.descendant_id AND closures.ancestor_id IN (SELECT consequent_id FROM rules WHERE name = %s) AND nodes.type_id = types.id ORDER BY parent_id ASC;', (self.uiRulesCombo.currentText(),))
-            nodes = cur.fetchall()
-            cur.close()
-            for node in nodes:
-                if node[0] != node[1]:
-                    if (node[2] == 'variable'):
-                        cur = self.conn.cursor()
-                        cur.execute('SELECT variables.name FROM variables, nodes WHERE variables.id = nodes.variable_id AND nodes.id = %s;', (node[0],))
-                        name = cur.fetchone()
-                        cur.close()
-                    elif (node[2] == 'hedge'):
-                        cur = self.conn.cursor()
-                        cur.execute('SELECT hedges.value FROM hedges, nodes WHERE hedges.id = nodes.hedge_id AND nodes.id = %s;', (node[0],))
-                        name = cur.fetchone()
-                        cur.close()
-                    elif (node[2] == 'term'):
-                        cur = self.conn.cursor()
-                        cur.execute('SELECT terms.value FROM terms, nodes WHERE terms.id = nodes.term_id AND nodes.id = %s;', (node[0],))
-                        name = cur.fetchone()
-                        cur.close()
-                    else:
-                        name = node[2]
-                    parents = self.uiConsequentTree.findItems('%s' % node[1], Qt.MatchExactly | Qt.MatchRecursive, 1)
-                    item = QTreeWidgetItem()
-                    item.setText(0, '%s' % name)
-                    item.setText(1, '%s' % node[0])
-                    parents[0].addChild(item)
+        self.loadTree(self.uiAntecedentTree, 'antecedent', self.uiRulesCombo.currentData())
+        self.loadTree(self.uiConsequentTree, 'consequent', self.uiRulesCombo.currentData())
 
         self.uiRenameRuleButton.setEnabled(True)
         self.uiDeleteRuleButton.setEnabled(True)
@@ -550,17 +517,20 @@ class Window(QMainWindow):
     def onRuleEntered(self):
         self.uiRulesCombo.setEditable(False)
         self.uiCreateRuleButton.setEnabled(True)
+        self.uiRulesCombo.setItemData(self.uiRulesCombo.currentIndex(), 0)
         self.onRuleSelected()
 
     def onDeleteRuleClicked(self):
         cur = self.conn.cursor()
-        cur.execute('DELETE FROM rules WHERE name = %s;', (self.uiRulesCombo.currentText(),))
+        cur.execute('DELETE FROM rules WHERE id = %s;', (self.uiRulesCombo.currentData(),))
         self.conn.commit()
         cur.close()
         self.uiRulesCombo.removeItem(self.uiRulesCombo.currentIndex())
 
     def commitRule(self):
         self.uiCommitRuleButton.setEnabled(False)
+
+    # Actions on main window
 
     def onTabChanged(self):
         if (self.uiTabs.currentIndex() == 0):
