@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Интерфейс эксперта</string>
+   <string>Интерфейс эксперта СППР</string>
   </property>
   <property name="documentMode">
    <bool>true</bool>
