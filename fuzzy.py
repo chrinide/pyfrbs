@@ -12,7 +12,7 @@ class Window(QMainWindow):
     def __init__(self, *args):
         super(Window, self).__init__(*args)
 
-        self.conn = psycopg2.connect(host='78.107.239.213', database='fuzzy', user='user1', password='pass1')
+        self.conn = psycopg2.connect(host='127.0.0.1', database='fuzzy', user='user1', password='pass1')
 
         loadUi('fuzzy.ui', self)
 
@@ -579,10 +579,10 @@ class Window(QMainWindow):
             self.uiAntecedentTree.currentItem().addChild(item)
         else:
             self.uiAntecedentTree.addTopLevelItem(item)
+        self.uiCommitRuleButton.setEnabled(True)
 
     def onAntecedentNodeSelected(self):
-        if (self.uiAntecedentNodeTypesCombo.currentIndex() != -1):
-            self.uiRemoveAntecedentNodeButton.setEnabled(True)
+        self.uiRemoveAntecedentNodeButton.setEnabled(True)
 
     def onRemoveAntecedentNodeClicked(self):
         current = self.uiAntecedentTree.currentItem()
