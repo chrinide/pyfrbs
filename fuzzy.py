@@ -12,7 +12,7 @@ class Window(QMainWindow):
     def __init__(self, *args):
         super(Window, self).__init__(*args)
 
-             self.conn = psycopg2.connect(host='78.107.239.213', database='fuzzy', user='user1', password='pass1')
+        self.conn = psycopg2.connect(host='78.107.239.213', database='fuzzy', user='user1', password='pass1')
 
         loadUi('fuzzy.ui', self)
 
