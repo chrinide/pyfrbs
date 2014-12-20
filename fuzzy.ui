@@ -811,7 +811,7 @@
        <string>Убрать</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="uiAntecedentNodeTypeCombo">
+     <widget class="QComboBox" name="uiAntecedentNodeTypesCombo">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -824,7 +824,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QComboBox" name="uiConsequentNodeTypeCombo">
+     <widget class="QComboBox" name="uiConsequentNodeTypesCombo">
       <property name="enabled">
        <bool>false</bool>
       </property>

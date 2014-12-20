@@ -65,7 +65,7 @@ CREATE TABLE types (
 
 CREATE TABLE nodes (
 	id SERIAL PRIMARY KEY,
-	parent_id INT NOT NULL REFERENCES nodes(id),
+	parent_id INT NULL REFERENCES nodes(id),
 	type_id INT NOT NULL REFERENCES types(id),
 	variable_id INT NULL REFERENCES variables(id) ON DELETE CASCADE,
 	term_id INT NULL REFERENCES terms(id) ON DELETE CASCADE,
@@ -145,13 +145,13 @@ INSERT INTO types (name) VALUES
 	('variable_or'),
 	('variable_not');
 
-INSERT INTO nodes (id, parent_id, type_id, variable_id, term_id, hedge_id) VALUES
-	(1, 1, 8, null, null, null), (2, 1, 5, null, null, null), 
-	(3, 2, 3, 1, null, null), (4, 2, 4, null, null, null), 
-	(5, 4, 2, null, null, 1), (6, 4, 1, null, 1, null), 
-	(7, 1, 5, null, null, null), (8, 7, 3, 2, null, null), 
-	(9, 7, 1, null, 2, null), (10, 10, 5, null, null, null), 
-	(11, 10, 3, 3, null, null), (12, 10, 1, null, 3, null);
+INSERT INTO nodes (parent_id, type_id, variable_id, term_id, hedge_id) VALUES
+	(null, 8, null, null, null), (1, 5, null, null, null), 
+	(2, 3, 1, null, null), (2, 4, null, null, null), 
+	(4, 2, null, null, 1), (4, 1, null, 1, null), 
+	(1, 5, null, null, null), (7, 3, 2, null, null), 
+	(7, 1, null, 2, null), (null, 5, null, null, null), 
+	(10, 3, 3, null, null), (10, 1, null, 3, null);
 
 INSERT INTO closures (ancestor_id, descendant_id) VALUES
 	(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7),
