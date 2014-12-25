@@ -43,5 +43,5 @@ class tests(unittest.TestCase):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = Window()
+    window = Window(addr='78.107.239.213')
     unittest.main()

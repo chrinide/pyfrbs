@@ -9,10 +9,10 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QListWidgetItem, QTreeWid
 from PyQt5.uic import loadUi
 
 class Window(QMainWindow):
-    def __init__(self, *args):
+    def __init__(self, *args, addr):
         super(Window, self).__init__(*args)
 
-        self.conn = psycopg2.connect(host='78.107.239.213', database='fuzzy', user='user1', password='pass1')
+        self.conn = psycopg2.connect(host=addr, database='fuzzy', user='user1', password='pass1')
 
         loadUi('fuzzy.ui', self)
 
@@ -80,6 +80,13 @@ class Window(QMainWindow):
         self.uiAddAntecedentNodeButton.clicked.connect(self.onAddAntecedentNodeClicked)
         self.uiAntecedentTree.currentItemChanged.connect(self.onAntecedentNodeSelected)
         self.uiRemoveAntecedentNodeButton.clicked.connect(self.onRemoveAntecedentNodeClicked)
+
+        self.fillComboWithNames(self.uiConsequentNodeTypesCombo, 'types')
+        self.uiConsequentNodeTypesCombo.currentIndexChanged.connect(self.onConsequentNodeTypeSelected)
+        self.uiConsequentNodesCombo.currentIndexChanged.connect(self.onConsequentNodeValueSelected)
+        self.uiAddConsequentNodeButton.clicked.connect(self.onAddConsequentNodeClicked)
+        self.uiConsequentTree.currentItemChanged.connect(self.onConsequentNodeSelected)
+        self.uiRemoveConsequentNodeButton.clicked.connect(self.onRemoveConsequentNodeClicked)
 
         self.uiCommitRuleButton.clicked.connect(self.commitRule)
 
@@ -503,6 +510,7 @@ class Window(QMainWindow):
             self.uiAntecedentTree.setEnabled(False)
             self.uiConsequentNodeTypesCombo.setEnabled(False)
             self.uiConsequentNodesCombo.setEnabled(False)
+            self.uiAddConsequentNodeButton.setEnabled(False)
             self.uiConsequentTree.setEnabled(False)
             return
 
@@ -511,6 +519,9 @@ class Window(QMainWindow):
 
         if (self.uiAntecedentTree.topLevelItemCount() == 0):
             self.uiAntecedentNodeTypesCombo.setEnabled(True)
+
+        if (self.uiConsequentTree.topLevelItemCount() == 0):
+            self.uiConsequentNodeTypesCombo.setEnabled(True)
 
         self.uiRenameRuleButton.setEnabled(True)
         self.uiDeleteRuleButton.setEnabled(True)
@@ -585,6 +596,7 @@ class Window(QMainWindow):
             self.uiAntecedentTree.addTopLevelItem(item)
             self.uiAntecedentNodeTypesCombo.setCurrentIndex(-1)
             self.uiAntecedentNodeTypesCombo.setEnabled(False)
+            self.uiAddAntecedentNodeButton.setEnabled(False)
         self.uiCommitRuleButton.setEnabled(True)
 
     def onAntecedentNodeSelected(self):
@@ -599,6 +611,75 @@ class Window(QMainWindow):
             self.uiAntecedentTree.takeTopLevelItem(self.uiAntecedentTree.indexOfTopLevelItem(current))
         if (self.uiAntecedentTree.topLevelItemCount() == 0):
             self.uiRemoveAntecedentNodeButton.setEnabled(False)
+            self.uiAddAntecedentNodeButton.setEnabled(False)
+            self.onAntecedentNodeTypeSelected()
+        self.uiCommitRuleButton.setEnabled(True)
+
+    def onConsequentNodeTypeSelected(self):
+        self.uiConsequentNodesCombo.clear()
+        self.uiConsequentNodesCombo.setEnabled(False)
+        if (self.uiConsequentNodeTypesCombo.currentIndex() == -1):
+            return
+        self.uiConsequentNodesCombo.blockSignals(True)
+        if (self.uiConsequentNodeTypesCombo.currentText() in ('variable', 'term', 'hedge')):
+            self.fillComboWithLemmas(self.uiConsequentNodesCombo, self.uiConsequentNodeTypesCombo.currentText() + 's')
+            self.uiConsequentNodesCombo.setEnabled(True)
+            self.uiAddConsequentNodeButton.setEnabled(False)
+        else:
+            self.uiAddConsequentNodeButton.setEnabled(True)
+        self.uiConsequentNodesCombo.blockSignals(False)
+
+    def onConsequentNodeValueSelected(self):
+        if (self.uiConsequentNodesCombo.currentIndex() != -1):
+            self.uiAddConsequentNodeButton.setEnabled(True)
+
+    def onAddConsequentNodeClicked(self):
+        parent_id = None
+        variable_id = None
+        term_id = None
+        hedge_id = None
+        if (self.uiConsequentTree.currentItem()):
+            parent_id = self.uiConsequentTree.currentItem().text(1)
+        if (self.uiConsequentNodeTypesCombo.currentText() == 'variable'):
+            variable_id = self.uiConsequentNodesCombo.currentData()
+        elif (self.uiConsequentNodeTypesCombo.currentText() == 'term'):
+            term_id = self.uiConsequentNodesCombo.currentData()
+        elif (self.uiConsequentNodeTypesCombo.currentText() == 'hedge'):
+            hedge_id = self.uiConsequentNodesCombo.currentData()
+        cur = self.conn.cursor()
+        cur.execute('INSERT INTO nodes (parent_id, type_id, variable_id, term_id, hedge_id) VALUES (%s, %s, %s, %s, %s) RETURNING id;', (parent_id, self.uiConsequentNodeTypesCombo.currentData(), variable_id, term_id, hedge_id))
+        node_id = cur.fetchone()[0]
+        self.conn.commit()
+        cur.close()
+        item = QTreeWidgetItem()
+        if (self.uiConsequentNodesCombo.isEnabled()):
+            item.setText(0, '(%s) %s' % (self.uiConsequentNodeTypesCombo.currentText(), self.uiConsequentNodesCombo.currentText()))
+        else:
+            item.setText(0, '(%s)' % self.uiConsequentNodeTypesCombo.currentText())
+        item.setText(1, '%s' % node_id)
+        if (self.uiConsequentTree.currentItem()):
+            self.uiConsequentTree.currentItem().addChild(item)
+        else:
+            self.uiConsequentTree.addTopLevelItem(item)
+            self.uiConsequentNodeTypesCombo.setCurrentIndex(-1)
+            self.uiConsequentNodeTypesCombo.setEnabled(False)
+            self.uiAddConsequentNodeButton.setEnabled(False)
+        self.uiCommitRuleButton.setEnabled(True)
+
+    def onConsequentNodeSelected(self):
+        self.uiConsequentNodeTypesCombo.setEnabled(True)
+        self.uiRemoveConsequentNodeButton.setEnabled(True)
+
+    def onRemoveConsequentNodeClicked(self):
+        current = self.uiConsequentTree.currentItem()
+        if (current.parent()):
+            current.parent().takeChild(current.parent().indexOfChild(current))
+        else:
+            self.uiConsequentTree.takeTopLevelItem(self.uiConsequentTree.indexOfTopLevelItem(current))
+        if (self.uiConsequentTree.topLevelItemCount() == 0):
+            self.uiRemoveConsequentNodeButton.setEnabled(False)
+            self.uiAddConsequentNodeButton.setEnabled(False)
+            self.onConsequentNodeTypeSelected()
         self.uiCommitRuleButton.setEnabled(True)
 
     def commitRule(self):
@@ -617,6 +698,6 @@ class Window(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    widget = Window()
+    widget = Window(addr=sys.argv[1])
     widget.show()
     sys.exit(app.exec_())
