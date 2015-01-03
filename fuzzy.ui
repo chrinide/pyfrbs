@@ -47,7 +47,7 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="5" column="0" colspan="6">
-         <spacer name="verticalSpacer_6">
+         <spacer name="uiVariablesSpacer1">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -87,7 +87,7 @@
          </widget>
         </item>
         <item row="23" column="0" colspan="6">
-         <spacer name="verticalSpacer_10">
+         <spacer name="uiVariablesSpacer5">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -127,7 +127,7 @@
          </widget>
         </item>
         <item row="9" column="0" colspan="6">
-         <layout class="QHBoxLayout" name="horizontalLayout">
+         <layout class="QHBoxLayout" name="uiRangeLayout">
           <item>
            <widget class="QLineEdit" name="uiRangeMinEdit">
             <property name="enabled">
@@ -167,7 +167,7 @@
          </layout>
         </item>
         <item row="13" column="0" colspan="6">
-         <spacer name="verticalSpacer_8">
+         <spacer name="uiVariablesSpacer3">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -231,7 +231,7 @@
          </widget>
         </item>
         <item row="17" column="5">
-         <spacer name="verticalSpacer_4">
+         <spacer name="uiVariablesSpacer6">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -244,7 +244,7 @@
          </spacer>
         </item>
         <item row="18" column="0" colspan="6">
-         <spacer name="verticalSpacer_9">
+         <spacer name="uiVariablesSpacer4">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -260,7 +260,7 @@
          </spacer>
         </item>
         <item row="7" column="0" colspan="6">
-         <spacer name="verticalSpacer_7">
+         <spacer name="uiVariablesSpacer2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -276,7 +276,7 @@
          </spacer>
         </item>
         <item row="22" column="5">
-         <spacer name="verticalSpacer_5">
+         <spacer name="uiVariablesSpacer7">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -319,7 +319,7 @@
          </widget>
         </item>
         <item row="2" column="0" rowspan="2" colspan="6">
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <layout class="QHBoxLayout" name="uiVariableButtonsLayout">
           <item>
            <widget class="QPushButton" name="uiCreateVariableButton">
             <property name="text">
@@ -357,7 +357,7 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout">
         <item row="17" column="0" colspan="3">
-         <spacer name="verticalSpacer_11">
+         <spacer name="uiTermsSpacer4">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -370,7 +370,7 @@
          </spacer>
         </item>
         <item row="5" column="0" colspan="3">
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <layout class="QHBoxLayout" name="uiTermButtonsLayout">
           <item>
            <widget class="QPushButton" name="uiCreateTermButton">
             <property name="text">
@@ -456,7 +456,7 @@
          </widget>
         </item>
         <item row="6" column="0" colspan="3">
-         <spacer name="verticalSpacer_12">
+         <spacer name="uiTermsSpacer1">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -482,7 +482,7 @@
          </widget>
         </item>
         <item row="9" column="0" colspan="3">
-         <spacer name="verticalSpacer_13">
+         <spacer name="uiTermsSpacer2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -498,7 +498,7 @@
          </spacer>
         </item>
         <item row="14" column="0" colspan="3">
-         <spacer name="verticalSpacer_14">
+         <spacer name="uiTermsSpacer3">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -564,7 +564,7 @@
          </widget>
         </item>
         <item row="8" column="0" colspan="3">
-         <spacer name="verticalSpacer_2">
+         <spacer name="uiHedgesSpacer1">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -580,7 +580,7 @@
          </spacer>
         </item>
         <item row="10" column="0" colspan="3">
-         <spacer name="verticalSpacer_3">
+         <spacer name="uiHedgesSpacer2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -606,7 +606,7 @@
          </widget>
         </item>
         <item row="16" column="1">
-         <spacer name="verticalSpacer">
+         <spacer name="uiHedgesSpacer3">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -632,7 +632,7 @@
          </widget>
         </item>
         <item row="3" column="0" rowspan="2" colspan="3">
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <layout class="QHBoxLayout" name="uiHedgeButtonsLayout">
           <item>
            <widget class="QPushButton" name="uiCreateHedgeButton">
             <property name="text">
@@ -670,7 +670,7 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="4" column="0" colspan="5">
-         <spacer name="verticalSpacer_15">
+         <spacer name="uiRulesSpacer1">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -686,7 +686,7 @@
          </spacer>
         </item>
         <item row="9" column="4">
-         <spacer name="verticalSpacer_18">
+         <spacer name="uiRulesSpacer4">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -699,7 +699,7 @@
          </spacer>
         </item>
         <item row="15" column="0" colspan="5">
-         <spacer name="verticalSpacer_17">
+         <spacer name="uiRulesSpacer3">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -840,7 +840,7 @@
          </widget>
         </item>
         <item row="2" column="0" rowspan="2" colspan="5">
-         <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <layout class="QHBoxLayout" name="uiRuleButtonsLayout">
           <item>
            <widget class="QPushButton" name="uiCreateRuleButton">
             <property name="text">
@@ -871,7 +871,7 @@
          </layout>
         </item>
         <item row="10" column="0" colspan="5">
-         <spacer name="verticalSpacer_16">
+         <spacer name="uiRulesSpacer2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
