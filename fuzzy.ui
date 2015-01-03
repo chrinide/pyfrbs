@@ -669,6 +669,83 @@
         <string>Правила</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
+        <item row="8" column="0" rowspan="2" colspan="4">
+         <widget class="QTreeWidget" name="uiAntecedentTree">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="uniformRowHeights">
+           <bool>true</bool>
+          </property>
+          <property name="expandsOnDoubleClick">
+           <bool>true</bool>
+          </property>
+          <attribute name="headerVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="headerDefaultSectionSize">
+           <number>999999</number>
+          </attribute>
+          <attribute name="headerMinimumSectionSize">
+           <number>0</number>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>1</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>2</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item row="14" column="0" rowspan="2" colspan="4">
+         <widget class="QTreeWidget" name="uiConsequentTree">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="uniformRowHeights">
+           <bool>true</bool>
+          </property>
+          <property name="expandsOnDoubleClick">
+           <bool>true</bool>
+          </property>
+          <attribute name="headerVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="headerDefaultSectionSize">
+           <number>999999</number>
+          </attribute>
+          <attribute name="headerMinimumSectionSize">
+           <number>0</number>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>1</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>2</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item row="7" column="1" colspan="3">
+         <widget class="QComboBox" name="uiAntecedentNodesCombo">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
         <item row="4" column="0" colspan="5">
          <spacer name="uiRulesSpacer1">
           <property name="orientation">
@@ -698,7 +775,7 @@
           </property>
          </spacer>
         </item>
-        <item row="15" column="0" colspan="5">
+        <item row="17" column="0" colspan="5">
          <spacer name="uiRulesSpacer3">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -735,13 +812,6 @@
           </property>
          </widget>
         </item>
-        <item row="7" column="1" colspan="3">
-         <widget class="QComboBox" name="uiAntecedentNodesCombo">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
         <item row="7" column="4">
          <widget class="QPushButton" name="uiAddAntecedentNodeButton">
           <property name="enabled">
@@ -752,28 +822,28 @@
           </property>
          </widget>
         </item>
-        <item row="12" column="1" colspan="3">
-         <widget class="QComboBox" name="uiConsequentNodesCombo">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="11" column="0" colspan="3">
-         <widget class="QLabel" name="uiConsequentLabel">
-          <property name="text">
-           <string>Консеквент правила:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="12" column="0">
+        <item row="13" column="0">
          <widget class="QComboBox" name="uiConsequentNodeTypesCombo">
           <property name="enabled">
            <bool>false</bool>
           </property>
          </widget>
         </item>
-        <item row="12" column="4">
+        <item row="13" column="1" colspan="3">
+         <widget class="QComboBox" name="uiConsequentNodesCombo">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="0" colspan="3">
+         <widget class="QLabel" name="uiConsequentLabel">
+          <property name="text">
+           <string>Консеквент правила:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="13" column="4">
          <widget class="QPushButton" name="uiAddConsequentNodeButton">
           <property name="enabled">
            <bool>false</bool>
@@ -783,7 +853,7 @@
           </property>
          </widget>
         </item>
-        <item row="16" column="0" colspan="5">
+        <item row="18" column="0" colspan="5">
          <widget class="QPushButton" name="uiCommitRuleButton">
           <property name="enabled">
            <bool>false</bool>
@@ -793,33 +863,14 @@
           </property>
          </widget>
         </item>
-        <item row="8" column="0" rowspan="2" colspan="4">
-         <widget class="QTreeWidget" name="uiAntecedentTree">
+        <item row="14" column="4">
+         <widget class="QPushButton" name="uiRemoveConsequentNodeButton">
           <property name="enabled">
            <bool>false</bool>
           </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
+          <property name="text">
+           <string>Убрать</string>
           </property>
-          <attribute name="headerVisible">
-           <bool>false</bool>
-          </attribute>
-          <attribute name="headerDefaultSectionSize">
-           <number>350</number>
-          </attribute>
-          <attribute name="headerMinimumSectionSize">
-           <number>0</number>
-          </attribute>
-          <column>
-           <property name="text">
-            <string>1</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>2</string>
-           </property>
-          </column>
          </widget>
         </item>
         <item row="0" column="0" colspan="5">
@@ -870,7 +921,7 @@
           </item>
          </layout>
         </item>
-        <item row="10" column="0" colspan="5">
+        <item row="11" column="0" colspan="5">
          <spacer name="uiRulesSpacer2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -886,46 +937,7 @@
           </property>
          </spacer>
         </item>
-        <item row="13" column="4">
-         <widget class="QPushButton" name="uiRemoveConsequentNodeButton">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Убрать</string>
-          </property>
-         </widget>
-        </item>
-        <item row="13" column="0" rowspan="2" colspan="4">
-         <widget class="QTreeWidget" name="uiConsequentTree">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <attribute name="headerVisible">
-           <bool>false</bool>
-          </attribute>
-          <attribute name="headerDefaultSectionSize">
-           <number>350</number>
-          </attribute>
-          <attribute name="headerMinimumSectionSize">
-           <number>0</number>
-          </attribute>
-          <column>
-           <property name="text">
-            <string>1</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>2</string>
-           </property>
-          </column>
-         </widget>
-        </item>
-        <item row="14" column="4">
+        <item row="15" column="4">
          <spacer name="verticalSpacer_19">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -938,6 +950,26 @@
           </property>
          </spacer>
         </item>
+        <item row="10" column="0" colspan="5">
+         <widget class="QLineEdit" name="uiAntecedentEdit">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="16" column="0" colspan="5">
+         <widget class="QLineEdit" name="uiConsequentEdit">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </widget>
@@ -945,6 +977,57 @@
    </layout>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>uiTabs</tabstop>
+  <tabstop>uiVariablesCombo</tabstop>
+  <tabstop>uiCreateVariableButton</tabstop>
+  <tabstop>uiRenameVariableButton</tabstop>
+  <tabstop>uiDeleteVariableButton</tabstop>
+  <tabstop>uiVariableVerifiedCheck</tabstop>
+  <tabstop>uiRangeMinEdit</tabstop>
+  <tabstop>uiRangeMaxEdit</tabstop>
+  <tabstop>uiTermsCombo</tabstop>
+  <tabstop>uiAddTermButton</tabstop>
+  <tabstop>uiTermsList</tabstop>
+  <tabstop>uiRemoveTermButton</tabstop>
+  <tabstop>uiHedgesCombo</tabstop>
+  <tabstop>uiAddHedgeButton</tabstop>
+  <tabstop>uiHedgesList</tabstop>
+  <tabstop>uiRemoveHedgeButton</tabstop>
+  <tabstop>uiCommitVariableButton</tabstop>
+  <tabstop>uiTerms2Combo</tabstop>
+  <tabstop>uiCreateTermButton</tabstop>
+  <tabstop>uiRenameTermButton</tabstop>
+  <tabstop>uiDeleteTermButton</tabstop>
+  <tabstop>uiTermVerifiedCheck</tabstop>
+  <tabstop>uiFunctionCombo</tabstop>
+  <tabstop>uiPointsEdit</tabstop>
+  <tabstop>uiCommitTermButton</tabstop>
+  <tabstop>uiHedges2Combo</tabstop>
+  <tabstop>uiCreateHedgeButton</tabstop>
+  <tabstop>uiRenameHedgeButton</tabstop>
+  <tabstop>uiDeleteHedgeButton</tabstop>
+  <tabstop>uiHedgeVerifiedCheck</tabstop>
+  <tabstop>uiResultEdit</tabstop>
+  <tabstop>uiCommitHedgeButton</tabstop>
+  <tabstop>uiRulesCombo</tabstop>
+  <tabstop>uiCreateRuleButton</tabstop>
+  <tabstop>uiRenameRuleButton</tabstop>
+  <tabstop>uiDeleteRuleButton</tabstop>
+  <tabstop>uiAntecedentNodeTypesCombo</tabstop>
+  <tabstop>uiAntecedentNodesCombo</tabstop>
+  <tabstop>uiAddAntecedentNodeButton</tabstop>
+  <tabstop>uiAntecedentTree</tabstop>
+  <tabstop>uiRemoveAntecedentNodeButton</tabstop>
+  <tabstop>uiAntecedentEdit</tabstop>
+  <tabstop>uiConsequentNodeTypesCombo</tabstop>
+  <tabstop>uiConsequentNodesCombo</tabstop>
+  <tabstop>uiAddConsequentNodeButton</tabstop>
+  <tabstop>uiConsequentTree</tabstop>
+  <tabstop>uiRemoveConsequentNodeButton</tabstop>
+  <tabstop>uiConsequentEdit</tabstop>
+  <tabstop>uiCommitRuleButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

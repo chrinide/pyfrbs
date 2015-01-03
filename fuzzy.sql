@@ -134,9 +134,9 @@ INSERT INTO variables_hedges (variable_id, hedge_id) VALUES
 	(1, 1);
 
 INSERT INTO types (name) VALUES 
-	('term'),
-	('hedge'),
 	('variable'),
+	('hedge'),
+	('term'),
 	('term_complex'),
 	('variable_value'),
 	('term_and'),
@@ -147,11 +147,11 @@ INSERT INTO types (name) VALUES
 
 INSERT INTO nodes (parent_id, type_id, variable_id, term_id, hedge_id) VALUES
 	(null, 8, null, null, null), (1, 5, null, null, null), 
-	(2, 3, 1, null, null), (2, 4, null, null, null), 
-	(4, 2, null, null, 1), (4, 1, null, 1, null), 
-	(1, 5, null, null, null), (7, 3, 2, null, null), 
-	(7, 1, null, 2, null), (null, 5, null, null, null), 
-	(10, 3, 3, null, null), (10, 1, null, 3, null);
+	(2, 1, 1, null, null), (2, 4, null, null, null), 
+	(4, 2, null, null, 1), (4, 3, null, 1, null), 
+	(1, 5, null, null, null), (7, 1, 2, null, null), 
+	(7, 3, null, 2, null), (null, 5, null, null, null), 
+	(10, 1, 3, null, null), (10, 3, null, 3, null);
 
 INSERT INTO closures (ancestor_id, descendant_id) VALUES
 	(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7),

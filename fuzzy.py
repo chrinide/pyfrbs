@@ -503,23 +503,14 @@ class Window(QMainWindow):
             item.setText(1, '%s' % root[0])
             tree.addTopLevelItem(item)
             cur = self.conn.cursor()
-            cur.execute('SELECT nodes.id, nodes.parent_id, types.name FROM nodes, types, closures WHERE nodes.id = closures.descendant_id AND closures.ancestor_id = %s AND nodes.type_id = types.id AND nodes.parent_id IS NOT NULL ORDER BY parent_id ASC;', (root[0],))
+            cur.execute('SELECT nodes.id, nodes.parent_id, types.name, types.id FROM nodes, types, closures WHERE nodes.id = closures.descendant_id AND closures.ancestor_id = %s AND nodes.type_id = types.id AND nodes.parent_id IS NOT NULL ORDER BY nodes.parent_id ASC, types.id ASC;', (root[0],))
             nodes = cur.fetchall()
             cur.close()
             for node in nodes:
-                if (node[2] == 'variable'):
+                if (node[2] in ('variable', 'term', 'hedge')):
                     cur = self.conn.cursor()
-                    cur.execute('SELECT variables.name_id FROM variables, nodes WHERE variables.id = nodes.variable_id AND nodes.id = %s;', (node[0],))
-                    name = '(%s) ' % node[2] + ', '.join(self.getLemmas(cur.fetchone()[0])) 
-                    cur.close()
-                elif (node[2] == 'hedge'):
-                    cur = self.conn.cursor()
-                    cur.execute('SELECT hedges.name_id FROM hedges, nodes WHERE hedges.id = nodes.hedge_id AND nodes.id = %s;', (node[0],))
-                    name = '(%s) ' % node[2] + ', '.join(self.getLemmas(cur.fetchone()[0])) 
-                    cur.close()
-                elif (node[2] == 'term'):
-                    cur = self.conn.cursor()
-                    cur.execute('SELECT terms.name_id FROM terms, nodes WHERE terms.id = nodes.term_id AND nodes.id = %s;', (node[0],))
+                    query = 'SELECT %ss.name_id FROM %ss, nodes WHERE %ss.id = nodes.%s_id' % (node[2], node[2], node[2], node[2])
+                    cur.execute(query + ' AND nodes.id = %s;', (node[0],))
                     name = '(%s) ' % node[2] + ', '.join(self.getLemmas(cur.fetchone()[0])) 
                     cur.close()
                 else:
@@ -530,14 +521,40 @@ class Window(QMainWindow):
                 item.setText(1, '%s' % node[0])
                 parents[0].addChild(item)
 
+    def nodeToString(self, node):
+        cur = self.conn.cursor()
+        cur.execute('SELECT types.name FROM nodes, types WHERE nodes.type_id = types.id AND nodes.id = %s;', (node.text(1),))
+        name = cur.fetchone()[0]
+        cur.close()
+        if (name in ('variable', 'term', 'hedge')):
+            cur = self.conn.cursor()
+            query = 'SELECT %ss.name_id FROM %ss, nodes WHERE %ss.id = nodes.%s_id' % (name, name, name, name)
+            cur.execute(query + ' AND nodes.id = %s;', (node.text(1),))
+            token = '\'' + ', '.join(self.getLemmas(cur.fetchone()[0])) + '\''
+            cur.close()
+        elif (name == 'variable_and'):
+            token = '%s AND %s' % (self.nodeToString(node.child(0)), self.nodeToString(node.child(1)))
+        elif (name == 'variable_or'):
+            token = '%s OR %s' % (self.nodeToString(node.child(0)), self.nodeToString(node.child(1)))
+        elif (name == 'variable_value'):
+            token = '%s IS %s' % (self.nodeToString(node.child(0)), self.nodeToString(node.child(1)))
+        elif (name == 'term_complex'):
+            token = '%s %s' % (self.nodeToString(node.child(0)), self.nodeToString(node.child(1)))
+        else:
+            token = ''
+        return token
+
     def onRuleSelected(self):
         if (self.uiRulesCombo.isEditable() == True):
             return
 
         self.uiCommitRuleButton.setEnabled(False)
-
         self.uiAntecedentTree.clear()
+        self.uiAntecedentEdit.clear()
+        self.uiAntecedentEdit.setEnabled(False)
         self.uiConsequentTree.clear()
+        self.uiConsequentEdit.clear()
+        self.uiConsequentEdit.setEnabled(False)
 
         if (self.uiRulesCombo.currentIndex() == -1):
             self.uiRenameRuleButton.setEnabled(False)
@@ -640,6 +657,8 @@ class Window(QMainWindow):
     def onAntecedentNodeSelected(self):
         self.uiAntecedentNodeTypesCombo.setEnabled(True)
         self.uiRemoveAntecedentNodeButton.setEnabled(True)
+        self.uiAntecedentEdit.setEnabled(True)
+        self.uiAntecedentEdit.setText(self.nodeToString(self.uiAntecedentTree.currentItem()))
 
     def onRemoveAntecedentNodeClicked(self):
         current = self.uiAntecedentTree.currentItem()
@@ -707,6 +726,8 @@ class Window(QMainWindow):
     def onConsequentNodeSelected(self):
         self.uiConsequentNodeTypesCombo.setEnabled(True)
         self.uiRemoveConsequentNodeButton.setEnabled(True)
+        self.uiConsequentEdit.setEnabled(True)
+        self.uiConsequentEdit.setText(self.nodeToString(self.uiConsequentTree.currentItem()))
 
     def onRemoveConsequentNodeClicked(self):
         current = self.uiConsequentTree.currentItem()
