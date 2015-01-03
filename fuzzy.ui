@@ -6,957 +6,943 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
-    <height>590</height>
+    <width>455</width>
+    <height>592</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
-    <width>450</width>
-    <height>590</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>450</width>
-    <height>590</height>
+    <width>455</width>
+    <height>592</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>Интерфейс эксперта СППР</string>
+   <string>Интерфейс эксперта</string>
   </property>
   <property name="documentMode">
    <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTabWidget" name="uiTabs">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>431</width>
-      <height>571</height>
-     </rect>
-    </property>
-    <property name="currentIndex">
-     <number>0</number>
-    </property>
-    <widget class="QWidget" name="uiVariablesTab">
-     <attribute name="title">
-      <string>Переменные</string>
-     </attribute>
-     <widget class="QPushButton" name="uiCreateVariableButton">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>65</y>
-        <width>131</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Создать</string>
-      </property>
-     </widget>
-     <widget class="QListWidget" name="uiTermsList">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>260</y>
-        <width>311</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="sortingEnabled">
-       <bool>false</bool>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiAddTermButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>330</x>
-        <y>230</y>
-        <width>91</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Добавить</string>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="uiHedgesCombo">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>370</y>
-        <width>311</width>
-        <height>24</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="uiVariableLabel">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>15</y>
-        <width>251</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Лингвистическая переменная:</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="uiHedgesLabel">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>350</y>
-        <width>221</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Доступные модификаторы:</string>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="uiTermsCombo">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>230</y>
-        <width>311</width>
-        <height>24</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiRemoveTermButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>330</x>
-        <y>260</y>
-        <width>91</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Убрать</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiAddHedgeButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>330</x>
-        <y>370</y>
-        <width>91</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Добавить</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiRemoveHedgeButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>330</x>
-        <y>400</y>
-        <width>91</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Убрать</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiDeleteVariableButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>290</x>
-        <y>65</y>
-        <width>131</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Удалить</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiRenameVariableButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>65</y>
-        <width>131</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Переименовать</string>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="uiVariablesCombo">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>35</y>
-        <width>411</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="editable">
-       <bool>false</bool>
-      </property>
-     </widget>
-     <widget class="QLabel" name="uiTermsLabel">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>210</y>
-        <width>241</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Доступные атомарные термы:</string>
-      </property>
-     </widget>
-     <widget class="QListWidget" name="uiHedgesList">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>400</y>
-        <width>311</width>
-        <height>71</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="uiRangeLabel">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>150</y>
-        <width>331</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Диапазон значений базовой переменной:</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="uiRangeMinEdit">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>170</y>
-        <width>191</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="inputMask">
-       <string/>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="maxLength">
-       <number>32767</number>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="uiRangeMaxEdit">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>230</x>
-        <y>170</y>
-        <width>191</width>
-        <height>24</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="uiRangeSepLabel">
-      <property name="geometry">
-       <rect>
-        <x>210</x>
-        <y>170</y>
-        <width>16</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>--</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiCommitVariableButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>490</y>
-        <width>411</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Сохранить изменения переменной</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="uiVariableVerifiedCheck">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>110</y>
-        <width>391</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Пометить переменную как верифицированную</string>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="uiTermsTab">
-     <attribute name="title">
-      <string>Термы</string>
-     </attribute>
-     <widget class="QPushButton" name="uiDeleteTermButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>290</x>
-        <y>65</y>
-        <width>131</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Удалить</string>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="uiTerms2Combo">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>35</y>
-        <width>411</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="editable">
-       <bool>false</bool>
-      </property>
-     </widget>
-     <widget class="QLabel" name="uiTermLabel">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>15</y>
-        <width>251</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Атомарный терм:</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiCreateTermButton">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>65</y>
-        <width>131</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Создать</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiRenameTermButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>65</y>
-        <width>131</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Переименовать</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="uiFunctionLabel">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>150</y>
-        <width>221</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Функция принадлежности:</string>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="uiFunctionCombo">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>170</y>
-        <width>411</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="editable">
-       <bool>false</bool>
-      </property>
-     </widget>
-     <widget class="QLabel" name="uiPointsLabel">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>210</y>
-        <width>171</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Характерные точки:</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="uiPointsEdit">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>230</y>
-        <width>411</width>
-        <height>24</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiCommitTermButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>490</y>
-        <width>411</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Сохранить изменения терма</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="uiTermVerifiedCheck">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>110</y>
-        <width>391</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Пометить терм как верифицированный</string>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="uiHedgesTab">
-     <attribute name="title">
-      <string>Модификаторы</string>
-     </attribute>
-     <widget class="QPushButton" name="uiCreateHedgeButton">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>65</y>
-        <width>131</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Создать</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiRenameHedgeButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>65</y>
-        <width>131</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Переименовать</string>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="uiHedges2Combo">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>35</y>
-        <width>411</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="editable">
-       <bool>false</bool>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="uiResultEdit">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>170</y>
-        <width>411</width>
-        <height>24</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiDeleteHedgeButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>290</x>
-        <y>65</y>
-        <width>131</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Удалить</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="uiResultLabel">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>150</y>
-        <width>171</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Значение:</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="uiHedgeLabel">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>15</y>
-        <width>251</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Модификатор:</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiCommitHedgeButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>490</y>
-        <width>411</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Сохранить изменения модификатора</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="uiHedgeVerifiedCheck">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>110</y>
-        <width>391</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Пометить модификатор как верифицированный</string>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="uiRulesTab">
-     <attribute name="title">
-      <string>Правила</string>
-     </attribute>
-     <widget class="QPushButton" name="uiCreateRuleButton">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>65</y>
-        <width>131</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Создать</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiRenameRuleButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>65</y>
-        <width>131</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Переименовать</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiCommitRuleButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>450</y>
-        <width>411</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Сохранить изменения правила</string>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="uiRulesCombo">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>35</y>
-        <width>411</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="editable">
-       <bool>false</bool>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="uiAntecedentNodesCombo">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>120</x>
-        <y>130</y>
-        <width>201</width>
-        <height>24</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiAddConsequentNodeButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>330</x>
-        <y>300</y>
-        <width>91</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Добавить</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="uiConsequentLabel">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>280</y>
-        <width>221</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Консеквент правила:</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiAddAntecedentNodeButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>330</x>
-        <y>130</y>
-        <width>91</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Добавить</string>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="uiConsequentNodesCombo">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>120</x>
-        <y>300</y>
-        <width>201</width>
-        <height>24</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiRemoveConsequentNodeButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>330</x>
-        <y>330</y>
-        <width>91</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Убрать</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiDeleteRuleButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>290</x>
-        <y>65</y>
-        <width>131</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Удалить</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="uiAntecedentLabel">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>110</y>
-        <width>241</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Антецедент правила:</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="uiRuleLabel">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>15</y>
-        <width>291</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Нечёткое логическое правило:</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="uiRemoveAntecedentNodeButton">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>330</x>
-        <y>160</y>
-        <width>91</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Убрать</string>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="uiAntecedentNodeTypesCombo">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>130</y>
-        <width>101</width>
-        <height>24</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="uiConsequentNodeTypesCombo">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>300</y>
-        <width>101</width>
-        <height>24</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QTreeWidget" name="uiAntecedentTree">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>160</y>
-        <width>311</width>
-        <height>101</height>
-       </rect>
-      </property>
-      <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
-      </property>
-      <attribute name="headerVisible">
-       <bool>false</bool>
-      </attribute>
-      <attribute name="headerDefaultSectionSize">
-       <number>350</number>
-      </attribute>
-      <attribute name="headerMinimumSectionSize">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="1" column="0">
+     <widget class="QTabWidget" name="uiTabs">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="currentIndex">
        <number>0</number>
-      </attribute>
-      <column>
-       <property name="text">
-        <string>1</string>
+      </property>
+      <widget class="QWidget" name="uiVariablesTab">
+       <attribute name="title">
+        <string>Переменные</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="5" column="0" colspan="6">
+         <spacer name="verticalSpacer_6">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>10</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="24" column="0" colspan="6">
+         <widget class="QPushButton" name="uiCommitVariableButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Сохранить изменения переменной</string>
+          </property>
+         </widget>
+        </item>
+        <item row="15" column="0" colspan="5">
+         <widget class="QComboBox" name="uiTermsCombo">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="21" column="0" rowspan="2" colspan="5">
+         <widget class="QListWidget" name="uiHedgesList">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="23" column="0" colspan="6">
+         <spacer name="verticalSpacer_10">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="0" colspan="6">
+         <widget class="QComboBox" name="uiVariablesCombo">
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0" colspan="6">
+         <widget class="QLabel" name="uiRangeLabel">
+          <property name="text">
+           <string>Диапазон значений базовой переменной:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0" colspan="6">
+         <widget class="QCheckBox" name="uiVariableVerifiedCheck">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Данная переменная была проверена экспертом</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0" colspan="6">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLineEdit" name="uiRangeMinEdit">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="inputMask">
+             <string/>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="maxLength">
+             <number>32767</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="uiRangeSepLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>--</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="uiRangeMaxEdit">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="13" column="0" colspan="6">
+         <spacer name="verticalSpacer_8">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="0" colspan="6">
+         <widget class="QLabel" name="uiVariableLabel">
+          <property name="text">
+           <string>Лингвистическая переменная:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="19" column="0" colspan="6">
+         <widget class="QLabel" name="uiHedgesLabel">
+          <property name="text">
+           <string>Доступные модификаторы:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="20" column="0" colspan="5">
+         <widget class="QComboBox" name="uiHedgesCombo">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="20" column="5">
+         <widget class="QPushButton" name="uiAddHedgeButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Добавить</string>
+          </property>
+         </widget>
+        </item>
+        <item row="14" column="0" colspan="6">
+         <widget class="QLabel" name="uiTermsLabel">
+          <property name="text">
+           <string>Доступные атомарные термы:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="16" column="5">
+         <widget class="QPushButton" name="uiRemoveTermButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Убрать</string>
+          </property>
+         </widget>
+        </item>
+        <item row="17" column="5">
+         <spacer name="verticalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="18" column="0" colspan="6">
+         <spacer name="verticalSpacer_9">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="7" column="0" colspan="6">
+         <spacer name="verticalSpacer_7">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="22" column="5">
+         <spacer name="verticalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="15" column="5">
+         <widget class="QPushButton" name="uiAddTermButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Добавить</string>
+          </property>
+         </widget>
+        </item>
+        <item row="16" column="0" rowspan="2" colspan="5">
+         <widget class="QListWidget" name="uiTermsList">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="sortingEnabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="21" column="5">
+         <widget class="QPushButton" name="uiRemoveHedgeButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Убрать</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0" rowspan="2" colspan="6">
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QPushButton" name="uiCreateVariableButton">
+            <property name="text">
+             <string>Создать</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="uiRenameVariableButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Переименовать</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="uiDeleteVariableButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Удалить</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="uiTermsTab">
+       <attribute name="title">
+        <string>Термы</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="17" column="0" colspan="3">
+         <spacer name="verticalSpacer_11">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="5" column="0" colspan="3">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QPushButton" name="uiCreateTermButton">
+            <property name="text">
+             <string>Создать</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="uiRenameTermButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Переименовать</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="uiDeleteTermButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Удалить</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="10" column="0" colspan="3">
+         <widget class="QLabel" name="uiFunctionLabel">
+          <property name="text">
+           <string>Функция принадлежности:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="15" column="0" colspan="3">
+         <widget class="QLabel" name="uiPointsLabel">
+          <property name="text">
+           <string>Характерные точки:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="3">
+         <widget class="QComboBox" name="uiTerms2Combo">
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="18" column="0" colspan="3">
+         <widget class="QPushButton" name="uiCommitTermButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Сохранить изменения терма</string>
+          </property>
+         </widget>
+        </item>
+        <item row="16" column="0" colspan="3">
+         <widget class="QLineEdit" name="uiPointsEdit">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="13" column="0" colspan="3">
+         <widget class="QComboBox" name="uiFunctionCombo">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="3">
+         <widget class="QLabel" name="uiTermLabel">
+          <property name="text">
+           <string>Атомарный терм:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0" colspan="3">
+         <spacer name="verticalSpacer_12">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="8" column="0" colspan="3">
+         <widget class="QCheckBox" name="uiTermVerifiedCheck">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Данный терм был проверен экспертом</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0" colspan="3">
+         <spacer name="verticalSpacer_13">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="14" column="0" colspan="3">
+         <spacer name="verticalSpacer_14">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Minimum</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="uiHedgesTab">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>2</string>
+       <property name="sizeIncrement">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
        </property>
-      </column>
+       <attribute name="title">
+        <string>Модификаторы</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="17" column="0" colspan="3">
+         <widget class="QPushButton" name="uiCommitHedgeButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Сохранить изменения модификатора</string>
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="0" colspan="3">
+         <widget class="QLineEdit" name="uiResultEdit">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="0" colspan="3">
+         <widget class="QLabel" name="uiResultLabel">
+          <property name="text">
+           <string>Значение:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="3">
+         <widget class="QLabel" name="uiHedgeLabel">
+          <property name="text">
+           <string>Модификатор:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0" colspan="3">
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="10" column="0" colspan="3">
+         <spacer name="verticalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="9" column="0" colspan="3">
+         <widget class="QCheckBox" name="uiHedgeVerifiedCheck">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Данный модификтатор был проверен экспертом</string>
+          </property>
+         </widget>
+        </item>
+        <item row="16" column="1">
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="0" colspan="3">
+         <widget class="QComboBox" name="uiHedges2Combo">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0" rowspan="2" colspan="3">
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QPushButton" name="uiCreateHedgeButton">
+            <property name="text">
+             <string>Создать</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="uiRenameHedgeButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Переименовать</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="uiDeleteHedgeButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Удалить</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="uiRulesTab">
+       <attribute name="title">
+        <string>Правила</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="4" column="0" colspan="5">
+         <spacer name="verticalSpacer_15">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="9" column="4">
+         <spacer name="verticalSpacer_18">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="15" column="0" colspan="5">
+         <spacer name="verticalSpacer_17">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="0" colspan="5">
+         <widget class="QComboBox" name="uiRulesCombo">
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QComboBox" name="uiAntecedentNodeTypesCombo">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0" colspan="3">
+         <widget class="QLabel" name="uiAntecedentLabel">
+          <property name="text">
+           <string>Антецедент правила:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1" colspan="3">
+         <widget class="QComboBox" name="uiAntecedentNodesCombo">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="4">
+         <widget class="QPushButton" name="uiAddAntecedentNodeButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Добавить</string>
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="1" colspan="3">
+         <widget class="QComboBox" name="uiConsequentNodesCombo">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="0" colspan="3">
+         <widget class="QLabel" name="uiConsequentLabel">
+          <property name="text">
+           <string>Консеквент правила:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="0">
+         <widget class="QComboBox" name="uiConsequentNodeTypesCombo">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="4">
+         <widget class="QPushButton" name="uiAddConsequentNodeButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Добавить</string>
+          </property>
+         </widget>
+        </item>
+        <item row="16" column="0" colspan="5">
+         <widget class="QPushButton" name="uiCommitRuleButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Сохранить изменения правила</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0" rowspan="2" colspan="4">
+         <widget class="QTreeWidget" name="uiAntecedentTree">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <attribute name="headerVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="headerDefaultSectionSize">
+           <number>350</number>
+          </attribute>
+          <attribute name="headerMinimumSectionSize">
+           <number>0</number>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>1</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>2</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="5">
+         <widget class="QLabel" name="uiRuleLabel">
+          <property name="text">
+           <string>Нечёткое логическое правило:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="4">
+         <widget class="QPushButton" name="uiRemoveAntecedentNodeButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Убрать</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0" rowspan="2" colspan="5">
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <widget class="QPushButton" name="uiCreateRuleButton">
+            <property name="text">
+             <string>Создать</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="uiRenameRuleButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Переименовать</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="uiDeleteRuleButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Удалить</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="10" column="0" colspan="5">
+         <spacer name="verticalSpacer_16">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="13" column="4">
+         <widget class="QPushButton" name="uiRemoveConsequentNodeButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Убрать</string>
+          </property>
+         </widget>
+        </item>
+        <item row="13" column="0" rowspan="2" colspan="4">
+         <widget class="QTreeWidget" name="uiConsequentTree">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <attribute name="headerVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="headerDefaultSectionSize">
+           <number>350</number>
+          </attribute>
+          <attribute name="headerMinimumSectionSize">
+           <number>0</number>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>1</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>2</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item row="14" column="4">
+         <spacer name="verticalSpacer_19">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
      </widget>
-     <widget class="QTreeWidget" name="uiConsequentTree">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>330</y>
-        <width>311</width>
-        <height>101</height>
-       </rect>
-      </property>
-      <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
-      </property>
-      <attribute name="headerVisible">
-       <bool>false</bool>
-      </attribute>
-      <attribute name="headerDefaultSectionSize">
-       <number>350</number>
-      </attribute>
-      <attribute name="headerMinimumSectionSize">
-       <number>0</number>
-      </attribute>
-      <column>
-       <property name="text">
-        <string>1</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>2</string>
-       </property>
-      </column>
-     </widget>
-    </widget>
-   </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>
