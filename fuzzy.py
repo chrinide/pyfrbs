@@ -79,6 +79,8 @@ class Window(QMainWindow):
         self.uiCreateRuleButton.clicked.connect(self.onCreateRuleClicked)
         self.uiDeleteRuleButton.clicked.connect(self.onDeleteRuleClicked)
 
+        self.uiRuleVerifiedCheck.stateChanged.connect(self.onRuleVerified)
+        
         self.fillComboWithNames(self.uiAntecedentNodeTypesCombo, 'types')
         self.uiAntecedentNodeTypesCombo.currentIndexChanged.connect(self.onAntecedentNodeTypeSelected)
         self.uiAntecedentNodesCombo.currentIndexChanged.connect(self.onAntecedentNodeValueSelected)
@@ -549,6 +551,7 @@ class Window(QMainWindow):
             return
 
         self.uiCommitRuleButton.setEnabled(False)
+        self.uiRuleVerifiedCheck.setChecked(False)
         self.uiAntecedentTree.clear()
         self.uiAntecedentEdit.clear()
         self.uiAntecedentEdit.setEnabled(False)
@@ -559,6 +562,7 @@ class Window(QMainWindow):
         if (self.uiRulesCombo.currentIndex() == -1):
             self.uiRenameRuleButton.setEnabled(False)
             self.uiDeleteRuleButton.setEnabled(False)
+            self.uiRuleVerifiedCheck.setEnabled(False)
             self.uiAntecedentNodeTypesCombo.setEnabled(False)
             self.uiAntecedentNodesCombo.setEnabled(False)
             self.uiAddAntecedentNodeButton.setEnabled(False)
@@ -569,19 +573,28 @@ class Window(QMainWindow):
             self.uiConsequentTree.setEnabled(False)
             return
 
-        self.loadTree(self.uiAntecedentTree, 'antecedent', self.uiRulesCombo.currentData())
-        self.loadTree(self.uiConsequentTree, 'consequent', self.uiRulesCombo.currentData())
+        if (self.uiRulesCombo.currentData() != 0):
 
-        if (self.uiAntecedentTree.topLevelItemCount() == 0):
-            self.uiAntecedentNodeTypesCombo.setEnabled(True)
+            cur = self.conn.cursor()
+            cur.execute('SELECT validated FROM rules WHERE id = %s;', (self.uiRulesCombo.currentData(),))
+            state = cur.fetchone()
+            if (state[0] == True):
+                self.uiRuleVerifiedCheck.setChecked(True);
 
-        if (self.uiConsequentTree.topLevelItemCount() == 0):
-            self.uiConsequentNodeTypesCombo.setEnabled(True)
+            self.loadTree(self.uiAntecedentTree, 'antecedent', self.uiRulesCombo.currentData())
+            self.loadTree(self.uiConsequentTree, 'consequent', self.uiRulesCombo.currentData())
 
-        self.uiRenameRuleButton.setEnabled(True)
-        self.uiDeleteRuleButton.setEnabled(True)
-        self.uiAntecedentTree.setEnabled(True)
-        self.uiConsequentTree.setEnabled(True)
+            if (self.uiAntecedentTree.topLevelItemCount() == 0):
+                self.uiAntecedentNodeTypesCombo.setEnabled(True)
+
+            if (self.uiConsequentTree.topLevelItemCount() == 0):
+                self.uiConsequentNodeTypesCombo.setEnabled(True)
+
+            self.uiRenameRuleButton.setEnabled(True)
+            self.uiDeleteRuleButton.setEnabled(True)
+            self.uiRuleVerifiedCheck.setEnabled(True)
+            self.uiAntecedentTree.setEnabled(True)
+            self.uiConsequentTree.setEnabled(True)
 
     def onCreateRuleClicked(self):
         self.uiRulesCombo.setCurrentIndex(-1)
@@ -740,6 +753,9 @@ class Window(QMainWindow):
             self.uiAddConsequentNodeButton.setEnabled(False)
             self.onConsequentNodeTypeSelected()
         self.uiCommitRuleButton.setEnabled(True)
+
+    def onRuleVerified(self):
+        self.commitRule()
 
     def commitRule(self):
         self.uiCommitRuleButton.setEnabled(False)

@@ -81,6 +81,7 @@ CREATE TABLE closures (
 CREATE TABLE rules (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(255),
+	validated BOOLEAN,
 	antecedent_id INT NOT NULL REFERENCES nodes(id) ON DELETE CASCADE,
 	consequent_id INT NOT NULL REFERENCES nodes(id) ON DELETE CASCADE
 );
@@ -160,5 +161,5 @@ INSERT INTO closures (ancestor_id, descendant_id) VALUES
 	(7, 8), (7, 9), (8, 8), (9, 9), (10, 10), (10, 11), 
 	(10, 12), (11, 11), (12, 12);
 
-INSERT INTO rules (name, antecedent_id, consequent_id) VALUES 
-	('возраст не молодой и время позднее, активность низкая', 1, 10);
+INSERT INTO rules (name, validated, antecedent_id, consequent_id) VALUES 
+	('ЕСЛИ возраст не молодой и время позднее, TO активность низкая', false, 1, 10);
