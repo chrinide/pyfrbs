@@ -5,7 +5,7 @@ import psycopg2
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QDoubleValidator
-from PyQt5.QtWidgets import QApplication, QMainWindow, QListWidgetItem, QTreeWidgetItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QListWidgetItem, QTreeWidgetItem, QTableWidgetItem
 from PyQt5.uic import loadUi
 
 class Window(QMainWindow):
@@ -100,6 +100,17 @@ class Window(QMainWindow):
         self.uiRemoveConsequentNodeButton.clicked.connect(self.onRemoveConsequentNodeClicked)
 
         self.uiCommitRuleButton.clicked.connect(self.commitRule)
+
+        # Initialize debug tab
+
+        self.uiModeCombo.addItem('Переменные', 0)
+        self.uiModeCombo.addItem('Термы', 1)
+        self.uiModeCombo.addItem('Модификаторы', 2)
+        self.uiModeCombo.addItem('Переменные и термы', 3)
+        self.uiModeCombo.addItem('Переменные и модификаторы', 4)
+        self.uiModeCombo.addItem('Синонимы', 5)
+        self.uiModeCombo.setCurrentIndex(-1)
+        self.uiModeCombo.currentIndexChanged.connect(self.onModeSelected)
 
         # Initialize main window
 
@@ -876,6 +887,40 @@ class Window(QMainWindow):
 
     def commitRule(self):
         self.uiCommitRuleButton.setEnabled(False)
+
+    # Actions on debug tab
+
+    def fillTable(self, query):
+        cur = self.conn.cursor()
+        cur.execute(query)
+        rows = cur.fetchall()
+        self.uiDataTable.clear()
+        self.uiDataTable.setRowCount(cur.rowcount)
+        self.uiDataTable.setColumnCount(len(cur.description))
+        self.uiDataTable.setHorizontalHeaderLabels([desc[0] for desc in cur.description])
+        self.uiDataTable.setSortingEnabled(False)
+        i = 0
+        for row in rows:
+            for j in range(0, len(row)):
+                item = QTableWidgetItem('%s' % row[j])
+                self.uiDataTable.setItem(i, j, item)
+            i += 1
+        cur.close()
+        self.uiDataTable.setSortingEnabled(True)
+
+    def onModeSelected(self):
+        if (self.uiModeCombo.currentData() == 0):
+            self.fillTable('SELECT variables.id, variables.name, variables.name_id, variables.min, variables.max, variables.validated FROM variables;')
+        elif (self.uiModeCombo.currentData() == 1):
+            self.fillTable('SELECT terms.id, terms.name, terms.name_id, functions.name, terms.points, terms.validated FROM terms, functions WHERE terms.function_id = functions.id;')
+        elif (self.uiModeCombo.currentData() == 2):
+            self.fillTable('SELECT hedges.id, hedges.name, hedges.name_id, hedges.result, hedges.validated FROM hedges;')
+        elif (self.uiModeCombo.currentData() == 3):
+            self.fillTable('SELECT variables.id, variables.name, variables.name_id, variables.min, variables.max, variables.validated, terms.id, terms.name, terms.name_id, functions.name, terms.points, terms.validated FROM variables, terms, functions, variables_terms WHERE variables.id = variables_terms.variable_id AND terms.id = variables_terms.term_id AND terms.function_id = functions.id;')
+        elif (self.uiModeCombo.currentData() == 4):
+            self.fillTable('SELECT variables.id, variables.name, variables.name_id, variables.min, variables.max, variables.validated, hedges.id, hedges.name, hedges.name_id, hedges.result, hedges.validated FROM variables, hedges, variables_hedges WHERE variables.id = variables_hedges.variable_id AND hedges.id = variables_hedges.hedge_id;')
+        elif (self.uiModeCombo.currentData() == 5):
+            self.fillTable('SELECT synonims.id, synonims.group_id, synonims.lemma, synonims.grammemes, synonims.hits, groups.is_variable, groups.is_term, groups.is_hedge FROM synonims, groups WHERE synonims.group_id = groups.id;')
 
     # Actions on main window
 
