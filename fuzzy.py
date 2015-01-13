@@ -21,6 +21,7 @@ class Window(QMainWindow):
         self.fillComboWithLemmas(self.uiVariablesCombo, 'variables')
         self.uiVariablesCombo.currentIndexChanged.connect(self.onVariableSelected)
         self.uiCreateVariableButton.clicked.connect(self.onCreateVariableClicked)
+        self.uiRenameVariableButton.clicked.connect(self.onRenameVariableClicked)
         self.uiDeleteVariableButton.clicked.connect(self.onDeleteVariableClicked)
 
         self.uiVariableVerifiedCheck.stateChanged.connect(self.onVariableVerified)
@@ -48,6 +49,7 @@ class Window(QMainWindow):
         self.fillComboWithLemmas(self.uiTerms2Combo, 'terms')
         self.uiTerms2Combo.currentIndexChanged.connect(self.onTerm2Selected)
         self.uiCreateTermButton.clicked.connect(self.onCreateTermClicked)
+        self.uiRenameTermButton.clicked.connect(self.onRenameTermClicked)
         self.uiDeleteTermButton.clicked.connect(self.onDeleteTermClicked)
 
         self.uiTermVerifiedCheck.stateChanged.connect(self.onTermVerified)
@@ -64,6 +66,7 @@ class Window(QMainWindow):
         self.fillComboWithLemmas(self.uiHedges2Combo, 'hedges')
         self.uiHedges2Combo.currentIndexChanged.connect(self.onHedge2Selected)
         self.uiCreateHedgeButton.clicked.connect(self.onCreateHedgeClicked)
+        self.uiRenameHedgeButton.clicked.connect(self.onRenameHedgeClicked)
         self.uiDeleteHedgeButton.clicked.connect(self.onDeleteHedgeClicked)
 
         self.uiHedgeVerifiedCheck.stateChanged.connect(self.onHedgeVerified)
@@ -77,6 +80,7 @@ class Window(QMainWindow):
         self.fillComboWithNames(self.uiRulesCombo, 'rules')
         self.uiRulesCombo.currentIndexChanged.connect(self.onRuleSelected)
         self.uiCreateRuleButton.clicked.connect(self.onCreateRuleClicked)
+        self.uiRenameRuleButton.clicked.connect(self.onRenameRuleClicked)
         self.uiDeleteRuleButton.clicked.connect(self.onDeleteRuleClicked)
 
         self.uiRuleVerifiedCheck.stateChanged.connect(self.onRuleVerified)
@@ -114,9 +118,12 @@ class Window(QMainWindow):
     def fillComboWithLemmas(self, combo, table):
         combo.clear()
         cur = self.conn.cursor()
-        cur.execute('SELECT id, name_id FROM %s;' % table)
+        cur.execute('SELECT id, name, name_id FROM %s;' % table)
         for row in cur.fetchall():
-            combo.addItem(', '.join(self.getLemmas(row[1])), row[0])
+            if (row[1] != ''):
+                combo.addItem(row[1], row[0])
+            else:
+                combo.addItem(', '.join(self.getLemmas(row[2])), row[0])
         cur.close()
         combo.setCurrentIndex(-1)
 
@@ -170,18 +177,24 @@ class Window(QMainWindow):
 
         if (self.uiVariablesCombo.currentData() != 0):
             cur = self.conn.cursor()
-            cur.execute('SELECT terms.id, terms.name_id FROM variables, terms, variables_terms WHERE variables.id = %s AND variables.id = variables_terms.variable_id AND terms.id = variables_terms.term_id;', (self.uiVariablesCombo.currentData(),))
+            cur.execute('SELECT terms.id, terms.name, terms.name_id FROM variables, terms, variables_terms WHERE variables.id = %s AND variables.id = variables_terms.variable_id AND terms.id = variables_terms.term_id;', (self.uiVariablesCombo.currentData(),))
             for row in cur.fetchall():
-                item = QListWidgetItem(', '.join(self.getLemmas(row[1])))
+                if (row[1] != ''):
+                    item = QListWidgetItem(row[1])
+                else:
+                    item = QListWidgetItem(', '.join(self.getLemmas(row[2])))
                 item.setData(Qt.UserRole, row[0])
                 self.uiTermsList.addItem(item)
             cur.close()
             self.loadTerms()
 
             cur = self.conn.cursor()
-            cur.execute('SELECT hedges.id, hedges.name_id FROM variables, hedges, variables_hedges WHERE variables.id = %s AND variables.id = variables_hedges.variable_id AND hedges.id = variables_hedges.hedge_id;', (self.uiVariablesCombo.currentData(),))
+            cur.execute('SELECT hedges.id, hedges.name, hedges.name_id FROM variables, hedges, variables_hedges WHERE variables.id = %s AND variables.id = variables_hedges.variable_id AND hedges.id = variables_hedges.hedge_id;', (self.uiVariablesCombo.currentData(),))
             for row in cur.fetchall():
-                item = QListWidgetItem(', '.join(self.getLemmas(row[1])))
+                if (row[1] != ''):
+                    item = QListWidgetItem(row[1])
+                else:
+                    item = QListWidgetItem(', '.join(self.getLemmas(row[2])))
                 item.setData(Qt.UserRole, row[0])
                 self.uiHedgesList.addItem(item)
             cur.close()
@@ -259,17 +272,40 @@ class Window(QMainWindow):
         self.checkRange()
 
     def onCreateVariableClicked(self):
+        self.currentVariable = -1
         self.uiVariablesCombo.setCurrentIndex(-1)
         self.uiVariablesCombo.setEditable(True)
         self.uiVariablesCombo.lineEdit().returnPressed.connect(self.onVariableEntered)
         self.uiVariablesCombo.setFocus()
         self.uiCreateVariableButton.setEnabled(False)
 
+    def onRenameVariableClicked(self):
+        self.currentVariable = self.uiVariablesCombo.currentIndex()
+        self.uiVariablesCombo.setEditable(True)
+        self.uiVariablesCombo.lineEdit().returnPressed.connect(self.onVariableEntered)
+        self.uiVariablesCombo.setFocus()
+        self.uiCreateVariableButton.setEnabled(False)
+        self.uiRenameVariableButton.setEnabled(False)
+        self.uiDeleteVariableButton.setEnabled(False)
+
     def onVariableEntered(self):
         self.uiVariablesCombo.setEditable(False)
         self.uiCreateVariableButton.setEnabled(True)
-        self.uiVariablesCombo.setItemData(self.uiVariablesCombo.currentIndex(), 0)
-        self.onVariableSelected()
+        self.uiRenameVariableButton.setEnabled(True)
+        self.uiDeleteVariableButton.setEnabled(True)
+        if (self.currentVariable >= 0):
+            name = self.uiVariablesCombo.currentText()
+            self.uiVariablesCombo.removeItem(self.uiVariablesCombo.currentIndex())
+            if (self.uiVariablesCombo.itemText(self.currentVariable) != name):
+                self.uiVariablesCombo.setItemText(self.currentVariable, name)
+                self.variableRenamed = True
+                self.uiVariablesCombo.setCurrentIndex(self.currentVariable)
+                self.checkRange()
+            else:
+                self.uiVariablesCombo.setCurrentIndex(self.currentVariable)
+        else:
+            self.uiVariablesCombo.setItemData(self.uiVariablesCombo.currentIndex(), 0)
+            self.onVariableSelected()
 
     def onDeleteVariableClicked(self):
         cur = self.conn.cursor()
@@ -293,6 +329,8 @@ class Window(QMainWindow):
         variable_id = self.uiVariablesCombo.currentData()
         if (variable_id):
             cur.execute('UPDATE variables SET validated = %s, min = %s, max = %s WHERE id = %s;', (self.uiVariableVerifiedCheck.isChecked(), self.uiRangeMinEdit.text(), self.uiRangeMaxEdit.text(), variable_id))
+            if (self.variableRenamed == True):
+                cur.execute('UPDATE variables SET name = %s WHERE id = %s;', (self.uiVariablesCombo.currentText(), variable_id))
             cur.execute('DELETE FROM variables_terms WHERE variable_id = %s;', (variable_id,))
             cur.execute('DELETE FROM variables_hedges WHERE variable_id = %s;', (variable_id,))
         else:
@@ -300,7 +338,7 @@ class Window(QMainWindow):
             group_id = cur.fetchone()[0]
             for lemma in self.uiVariablesCombo.currentText().replace(' ', '').split(','):
                 cur.execute('INSERT INTO synonims (group_id, lemma, grammemes, hits) VALUES (%s, %s, %s, 0);', (group_id, lemma, ''));
-            cur.execute('INSERT INTO variables (name_id, validated, min, max) VALUES (%s, %s, %s, %s) RETURNING id;', (group_id, self.uiVariableVerifiedCheck.isChecked(), self.uiRangeMinEdit.text(), self.uiRangeMaxEdit.text()))
+            cur.execute('INSERT INTO variables (name_id, name, validated, min, max) VALUES (%s, '', %s, %s, %s) RETURNING id;', (group_id, self.uiVariableVerifiedCheck.isChecked(), self.uiRangeMinEdit.text(), self.uiRangeMaxEdit.text()))
             variable_id = cur.fetchone()[0]
             self.uiVariablesCombo.setItemData(self.uiVariablesCombo.currentIndex(), variable_id)
         for i in range(0, self.uiTermsList.count()):
@@ -359,18 +397,41 @@ class Window(QMainWindow):
         self.uiFunctionCombo.setEnabled(True)
 
     def onCreateTermClicked(self):
+        self.currentTerm = -1
         self.uiTerms2Combo.setCurrentIndex(-1)
         self.uiTerms2Combo.setEditable(True)
         self.uiTerms2Combo.lineEdit().returnPressed.connect(self.onTermEntered)
         self.uiTerms2Combo.setFocus()
         self.uiCreateTermButton.setEnabled(False)
 
+    def onRenameTermClicked(self):
+        self.currentTerm = self.uiTerms2Combo.currentIndex()
+        self.uiTerms2Combo.setEditable(True)
+        self.uiTerms2Combo.lineEdit().returnPressed.connect(self.onTermEntered)
+        self.uiTerms2Combo.setFocus()
+        self.uiCreateTermButton.setEnabled(False)
+        self.uiRenameTermButton.setEnabled(False)
+        self.uiDeleteTermButton.setEnabled(False)
+
     def onTermEntered(self):
         self.uiTerms2Combo.setEditable(False)
         self.uiCreateTermButton.setEnabled(True)
-        self.uiTerms2Combo.setItemData(self.uiTerms2Combo.currentIndex(), 0)
-        self.onTerm2Selected()
-        self.uiFunctionCombo.setFocus()
+        self.uiRenameTermButton.setEnabled(True)
+        self.uiDeleteTermButton.setEnabled(True)
+        if (self.currentTerm >= 0):
+            name = self.uiTerms2Combo.currentText()
+            self.uiTerms2Combo.removeItem(self.uiTerms2Combo.currentIndex())
+            if (self.uiTerms2Combo.itemText(self.currentTerm) != name):
+                self.uiTerms2Combo.setItemText(self.currentTerm, name)
+                self.termRenamed = True
+                self.uiTerms2Combo.setCurrentIndex(self.currentTerm)
+                self.checkPoints()
+            else:
+                self.uiTerms2Combo.setCurrentIndex(self.currentTerm)
+        else:
+            self.uiTerms2Combo.setItemData(self.uiTerms2Combo.currentIndex(), 0)
+            self.onTerm2Selected()
+            self.uiFunctionCombo.setFocus()
 
     def onDeleteTermClicked(self):
         cur = self.conn.cursor()
@@ -398,12 +459,14 @@ class Window(QMainWindow):
         term_id = self.uiTerms2Combo.currentData()
         if (term_id):
             cur.execute('UPDATE terms SET validated = %s, function_id = %s, points = %s WHERE id = %s;', (self.uiTermVerifiedCheck.isChecked(), self.uiFunctionCombo.currentData(), self.uiPointsEdit.text(), term_id))
+            if (self.termRenamed == True):
+                cur.execute('UPDATE terms SET name = %s WHERE id = %s;', (self.uiTerms2Combo.currentText(), term_id))
         else:
             cur.execute('INSERT INTO groups (is_variable, is_term, is_hedge) VALUES (false, true, false) RETURNING id;')
             group_id = cur.fetchone()[0]
             for lemma in self.uiTerms2Combo.currentText().replace(' ', '').split(','):
                 cur.execute('INSERT INTO synonims (group_id, lemma, grammemes, hits) VALUES (%s, %s, %s, 0);', (group_id, lemma, ''));
-            cur.execute('INSERT INTO terms (validated, name_id, function_id, points) VALUES (%s, %s, %s, %s) RETURNING id;', (self.uiTermVerifiedCheck.isChecked(), group_id, self.uiFunctionCombo.currentData(), self.uiPointsEdit.text()))
+            cur.execute('INSERT INTO terms (validated, name, name_id, function_id, points) VALUES (%s, '', %s, %s, %s) RETURNING id;', (self.uiTermVerifiedCheck.isChecked(), group_id, self.uiFunctionCombo.currentData(), self.uiPointsEdit.text()))
             term_id = cur.fetchone()[0]
             self.uiTerms2Combo.setItemData(self.uiTerms2Combo.currentIndex(), term_id)
         self.conn.commit()
@@ -445,18 +508,41 @@ class Window(QMainWindow):
         self.uiResultEdit.setEnabled(True)
 
     def onCreateHedgeClicked(self):
+        self.currentHedge = -1
         self.uiHedges2Combo.setCurrentIndex(-1)
         self.uiHedges2Combo.setEditable(True)
         self.uiHedges2Combo.lineEdit().returnPressed.connect(self.onHedgeEntered)
         self.uiHedges2Combo.setFocus()
         self.uiCreateHedgeButton.setEnabled(False)
 
+    def onRenameHedgeClicked(self):
+        self.currentHedge = self.uiHedges2Combo.currentIndex()
+        self.uiHedges2Combo.setEditable(True)
+        self.uiHedges2Combo.lineEdit().returnPressed.connect(self.onHedgeEntered)
+        self.uiHedges2Combo.setFocus()
+        self.uiCreateHedgeButton.setEnabled(False)
+        self.uiRenameHedgeButton.setEnabled(False)
+        self.uiDeleteHedgeButton.setEnabled(False)
+
     def onHedgeEntered(self):
         self.uiHedges2Combo.setEditable(False)
         self.uiCreateHedgeButton.setEnabled(True)
-        self.uiHedges2Combo.setItemData(self.uiHedges2Combo.currentIndex(), 0)
-        self.onHedge2Selected()
-        self.uiResultEdit.setFocus()
+        self.uiRenameHedgeButton.setEnabled(True)
+        self.uiDeleteHedgeButton.setEnabled(True)
+        if (self.currentHedge >= 0):
+            name = self.uiHedges2Combo.currentText()
+            self.uiHedges2Combo.removeItem(self.uiHedges2Combo.currentIndex())
+            if (self.uiHedges2Combo.itemText(self.currentHedge) != name):
+                self.uiHedges2Combo.setItemText(self.currentHedge, name)
+                self.hedgeRenamed = True
+                self.uiHedges2Combo.setCurrentIndex(self.currentHedge)
+                self.checkResult()
+            else:
+                self.uiHedges2Combo.setCurrentIndex(self.currentHedge)
+        else:
+            self.uiHedges2Combo.setItemData(self.uiHedges2Combo.currentIndex(), 0)
+            self.onHedge2Selected()
+            self.uiResultEdit.setFocus()
 
     def onDeleteHedgeClicked(self):
         cur = self.conn.cursor()
@@ -480,12 +566,14 @@ class Window(QMainWindow):
         hedge_id = self.uiHedges2Combo.currentData()
         if (hedge_id):
             cur.execute('UPDATE hedges SET validated = %s, result = %s WHERE id = %s;', (self.uiHedgeVerifiedCheck.isChecked(), self.uiResultEdit.text(), hedge_id))
+            if (self.hedgeRenamed == True):
+                cur.execute('UPDATE hedges SET name = %s WHERE id = %s;', (self.uiHedges2Combo.currentText(), hedge_id))
         else:
             cur.execute('INSERT INTO groups (is_variable, is_term, is_hedge) VALUES (false, false, true) RETURNING id;')
             group_id = cur.fetchone()[0]
             for lemma in self.uiHedges2Combo.currentText().replace(' ', '').split(','):
                 cur.execute('INSERT INTO synonims (group_id, lemma, grammemes, hits) VALUES (%s, %s, %s, 0);', (group_id, lemma, ''));
-            cur.execute('INSERT INTO hedges (validated, name_id, result) VALUES (%s, %s, %s) RETURNING id;', (self.uiHedgeVerifiedCheck.isChecked(), group_id, self.uiResultEdit.text()))
+            cur.execute('INSERT INTO hedges (validated, name, name_id, result) VALUES (%s, '', %s, %s) RETURNING id;', (self.uiHedgeVerifiedCheck.isChecked(), group_id, self.uiResultEdit.text()))
             hedge_id = cur.fetchone()[0]
             self.uiHedges2Combo.setItemData(self.uiHedges2Combo.currentIndex(), hedge_id)
         self.conn.commit()
@@ -511,9 +599,13 @@ class Window(QMainWindow):
             for node in nodes:
                 if (node[2] in ('variable', 'term', 'hedge')):
                     cur = self.conn.cursor()
-                    query = 'SELECT %ss.name_id FROM %ss, nodes WHERE %ss.id = nodes.%s_id' % (node[2], node[2], node[2], node[2])
+                    query = 'SELECT %ss.name_id, %ss.name FROM %ss, nodes WHERE %ss.id = nodes.%s_id' % (node[2], node[2], node[2], node[2], node[2])
                     cur.execute(query + ' AND nodes.id = %s;', (node[0],))
-                    name = '(%s) ' % node[2] + ', '.join(self.getLemmas(cur.fetchone()[0])) 
+                    row = cur.fetchone()
+                    if (row[1] != ''):
+                        name = '(%s) ' % node[2] + row[1]
+                    else:
+                        name = '(%s) ' % node[2] + ', '.join(self.getLemmas(row[0])) 
                     cur.close()
                 else:
                     name = '(%s)' % node[2]
@@ -530,9 +622,13 @@ class Window(QMainWindow):
         cur.close()
         if (name in ('variable', 'term', 'hedge')):
             cur = self.conn.cursor()
-            query = 'SELECT %ss.name_id FROM %ss, nodes WHERE %ss.id = nodes.%s_id' % (name, name, name, name)
+            query = 'SELECT %ss.name_id, %ss.name FROM %ss, nodes WHERE %ss.id = nodes.%s_id' % (name, name, name, name, name)
             cur.execute(query + ' AND nodes.id = %s;', (node.text(1),))
-            token = '\'' + ', '.join(self.getLemmas(cur.fetchone()[0])) + '\''
+            row = cur.fetchone()
+            if (row[1] != ''):
+                token = '\'' + row[1] + '\''
+            else:
+                token = '\'' + ', '.join(self.getLemmas(row[0])) + '\''
             cur.close()
         elif (name == 'variable_and'):
             token = '%s AND %s' % (self.nodeToString(node.child(0)), self.nodeToString(node.child(1)))
@@ -603,11 +699,32 @@ class Window(QMainWindow):
         self.uiRulesCombo.setFocus()
         self.uiCreateRuleButton.setEnabled(False)
 
+    def onRenameRuleClicked(self):
+        self.currentRule = self.uiRulesCombo.currentIndex()
+        self.uiRulesCombo.setEditable(True)
+        self.uiRulesCombo.lineEdit().returnPressed.connect(self.onRuleEntered)
+        self.uiRulesCombo.setFocus()
+        self.uiCreateRuleButton.setEnabled(False)
+        self.uiRenameRuleButton.setEnabled(False)
+        self.uiDeleteRuleButton.setEnabled(False)
+
     def onRuleEntered(self):
         self.uiRulesCombo.setEditable(False)
         self.uiCreateRuleButton.setEnabled(True)
-        self.uiRulesCombo.setItemData(self.uiRulesCombo.currentIndex(), 0)
-        self.onRuleSelected()
+        self.uiRenameRuleButton.setEnabled(True)
+        self.uiDeleteRuleButton.setEnabled(True)
+        if (self.currentRule >= 0):
+            name = self.uiRulesCombo.currentText()
+            self.uiRulesCombo.removeItem(self.uiRulesCombo.currentIndex())
+            if (self.uiRulesCombo.itemText(self.currentRule) != name):
+                self.uiRulesCombo.setItemText(self.currentRule, name)
+                self.uiRulesCombo.setCurrentIndex(self.currentRule)
+                self.commitRule()
+            else:
+                self.uiRulesCombo.setCurrentIndex(self.currentRule)
+        else:
+            self.uiRulesCombo.setItemData(self.uiRulesCombo.currentIndex(), 0)
+            self.onRuleSelected()
 
     def onDeleteRuleClicked(self):
         cur = self.conn.cursor()
