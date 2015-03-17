@@ -14,7 +14,7 @@ class Window(QMainWindow):
 
         self.conn = psycopg2.connect(host=addr, database='fuzzy', user='user1', password='pass1')
 
-        loadUi('fuzzy.ui', self)
+        loadUi('expert.ui', self)
 
         # Initialize variables tab
 
