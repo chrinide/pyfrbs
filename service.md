@@ -35,6 +35,23 @@ GET /api/variables
   ]
 }
 
+## Получить информацию о переменной
+
+GET /api/variables/[id]
+
+### Пример выходных данных
+
+{
+  "variables": {
+    "id": 1,
+    "max": 100.0,
+    "min": -100.0,
+    "name": "первая переменная",
+    "name_id": 1,
+    "validated": true
+  }
+}
+
 ## Передать задачу для машины вывода
 
 POST /api/tasks
