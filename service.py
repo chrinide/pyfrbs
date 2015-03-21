@@ -7,6 +7,7 @@ import argparse, sys
 
 parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, add_help=False)
 parser.add_argument('-a', dest='address', default='127.0.0.1:5432')
+parser.add_argument('-b', dest='bind_to', default='0.0.0.0:5432')
 parser.add_argument('-d', dest='database', default='fuzzy')
 parser.add_argument('-u', dest='username', default='user1')
 parser.add_argument('-p', dest='password', default='pass1')
@@ -124,4 +125,4 @@ def create_task():
         abort(400)
     return jsonify({'output': 43})
 
-app.run(debug=True)
+app.run(host=opts.bind_to.split(':')[0], port=int(opts.bind_to.split(':')[1]), debug=True)
