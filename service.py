@@ -7,7 +7,7 @@ import argparse, sys
 
 parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, add_help=False)
 parser.add_argument('-a', dest='address', default='127.0.0.1:5432')
-parser.add_argument('-b', dest='bind_to', default='0.0.0.0:5432')
+parser.add_argument('-b', dest='bind_to', default='127.0.0.1:5000')
 parser.add_argument('-d', dest='database', default='fuzzy')
 parser.add_argument('-u', dest='username', default='user1')
 parser.add_argument('-p', dest='password', default='pass1')
