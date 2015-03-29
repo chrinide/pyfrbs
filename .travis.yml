@@ -10,7 +10,7 @@ install:
     - sudo apt-get install postgresql-client-common
     - sudo apt-get install libpq-dev 
     - pip install psycopg2
-    - wget http://sourceforge.net/projects/pyqt/files/sip/sip-4.14.7/sip-4.15.3.tar.gz
+    - wget http://sourceforge.net/projects/pyqt/files/sip/sip-4.15.3/sip-4.15.3.tar.gz
     - tar -xzf sip-4.15.3.tar.gz
     - cd sip-4.15.3
     - python configure.py
