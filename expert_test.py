@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-from fuzzy import Window
+from expert import Window
 
-import sys
+import sys, argparse
 import unittest
 
 from PyQt5.QtWidgets import QApplication
@@ -42,6 +42,13 @@ class tests(unittest.TestCase):
         self.assertEqual(window.uiCommitVariableButton.isEnabled(), False)
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, add_help=False)
+    parser.add_argument('-a', dest='address', default='127.0.0.1:5432')
+    parser.add_argument('-d', dest='database', default='fuzzy')
+    parser.add_argument('-u', dest='username', default='user1')
+    parser.add_argument('-p', dest='password', default='pass1')
     app = QApplication(sys.argv)
-    window = Window(addr='78.107.239.213')
-    unittest.main()
+    window = Window(opts=parser.parse_args())
+    runner = unittest.TextTestRunner()
+    itersuite = unittest.TestLoader().loadTestsFromTestCase(tests)
+    runner.run(itersuite)

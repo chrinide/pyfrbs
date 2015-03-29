@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys
+import argparse, sys
 import psycopg2
 
 from PyQt5.QtCore import Qt
@@ -9,10 +9,11 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QListWidgetItem, QTreeWid
 from PyQt5.uic import loadUi
 
 class Window(QMainWindow):
-    def __init__(self, *args, addr):
+    def __init__(self, *args, opts):
         super(Window, self).__init__(*args)
 
-        self.conn = psycopg2.connect(host=addr, database='fuzzy', user='user1', password='pass1')
+        self.conn = psycopg2.connect(host=opts.address.split(':')[0], port=opts.address.split(':')[1], 
+            database=opts.database, user=opts.username, password=opts.password)
 
         loadUi('expert.ui', self)
 
@@ -934,7 +935,12 @@ class Window(QMainWindow):
         self.conn.close()
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, add_help=False)
+    parser.add_argument('-a', dest='address', default='127.0.0.1:5432')
+    parser.add_argument('-d', dest='database', default='fuzzy')
+    parser.add_argument('-u', dest='username', default='user1')
+    parser.add_argument('-p', dest='password', default='pass1')
     app = QApplication(sys.argv)
-    widget = Window(addr=sys.argv[1])
+    widget = Window(opts=parser.parse_args())
     widget.show()
     sys.exit(app.exec_())
