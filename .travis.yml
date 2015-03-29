@@ -17,9 +17,9 @@ install:
     - make -j4
     - sudo make install
     - cd -
-    - wget http://sourceforge.net/projects/pyqt/files/PyQt5/PyQt-5.0/PyQt-gpl-5.0.tar.gz
-    - tar -xzf PyQt-gpl-5.0.tar.gz
-    - cd PyQt-gpl-5.0
+    - wget http://sourceforge.net/projects/pyqt/files/PyQt5/PyQt-5.1.1/PyQt-gpl-5.1.1.tar.gz
+    - tar -xzf PyQt-gpl-5.1.1.tar.gz
+    - cd PyQt-gpl-5.1.1
     - python configure.py -q /usr/lib/x86_64-linux-gnu/qt5/bin/qmake --confirm-license --enable QtCore --enable QtGui --enable QtTest --enable QtWidgets
     - make -j4
     - sudo make install
@@ -30,6 +30,6 @@ before_script:
     - "sh -e /etc/init.d/xvfb start"
     - sleep 3
 script: 
-    - ./expert_test.py -a 78.107.239.213:54321
+    - coverage run ./expert_test.py -a 78.107.239.213:54321
 after_success:
     - coveralls
