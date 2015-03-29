@@ -10,18 +10,18 @@ install:
     - sudo apt-get install postgresql-client-common
     - sudo apt-get install libpq-dev 
     - pip install psycopg2
-    - wget http://sourceforge.net/projects/pyqt/files/sip/sip-4.16.7/sip-4.16.7.tar.gz
-    - tar -xzf sip-4.16.7.tar.gz
-    - cd sip-4.16.7
+    - wget http://sourceforge.net/projects/pyqt/files/sip/sip-4.16.3/sip-4.16.3.tar.gz
+    - tar -xzf sip-4.16.3.tar.gz
+    - cd sip-4.16.3
     - python configure.py
-    - make -j4
+    - make -j5
     - sudo make install
     - cd -
-    - wget http://sourceforge.net/projects/pyqt/files/PyQt5/PyQt-5.4.1/PyQt-gpl-5.4.1.tar.gz
-    - tar -xzf PyQt-gpl-5.4.1.tar.gz
-    - cd PyQt-gpl-5.4.1
+    - wget http://sourceforge.net/projects/pyqt/files/PyQt5/PyQt-5.3.2/PyQt-gpl-5.3.2.tar.gz
+    - tar -xzf PyQt-gpl-5.3.2.tar.gz
+    - cd PyQt-gpl-5.3.2
     - python configure.py -q /usr/lib/x86_64-linux-gnu/qt5/bin/qmake --confirm-license --enable QtCore --enable QtGui --enable QtTest --enable QtWidgets
-    - make -j4
+    - make -j5
     - sudo make install
     - cd -
     - pip install coveralls
