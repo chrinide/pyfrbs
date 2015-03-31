@@ -1,0 +1,7 @@
+site_name: pyfrbs
+pages:
+    - [index.md, Home]
+    - [schema.md, База знаний]
+    - [service.md, Программный интерфейс]
+    - [expert.md, Графический интерфейс эксперта]
+theme: readthedocs
