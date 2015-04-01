@@ -26,6 +26,7 @@ install:
     - sudo make install
     - cd -
     - pip install coveralls
+    - pip install flask
 before_script:
     - "export DISPLAY=:99.0"
     - "sh -e /etc/init.d/xvfb start"
