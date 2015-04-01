@@ -32,6 +32,7 @@ before_script:
     - sleep 3
 script: 
     - coverage run ./expert_test.py -a 78.107.239.213:54321
+    - coverage run ./service_test.py -a 78.107.239.213:54321
 after_success:
     - coveralls
 notifications:

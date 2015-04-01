@@ -1,17 +1,14 @@
 #!/usr/bin/env python
 
-from flask import Flask, jsonify, request, abort, g
-from werkzeug.exceptions import default_exceptions, HTTPException
-import psycopg2, psycopg2.extras
-import argparse, sys
-
-parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, add_help=False)
-parser.add_argument('-a', dest='address', default='127.0.0.1:5432')
-parser.add_argument('-b', dest='bind_to', default='127.0.0.1:5000')
-parser.add_argument('-d', dest='database', default='fuzzy')
-parser.add_argument('-u', dest='username', default='user1')
-parser.add_argument('-p', dest='password', default='pass1')
-opts = parser.parse_args()
+from flask import Flask
+from flask import jsonify
+from flask import request
+from flask import abort
+from flask import g
+from werkzeug.exceptions import default_exceptions
+from werkzeug.exceptions import HTTPException
+import psycopg2
+import psycopg2.extras
 
 def make_json_error(ex):
     response = jsonify(message=str(ex))
@@ -25,8 +22,8 @@ for code in default_exceptions.items():
 
 @app.before_request
 def before_request():
-    g.db = psycopg2.connect(host=opts.address.split(':')[0], port=opts.address.split(':')[1], 
-            database=opts.database, user=opts.username, password=opts.password)
+    g.db = psycopg2.connect(host=app.config['host'], port=app.config['port'], database=app.config['database'],
+                            user=app.config['username'], password=app.config['password'])
 
 @app.teardown_request
 def teardown_request(exception):
@@ -124,5 +121,3 @@ def create_task():
     if not valid:
         abort(400)
     return jsonify({'output': 43})
-
-app.run(host=opts.bind_to.split(':')[0], port=int(opts.bind_to.split(':')[1]), debug=True)

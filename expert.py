@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 
-import argparse, sys
 import psycopg2
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QDoubleValidator
-from PyQt5.QtWidgets import QApplication, QMainWindow, QListWidgetItem, QTreeWidgetItem, QTableWidgetItem
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QListWidgetItem
+from PyQt5.QtWidgets import QTreeWidgetItem
+from PyQt5.QtWidgets import QTableWidgetItem
 from PyQt5.uic import loadUi
 
 class Window(QMainWindow):
-    def __init__(self, *args, opts):
+    def __init__(self, *args, host, port, database, username, password):
         super(Window, self).__init__(*args)
 
-        self.conn = psycopg2.connect(host=opts.address.split(':')[0], port=opts.address.split(':')[1], 
-            database=opts.database, user=opts.username, password=opts.password)
+        self.conn = psycopg2.connect(host=host, port=port, database=database, user=username, password=password)
 
         loadUi('expert.ui', self)
 
@@ -933,14 +935,3 @@ class Window(QMainWindow):
 
     def __del__(self):
         self.conn.close()
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, add_help=False)
-    parser.add_argument('-a', dest='address', default='127.0.0.1:5432')
-    parser.add_argument('-d', dest='database', default='fuzzy')
-    parser.add_argument('-u', dest='username', default='user1')
-    parser.add_argument('-p', dest='password', default='pass1')
-    app = QApplication(sys.argv)
-    widget = Window(opts=parser.parse_args())
-    widget.show()
-    sys.exit(app.exec_())

@@ -2,7 +2,8 @@
 
 from expert import Window
 
-import sys, argparse
+import sys
+import argparse
 import unittest
 
 from PyQt5.QtWidgets import QApplication
@@ -47,8 +48,10 @@ if __name__ == '__main__':
     parser.add_argument('-d', dest='database', default='fuzzy')
     parser.add_argument('-u', dest='username', default='user1')
     parser.add_argument('-p', dest='password', default='pass1')
+    opts = parser.parse_args()
     app = QApplication(sys.argv)
-    window = Window(opts=parser.parse_args())
+    window = Window(host=opts.address.split(':')[0], port=opts.address.split(':')[1], 
+            database=opts.database, username=opts.username, password=opts.password)
     runner = unittest.TextTestRunner()
     itersuite = unittest.TestLoader().loadTestsFromTestCase(tests)
     runner.run(itersuite)
