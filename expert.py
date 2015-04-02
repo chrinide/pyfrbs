@@ -112,6 +112,8 @@ class Window(QMainWindow):
         self.uiModeCombo.addItem('Переменные и термы', 3)
         self.uiModeCombo.addItem('Переменные и модификаторы', 4)
         self.uiModeCombo.addItem('Синонимы', 5)
+        self.uiModeCombo.addItem('Правила', 6)
+        self.uiModeCombo.addItem('Узлы', 7)
         self.uiModeCombo.setCurrentIndex(-1)
         self.uiModeCombo.currentIndexChanged.connect(self.onModeSelected)
 
@@ -924,6 +926,10 @@ class Window(QMainWindow):
             self.fillTable('SELECT variables.id, variables.name, variables.name_id, variables.min, variables.max, variables.validated, hedges.id, hedges.name, hedges.name_id, hedges.result, hedges.validated FROM variables, hedges, variables_hedges WHERE variables.id = variables_hedges.variable_id AND hedges.id = variables_hedges.hedge_id;')
         elif (self.uiModeCombo.currentData() == 5):
             self.fillTable('SELECT synonims.id, synonims.group_id, synonims.lemma, synonims.grammemes, synonims.hits, groups.is_variable, groups.is_term, groups.is_hedge FROM synonims, groups WHERE synonims.group_id = groups.id;')
+        elif (self.uiModeCombo.currentData() == 6):
+            self.fillTable('SELECT rules.id, rules.name, rules.antecedent_id, rules.consequent_id FROM rules;')
+        elif (self.uiModeCombo.currentData() == 7):
+            self.fillTable('SELECT nodes.id, nodes.parent_id, types.name, nodes.variable_id, nodes.term_id, nodes.hedge_id FROM nodes, types WHERE nodes.type_id = types.id;')
 
     # Actions on main window
 
