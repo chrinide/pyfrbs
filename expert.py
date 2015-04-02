@@ -114,8 +114,8 @@ class Window(QMainWindow):
         self.uiModeCombo.addItem('Синонимы', 5)
         self.uiModeCombo.addItem('Правила', 6)
         self.uiModeCombo.addItem('Узлы', 7)
-        self.uiModeCombo.setCurrentIndex(-1)
         self.uiModeCombo.currentIndexChanged.connect(self.onModeSelected)
+        self.uiModeCombo.setCurrentIndex(-1)
 
         # Initialize main window
 
@@ -632,6 +632,8 @@ class Window(QMainWindow):
                 parents[0].addChild(item)
 
     def nodeToString(self, node):
+        if not node:
+            return '?'
         cur = self.conn.cursor()
         cur.execute('SELECT types.name FROM nodes, types WHERE nodes.type_id = types.id AND nodes.id = %s;', (node.text(1),))
         name = cur.fetchone()[0]
@@ -686,7 +688,6 @@ class Window(QMainWindow):
             return
 
         if (self.uiRulesCombo.currentData() != 0):
-
             cur = self.conn.cursor()
             cur.execute('SELECT validated FROM rules WHERE id = %s;', (self.uiRulesCombo.currentData(),))
             state = cur.fetchone()
@@ -695,20 +696,21 @@ class Window(QMainWindow):
 
             self.loadTree(self.uiAntecedentTree, 'antecedent', self.uiRulesCombo.currentData())
             self.loadTree(self.uiConsequentTree, 'consequent', self.uiRulesCombo.currentData())
+        else:
+            self.uiRuleVerifiedCheck.setChecked(False);
 
-            if (self.uiAntecedentTree.topLevelItemCount() == 0):
-                self.uiAntecedentNodeTypesCombo.setEnabled(True)
-
-            if (self.uiConsequentTree.topLevelItemCount() == 0):
-                self.uiConsequentNodeTypesCombo.setEnabled(True)
-
-            self.uiRenameRuleButton.setEnabled(True)
-            self.uiDeleteRuleButton.setEnabled(True)
-            self.uiRuleVerifiedCheck.setEnabled(True)
-            self.uiAntecedentTree.setEnabled(True)
-            self.uiConsequentTree.setEnabled(True)
+        if (self.uiAntecedentTree.topLevelItemCount() == 0):
+            self.uiAntecedentNodeTypesCombo.setEnabled(True)
+        if (self.uiConsequentTree.topLevelItemCount() == 0):
+            self.uiConsequentNodeTypesCombo.setEnabled(True)
+        self.uiRenameRuleButton.setEnabled(True)
+        self.uiDeleteRuleButton.setEnabled(True)
+        self.uiRuleVerifiedCheck.setEnabled(True)
+        self.uiAntecedentTree.setEnabled(True)
+        self.uiConsequentTree.setEnabled(True)
 
     def onCreateRuleClicked(self):
+        self.currentRule = -1
         self.uiRulesCombo.setCurrentIndex(-1)
         self.uiRulesCombo.setEditable(True)
         self.uiRulesCombo.lineEdit().returnPressed.connect(self.onRuleEntered)
@@ -735,7 +737,7 @@ class Window(QMainWindow):
             if (self.uiRulesCombo.itemText(self.currentRule) != name):
                 self.uiRulesCombo.setItemText(self.currentRule, name)
                 self.uiRulesCombo.setCurrentIndex(self.currentRule)
-                self.commitRule()
+                self.uiCommitRuleButton.setEnabled(True)
             else:
                 self.uiRulesCombo.setCurrentIndex(self.currentRule)
         else:
@@ -744,6 +746,8 @@ class Window(QMainWindow):
 
     def onDeleteRuleClicked(self):
         cur = self.conn.cursor()
+        cur.execute('DELETE FROM nodes WHERE id = %s;', (self.uiAntecedentTree.topLevelItem(0).text(1),))
+        cur.execute('DELETE FROM nodes WHERE id = %s;', (self.uiConsequentTree.topLevelItem(0).text(1),))
         cur.execute('DELETE FROM rules WHERE id = %s;', (self.uiRulesCombo.currentData(),))
         self.conn.commit()
         cur.close()
@@ -767,37 +771,40 @@ class Window(QMainWindow):
         if (self.uiAntecedentNodesCombo.currentIndex() != -1):
             self.uiAddAntecedentNodeButton.setEnabled(True)
 
-    def onAddAntecedentNodeClicked(self):
+    def addNode(self, tree, nodesCombo, nodeTypesCombo, addNodeButton):
         parent_id = None
         variable_id = None
         term_id = None
         hedge_id = None
-        if (self.uiAntecedentTree.currentItem()):
-            parent_id = self.uiAntecedentTree.currentItem().text(1)
-        if (self.uiAntecedentNodeTypesCombo.currentText() == 'variable'):
-            variable_id = self.uiAntecedentNodesCombo.currentData()
-        elif (self.uiAntecedentNodeTypesCombo.currentText() == 'term'):
-            term_id = self.uiAntecedentNodesCombo.currentData()
-        elif (self.uiAntecedentNodeTypesCombo.currentText() == 'hedge'):
-            hedge_id = self.uiAntecedentNodesCombo.currentData()
+        if (tree.currentItem()):
+            parent_id = tree.currentItem().text(1)
+        if (nodeTypesCombo.currentText() == 'variable'):
+            variable_id = nodesCombo.currentData()
+        elif (nodeTypesCombo.currentText() == 'term'):
+            term_id = nodesCombo.currentData()
+        elif (nodeTypesCombo.currentText() == 'hedge'):
+            hedge_id = nodesCombo.currentData()
         cur = self.conn.cursor()
-        cur.execute('INSERT INTO nodes (parent_id, type_id, variable_id, term_id, hedge_id) VALUES (%s, %s, %s, %s, %s) RETURNING id;', (parent_id, self.uiAntecedentNodeTypesCombo.currentData(), variable_id, term_id, hedge_id))
+        cur.execute('INSERT INTO nodes (parent_id, type_id, variable_id, term_id, hedge_id) VALUES (%s, %s, %s, %s, %s) RETURNING id;', (parent_id, nodeTypesCombo.currentData(), variable_id, term_id, hedge_id))
         node_id = cur.fetchone()[0]
         self.conn.commit()
         cur.close()
         item = QTreeWidgetItem()
-        if (self.uiAntecedentNodesCombo.isEnabled()):
-            item.setText(0, '(%s) %s' % (self.uiAntecedentNodeTypesCombo.currentText(), self.uiAntecedentNodesCombo.currentText()))
+        if (nodesCombo.isEnabled()):
+            item.setText(0, '(%s) %s' % (nodeTypesCombo.currentText(), nodesCombo.currentText()))
         else:
-            item.setText(0, '(%s)' % self.uiAntecedentNodeTypesCombo.currentText())
+            item.setText(0, '(%s)' % nodeTypesCombo.currentText())
         item.setText(1, '%s' % node_id)
-        if (self.uiAntecedentTree.currentItem()):
-            self.uiAntecedentTree.currentItem().addChild(item)
+        if (tree.currentItem()):
+            tree.currentItem().addChild(item)
         else:
-            self.uiAntecedentTree.addTopLevelItem(item)
-            self.uiAntecedentNodeTypesCombo.setCurrentIndex(-1)
-            self.uiAntecedentNodeTypesCombo.setEnabled(False)
-            self.uiAddAntecedentNodeButton.setEnabled(False)
+            tree.addTopLevelItem(item)
+            nodeTypesCombo.setCurrentIndex(-1)
+            nodeTypesCombo.setEnabled(False)
+            addNodeButton.setEnabled(False)
+
+    def onAddAntecedentNodeClicked(self):
+        self.addNode(self.uiAntecedentTree, self.uiAntecedentNodesCombo, self.uiAntecedentNodeTypesCombo, self.uiAddAntecedentNodeButton)
         self.uiCommitRuleButton.setEnabled(True)
 
     def onAntecedentNodeSelected(self):
@@ -808,6 +815,10 @@ class Window(QMainWindow):
 
     def onRemoveAntecedentNodeClicked(self):
         current = self.uiAntecedentTree.currentItem()
+        cur = self.conn.cursor()
+        cur.execute('DELETE FROM nodes WHERE id = %s;', (current.text(1),))
+        self.conn.commit()
+        cur.close()
         if (current.parent()):
             current.parent().takeChild(current.parent().indexOfChild(current))
         else:
@@ -816,7 +827,8 @@ class Window(QMainWindow):
             self.uiRemoveAntecedentNodeButton.setEnabled(False)
             self.uiAddAntecedentNodeButton.setEnabled(False)
             self.onAntecedentNodeTypeSelected()
-        self.uiCommitRuleButton.setEnabled(True)
+        else:
+            self.uiCommitRuleButton.setEnabled(True)
 
     def onConsequentNodeTypeSelected(self):
         self.uiConsequentNodesCombo.clear()
@@ -837,36 +849,7 @@ class Window(QMainWindow):
             self.uiAddConsequentNodeButton.setEnabled(True)
 
     def onAddConsequentNodeClicked(self):
-        parent_id = None
-        variable_id = None
-        term_id = None
-        hedge_id = None
-        if (self.uiConsequentTree.currentItem()):
-            parent_id = self.uiConsequentTree.currentItem().text(1)
-        if (self.uiConsequentNodeTypesCombo.currentText() == 'variable'):
-            variable_id = self.uiConsequentNodesCombo.currentData()
-        elif (self.uiConsequentNodeTypesCombo.currentText() == 'term'):
-            term_id = self.uiConsequentNodesCombo.currentData()
-        elif (self.uiConsequentNodeTypesCombo.currentText() == 'hedge'):
-            hedge_id = self.uiConsequentNodesCombo.currentData()
-        cur = self.conn.cursor()
-        cur.execute('INSERT INTO nodes (parent_id, type_id, variable_id, term_id, hedge_id) VALUES (%s, %s, %s, %s, %s) RETURNING id;', (parent_id, self.uiConsequentNodeTypesCombo.currentData(), variable_id, term_id, hedge_id))
-        node_id = cur.fetchone()[0]
-        self.conn.commit()
-        cur.close()
-        item = QTreeWidgetItem()
-        if (self.uiConsequentNodesCombo.isEnabled()):
-            item.setText(0, '(%s) %s' % (self.uiConsequentNodeTypesCombo.currentText(), self.uiConsequentNodesCombo.currentText()))
-        else:
-            item.setText(0, '(%s)' % self.uiConsequentNodeTypesCombo.currentText())
-        item.setText(1, '%s' % node_id)
-        if (self.uiConsequentTree.currentItem()):
-            self.uiConsequentTree.currentItem().addChild(item)
-        else:
-            self.uiConsequentTree.addTopLevelItem(item)
-            self.uiConsequentNodeTypesCombo.setCurrentIndex(-1)
-            self.uiConsequentNodeTypesCombo.setEnabled(False)
-            self.uiAddConsequentNodeButton.setEnabled(False)
+        self.addNode(self.uiConsequentTree, self.uiConsequentNodesCombo, self.uiConsequentNodeTypesCombo, self.uiAddConsequentNodeButton)
         self.uiCommitRuleButton.setEnabled(True)
 
     def onConsequentNodeSelected(self):
@@ -877,6 +860,10 @@ class Window(QMainWindow):
 
     def onRemoveConsequentNodeClicked(self):
         current = self.uiConsequentTree.currentItem()
+        cur = self.conn.cursor()
+        cur.execute('DELETE FROM nodes WHERE id = %s;', (current.text(1),))
+        self.conn.commit()
+        cur.close()
         if (current.parent()):
             current.parent().takeChild(current.parent().indexOfChild(current))
         else:
@@ -885,13 +872,42 @@ class Window(QMainWindow):
             self.uiRemoveConsequentNodeButton.setEnabled(False)
             self.uiAddConsequentNodeButton.setEnabled(False)
             self.onConsequentNodeTypeSelected()
-        self.uiCommitRuleButton.setEnabled(True)
+        else:
+            self.uiCommitRuleButton.setEnabled(True)
 
     def onRuleVerified(self):
-        self.commitRule()
+        self.uiCommitRuleButton.setEnabled(True)
+
+    def walkTree(self, root, cur):
+        self.walkNodes(root, root, cur)
+        for i in range(root.childCount()):
+            self.walkTree(root.child(i), cur)
+
+    def walkNodes(self, root, node, cur):
+        cur.execute('SELECT * FROM closures WHERE ancestor_id = %s AND descendant_id = %s LIMIT 1;', (root.text(1), node.text(1)))
+        if not cur.fetchone():
+            cur.execute('INSERT INTO closures (ancestor_id, descendant_id) VALUES (%s, %s);', (root.text(1), node.text(1)))
+        for i in range(node.childCount()):
+            self.walkNodes(root, node.child(i), cur)
 
     def commitRule(self):
         self.uiCommitRuleButton.setEnabled(False)
+        cur = self.conn.cursor()
+        self.walkTree(self.uiAntecedentTree.topLevelItem(0), cur) 
+        self.walkTree(self.uiConsequentTree.topLevelItem(0), cur) 
+        rule_id = self.uiRulesCombo.currentData()
+        if (rule_id):
+            cur.execute('UPDATE rules SET validated = %s, name = %s, antecedent_id = %s, consequent_id = %s WHERE id = %s;', 
+                        (self.uiRuleVerifiedCheck.isChecked(), self.uiRulesCombo.currentText(), 
+                         self.uiAntecedentTree.topLevelItem(0).text(1), self.uiConsequentTree.topLevelItem(0).text(1), rule_id))
+        else:
+            cur.execute('INSERT INTO rules (validated, name, antecedent_id, consequent_id) VALUES (%s, %s, %s, %s) RETURNING id;', 
+                        (self.uiRuleVerifiedCheck.isChecked(), self.uiRulesCombo.currentText(), 
+                         self.uiAntecedentTree.topLevelItem(0).text(1), self.uiConsequentTree.topLevelItem(0).text(1)))
+            rule_id = cur.fetchone()[0]
+            self.uiRulesCombo.setItemData(self.uiRulesCombo.currentIndex(), rule_id)
+        self.conn.commit()
+        cur.close()
 
     # Actions on debug tab
 
@@ -912,6 +928,7 @@ class Window(QMainWindow):
             i += 1
         cur.close()
         self.uiDataTable.setSortingEnabled(True)
+        self.uiDataTable.setEnabled(True)
 
     def onModeSelected(self):
         if (self.uiModeCombo.currentData() == 0):
@@ -927,9 +944,14 @@ class Window(QMainWindow):
         elif (self.uiModeCombo.currentData() == 5):
             self.fillTable('SELECT synonims.id, synonims.group_id, synonims.lemma, synonims.grammemes, synonims.hits, groups.is_variable, groups.is_term, groups.is_hedge FROM synonims, groups WHERE synonims.group_id = groups.id;')
         elif (self.uiModeCombo.currentData() == 6):
-            self.fillTable('SELECT rules.id, rules.name, rules.antecedent_id, rules.consequent_id FROM rules;')
+            self.fillTable('SELECT rules.id, rules.name, rules.antecedent_id, rules.consequent_id, rules.validated FROM rules;')
         elif (self.uiModeCombo.currentData() == 7):
             self.fillTable('SELECT nodes.id, nodes.parent_id, types.name, nodes.variable_id, nodes.term_id, nodes.hedge_id FROM nodes, types WHERE nodes.type_id = types.id;')
+        else:
+            self.uiDataTable.setEnabled(False)
+            self.uiDataTable.clear()
+            self.uiDataTable.setRowCount(0)
+            self.uiDataTable.setColumnCount(0)
 
     # Actions on main window
 
@@ -938,6 +960,8 @@ class Window(QMainWindow):
             self.loadTerms()
             self.loadHedges()
             self.onVariableSelected()
+        elif (self.uiTabs.currentIndex() == 4):
+            self.uiModeCombo.setCurrentIndex(-1)
 
     def __del__(self):
         self.conn.close()

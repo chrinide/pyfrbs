@@ -65,7 +65,7 @@ CREATE TABLE types (
 
 CREATE TABLE nodes (
 	id SERIAL PRIMARY KEY,
-	parent_id INT NULL REFERENCES nodes(id),
+	parent_id INT NULL REFERENCES nodes(id) ON DELETE CASCADE,
 	type_id INT NOT NULL REFERENCES types(id),
 	variable_id INT NULL REFERENCES variables(id) ON DELETE CASCADE,
 	term_id INT NULL REFERENCES terms(id) ON DELETE CASCADE,
