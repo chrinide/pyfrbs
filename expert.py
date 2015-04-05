@@ -28,10 +28,8 @@ class Window(QMainWindow):
         self.uiDeleteVariableButton.clicked.connect(self.onDeleteVariableClicked)
 
         self.uiVariableVerifiedCheck.stateChanged.connect(self.onVariableVerified)
-        self.uiRangeMinEdit.textEdited.connect(self.checkRange)
-        self.uiRangeMinEdit.setValidator(QDoubleValidator(-1000000, 1000000, 2, self.uiRangeMinEdit))
-        self.uiRangeMaxEdit.textEdited.connect(self.checkRange)
-        self.uiRangeMaxEdit.setValidator(QDoubleValidator(-1000000, 1000000, 2, self.uiRangeMaxEdit))
+        self.uiRangeMinEdit.textEdited.connect(self.checkChanges)
+        self.uiRangeMaxEdit.textEdited.connect(self.checkChanges)
 
         self.loadTerms()
         self.uiTermsCombo.currentIndexChanged.connect(self.onTermSelected)
@@ -189,6 +187,8 @@ class Window(QMainWindow):
             self.uiHedgesList.setEnabled(False)
             return
 
+        self.variableRenamed = False
+
         if (self.uiVariablesCombo.currentData() != 0):
             cur = self.conn.cursor()
             cur.execute('SELECT terms.id, terms.name, terms.name_id FROM variables, terms, variables_terms WHERE variables.id = %s AND variables.id = variables_terms.variable_id AND terms.id = variables_terms.term_id;', (self.uiVariablesCombo.currentData(),))
@@ -253,13 +253,13 @@ class Window(QMainWindow):
             item = QListWidgetItem(self.uiTermsCombo.currentText())
             item.setData(Qt.UserRole, self.uiTermsCombo.currentData())
             self.uiTermsList.addItem(item)
-            self.checkRange()
+            self.checkChanges()
 
     def onRemoveTermClicked(self):
         self.uiTermsList.takeItem(self.uiTermsList.currentRow())
         if (self.uiTermsList.count() == 0):
             self.uiRemoveTermButton.setEnabled(False)
-        self.checkRange()
+        self.checkChanges()
 
     def onHedgeSelected(self):
         self.uiAddHedgeButton.setEnabled(True)
@@ -277,13 +277,13 @@ class Window(QMainWindow):
             item = QListWidgetItem(self.uiHedgesCombo.currentText())
             item.setData(Qt.UserRole, self.uiHedgesCombo.currentData())
             self.uiHedgesList.addItem(item)
-            self.checkRange()
+            self.checkChanges()
 
     def onRemoveHedgeClicked(self):
         self.uiHedgesList.takeItem(self.uiHedgesList.currentRow())
         if (self.uiHedgesList.count() == 0):
             self.uiRemoveHedgeButton.setEnabled(False)
-        self.checkRange()
+        self.checkChanges()
 
     def onCreateVariableClicked(self):
         self.currentVariable = -1
@@ -315,7 +315,7 @@ class Window(QMainWindow):
                 self.uiVariablesCombo.setItemText(self.currentVariable, name)
                 self.variableRenamed = True
                 self.uiVariablesCombo.setCurrentIndex(self.currentVariable)
-                self.checkRange()
+                self.checkChanges()
             else:
                 self.uiVariablesCombo.setCurrentIndex(self.currentVariable)
         else:
@@ -329,16 +329,17 @@ class Window(QMainWindow):
         cur.close()
         self.uiVariablesCombo.removeItem(self.uiVariablesCombo.currentIndex())
 
-    def checkRange(self):
-        if (self.uiRangeMinEdit.text() != '' and self.uiRangeMaxEdit.text() != ''):
-            self.uiCommitVariableButton.setEnabled(True)
-        else:
-            self.uiCommitVariableButton.setEnabled(False)
+    def checkChanges(self):
+        self.uiCommitVariableButton.setEnabled(True)
 
     def onVariableVerified(self):
-        self.checkRange()
+        self.checkChanges()
 
     def commitVariable(self):
+        if (self.uiRangeMinEdit.text() == ''):
+            self.uiRangeMinEdit.setText('-inf')
+        if (self.uiRangeMaxEdit.text() == ''):
+            self.uiRangeMaxEdit.setText('+inf')
         self.uiCommitVariableButton.setEnabled(False)
         cur = self.conn.cursor()
         variable_id = self.uiVariablesCombo.currentData()
@@ -387,6 +388,8 @@ class Window(QMainWindow):
             self.uiFunctionCombo.setEnabled(False)
             self.uiPointsEdit.setEnabled(False)
             return
+
+        self.termRenamed = False
 
         if (self.uiTerms2Combo.currentData() != 0):
             self.uiFunctionCombo.blockSignals(True)
@@ -516,6 +519,8 @@ class Window(QMainWindow):
             self.uiHedgeVerifiedCheck.setEnabled(False)
             self.uiResultEdit.setEnabled(False)
             return
+
+        self.hedgeRenamed = False
 
         if (self.uiHedges2Combo.currentData() != 0):
             cur = self.conn.cursor()
