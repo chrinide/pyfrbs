@@ -343,7 +343,9 @@ class Window(QMainWindow):
         cur = self.conn.cursor()
         variable_id = self.uiVariablesCombo.currentData()
         if (variable_id):
-            cur.execute('UPDATE variables SET validated = %s, min = %s, max = %s WHERE id = %s;', (self.uiVariableVerifiedCheck.isChecked(), self.uiRangeMinEdit.text(), self.uiRangeMaxEdit.text(), variable_id))
+            cur.execute('UPDATE variables SET validated = %s, min = %s, max = %s WHERE id = %s;', 
+                        (self.uiVariableVerifiedCheck.isChecked(), self.uiRangeMinEdit.text(), 
+                         self.uiRangeMaxEdit.text(), variable_id))
             if (self.variableRenamed == True):
                 cur.execute('UPDATE variables SET name = %s WHERE id = %s;', (self.uiVariablesCombo.currentText(), variable_id))
             cur.execute('DELETE FROM variables_terms WHERE variable_id = %s;', (variable_id,))
@@ -353,13 +355,17 @@ class Window(QMainWindow):
             group_id = cur.fetchone()[0]
             for lemma in self.uiVariablesCombo.currentText().replace(' ', '').split(','):
                 cur.execute('INSERT INTO synonims (group_id, lemma, grammemes, hits) VALUES (%s, %s, %s, 0);', (group_id, lemma, ''));
-            cur.execute('INSERT INTO variables (name_id, name, validated, min, max) VALUES (%s, '', %s, %s, %s) RETURNING id;', (group_id, self.uiVariableVerifiedCheck.isChecked(), self.uiRangeMinEdit.text(), self.uiRangeMaxEdit.text()))
+            cur.execute('INSERT INTO variables (name_id, name, validated, min, max) VALUES (%s, %s, %s, %s, %s) RETURNING id;', 
+                        (group_id, self.uiVariablesCombo.currentText(), self.uiVariableVerifiedCheck.isChecked(), 
+                         self.uiRangeMinEdit.text(), self.uiRangeMaxEdit.text()))
             variable_id = cur.fetchone()[0]
             self.uiVariablesCombo.setItemData(self.uiVariablesCombo.currentIndex(), variable_id)
         for i in range(0, self.uiTermsList.count()):
-            cur.execute('INSERT INTO variables_terms (variable_id, term_id) VALUES (%s, %s);', (variable_id, self.uiTermsList.item(i).data(Qt.UserRole)))
+            cur.execute('INSERT INTO variables_terms (variable_id, term_id) VALUES (%s, %s);', 
+                        (variable_id, self.uiTermsList.item(i).data(Qt.UserRole)))
         for j in range(0, self.uiHedgesList.count()):
-            cur.execute('INSERT INTO variables_hedges (variable_id, hedge_id) VALUES (%s, %s);', (variable_id, self.uiHedgesList.item(j).data(Qt.UserRole)))
+            cur.execute('INSERT INTO variables_hedges (variable_id, hedge_id) VALUES (%s, %s);', 
+                        (variable_id, self.uiHedgesList.item(j).data(Qt.UserRole)))
         self.conn.commit()
         cur.close()
 
@@ -385,7 +391,8 @@ class Window(QMainWindow):
         if (self.uiTerms2Combo.currentData() != 0):
             self.uiFunctionCombo.blockSignals(True)
             cur = self.conn.cursor()
-            cur.execute('SELECT functions.name FROM terms, functions WHERE functions.id = terms.function_id AND terms.id = %s;', (self.uiTerms2Combo.currentData(),))
+            cur.execute('SELECT functions.name FROM terms, functions WHERE functions.id = terms.function_id AND terms.id = %s;', 
+                        (self.uiTerms2Combo.currentData(),))
             name = cur.fetchone()
             if (name):
                 self.uiFunctionCombo.setCurrentText(name[0])
@@ -474,15 +481,20 @@ class Window(QMainWindow):
         cur = self.conn.cursor()
         term_id = self.uiTerms2Combo.currentData()
         if (term_id):
-            cur.execute('UPDATE terms SET validated = %s, function_id = %s, points = %s WHERE id = %s;', (self.uiTermVerifiedCheck.isChecked(), self.uiFunctionCombo.currentData(), self.uiPointsEdit.text(), term_id))
+            cur.execute('UPDATE terms SET validated = %s, function_id = %s, points = %s WHERE id = %s;', 
+                        (self.uiTermVerifiedCheck.isChecked(), self.uiFunctionCombo.currentData(), 
+                         self.uiPointsEdit.text(), term_id))
             if (self.termRenamed == True):
                 cur.execute('UPDATE terms SET name = %s WHERE id = %s;', (self.uiTerms2Combo.currentText(), term_id))
         else:
             cur.execute('INSERT INTO groups (is_variable, is_term, is_hedge) VALUES (false, true, false) RETURNING id;')
             group_id = cur.fetchone()[0]
             for lemma in self.uiTerms2Combo.currentText().replace(' ', '').split(','):
-                cur.execute('INSERT INTO synonims (group_id, lemma, grammemes, hits) VALUES (%s, %s, %s, 0);', (group_id, lemma, ''));
-            cur.execute('INSERT INTO terms (validated, name, name_id, function_id, points) VALUES (%s, '', %s, %s, %s) RETURNING id;', (self.uiTermVerifiedCheck.isChecked(), group_id, self.uiFunctionCombo.currentData(), self.uiPointsEdit.text()))
+                cur.execute('INSERT INTO synonims (group_id, lemma, grammemes, hits) VALUES (%s, %s, %s, 0);', 
+                            (group_id, lemma, ''));
+            cur.execute('INSERT INTO terms (validated, name, name_id, function_id, points) VALUES (%s, %s, %s, %s, %s) RETURNING id;', 
+                        (self.uiTermVerifiedCheck.isChecked(), self.uiTerms2Combo.currentText(), 
+                         group_id, self.uiFunctionCombo.currentData(), self.uiPointsEdit.text()))
             term_id = cur.fetchone()[0]
             self.uiTerms2Combo.setItemData(self.uiTerms2Combo.currentIndex(), term_id)
         self.conn.commit()
@@ -582,15 +594,18 @@ class Window(QMainWindow):
         cur = self.conn.cursor()
         hedge_id = self.uiHedges2Combo.currentData()
         if (hedge_id):
-            cur.execute('UPDATE hedges SET validated = %s, result = %s WHERE id = %s;', (self.uiHedgeVerifiedCheck.isChecked(), self.uiResultEdit.text(), hedge_id))
+            cur.execute('UPDATE hedges SET validated = %s, result = %s WHERE id = %s;', 
+                        (self.uiHedgeVerifiedCheck.isChecked(), self.uiResultEdit.text(), hedge_id))
             if (self.hedgeRenamed == True):
                 cur.execute('UPDATE hedges SET name = %s WHERE id = %s;', (self.uiHedges2Combo.currentText(), hedge_id))
         else:
             cur.execute('INSERT INTO groups (is_variable, is_term, is_hedge) VALUES (false, false, true) RETURNING id;')
             group_id = cur.fetchone()[0]
             for lemma in self.uiHedges2Combo.currentText().replace(' ', '').split(','):
-                cur.execute('INSERT INTO synonims (group_id, lemma, grammemes, hits) VALUES (%s, %s, %s, 0);', (group_id, lemma, ''));
-            cur.execute('INSERT INTO hedges (validated, name, name_id, result) VALUES (%s, '', %s, %s) RETURNING id;', (self.uiHedgeVerifiedCheck.isChecked(), group_id, self.uiResultEdit.text()))
+                cur.execute('INSERT INTO synonims (group_id, lemma, grammemes, hits) VALUES (%s, %s, %s, 0);', 
+                            (group_id, lemma, ''));
+            cur.execute('INSERT INTO hedges (validated, name, name_id, result) VALUES (%s, %s, %s, %s) RETURNING id;', 
+                        (self.uiHedgeVerifiedCheck.isChecked(), self.uiHedges2Combo.currentText(), group_id, self.uiResultEdit.text()))
             hedge_id = cur.fetchone()[0]
             self.uiHedges2Combo.setItemData(self.uiHedges2Combo.currentIndex(), hedge_id)
         self.conn.commit()
