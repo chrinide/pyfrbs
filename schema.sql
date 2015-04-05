@@ -116,12 +116,16 @@ INSERT INTO variables (name_id, name, validated, min, max) VALUES
 	(3, 'активность', false, 0, 10);
 
 INSERT INTO functions (name) VALUES 
-	('трапеция');
+	('Z-функция'),
+	('синглтон'),
+	('треугольник'),
+	('трапеция'),
+	('S-функция');
 
 INSERT INTO terms (name_id, name, validated, function_id, points) VALUES 
-	(4, 'молодой, юный', false, 1, '15;20;25;30'),
-	(5, 'поздний', false, 1, '0;1;3;4'),
-	(6, 'низкий', false, 1, '0;1;2;3');
+	(4, 'молодой, юный', false, 4, '15;20;25;30'),
+	(5, 'поздний', false, 4, '0;1;3;4'),
+	(6, 'низкий', false, 4, '0;1;2;3');
 
 INSERT INTO variables_terms (variable_id, term_id) VALUES
 	(1, 1),
