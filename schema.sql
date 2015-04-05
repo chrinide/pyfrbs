@@ -111,17 +111,17 @@ INSERT INTO synonims (group_id, lemma, grammemes, hits) VALUES
 	(7, 'не', 'част', 1);
 
 INSERT INTO variables (name_id, name, validated, min, max) VALUES 
-	(1, '', false, 0, 100),
-	(2, '', false, 0, 24),
-	(3, '', false, 0, 10);
+	(1, 'возраст, годы', false, 0, 100),
+	(2, 'время, часы', false, 0, 24),
+	(3, 'активность', false, 0, 10);
 
 INSERT INTO functions (name) VALUES 
 	('трапеция');
 
 INSERT INTO terms (name_id, name, validated, function_id, points) VALUES 
-	(4, '', false, 1, '15;20;25;30'),
-	(5, '', false, 1, '0;1;3;4'),
-	(6, '', false, 1, '0;1;2;3');
+	(4, 'молодой, юный', false, 1, '15;20;25;30'),
+	(5, 'поздний', false, 1, '0;1;3;4'),
+	(6, 'низкий', false, 1, '0;1;2;3');
 
 INSERT INTO variables_terms (variable_id, term_id) VALUES
 	(1, 1),
@@ -129,7 +129,7 @@ INSERT INTO variables_terms (variable_id, term_id) VALUES
 	(3, 3);
 
 INSERT INTO hedges (name_id, name, validated, result) VALUES 
-	(7, '', false, '1 - x');
+	(7, 'не', false, '1 - x');
 
 INSERT INTO variables_hedges (variable_id, hedge_id) VALUES 
 	(1, 1);
