@@ -32,8 +32,8 @@ before_script:
     - "sh -e /etc/init.d/xvfb start"
     - sleep 3
 script: 
-    - coverage run ./expert_test.py -a 78.107.239.213:5432
-    - coverage run ./service_test.py -a 78.107.239.213:5432
+    - coverage run ./expert_test.py -a 78.107.239.213:5432 -d db1 -u user1 -p pass1
+    - coverage run ./service_test.py -a 78.107.239.213:5432 -d db1 -u user1 -p pass1
 after_success:
     - coveralls
 notifications:
