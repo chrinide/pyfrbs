@@ -100,10 +100,12 @@ def delete_variable(variable_id):
 
 @app.route('/api/tasks', methods=['POST'])
 def create_task():
+
     cur = g.db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cur.execute('SELECT id, min, max FROM variables;')
     variables = cur.fetchall()
     cur.close()
+
     for pair in request.json['inputs']:
         valid = False
         for variable in variables:
@@ -113,6 +115,7 @@ def create_task():
                     break
         if not valid:
             abort(400)
+
     valid = False
     for variable in variables:
         if request.json['output'] == variable['id']:
@@ -120,4 +123,45 @@ def create_task():
             break
     if not valid:
         abort(400)
-    return jsonify({'output': 43})
+
+    cur = g.db.cursor();
+    cur.execute('SELECT id FROM rules;')
+    rules = cur.fetchall()
+
+    count = 0
+
+    for rule in rules:
+
+        cur.execute('SELECT nodes.variable_id FROM nodes, closures, types, rules WHERE rules.id = %s AND closures.ancestor_id = rules.consequent_id AND nodes.id = closures.descendant_id AND nodes.type_id = types.id AND types.name = %s;', (rule, 'variable'));
+        variable = cur.fetchone()
+
+        if request.json['output'] != variable[0]:
+            continue
+
+        cur.execute('SELECT nodes.variable_id FROM nodes, closures, types, rules WHERE rules.id = %s AND closures.ancestor_id = rules.antecedent_id AND nodes.id = closures.descendant_id AND nodes.type_id = types.id AND types.name = %s;', (rule, 'variable'));
+        variables = cur.fetchall()
+
+        if len(request.json['inputs']) != len(variables):
+            continue
+
+        match = True
+        for pair in request.json['inputs']:
+            found = False
+            for variable in variables:
+                if pair['variable'] == variable[0]:
+                    found = True
+                    break
+            if not found:
+                match = False
+                break
+        if not match:
+            continue
+        else:
+            count += 1
+
+    cur.close()
+
+    if count == 0:
+        abort(404)
+
+    return jsonify({'output': count})
