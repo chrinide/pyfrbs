@@ -710,9 +710,6 @@ class Window(QMainWindow):
             self.uiConsequentTree.setEnabled(False)
             return
 
-        self.onAntecedentNodeSelected()
-        self.onConsequentNodeSelected()
-
         if (self.uiRulesCombo.currentData() != 0):
             cur = self.conn.cursor()
             cur.execute('SELECT validated FROM rules WHERE id = %s;', (self.uiRulesCombo.currentData(),))
@@ -721,9 +718,16 @@ class Window(QMainWindow):
                 self.uiRuleVerifiedCheck.setChecked(True);
 
             self.loadTree(self.uiAntecedentTree, 'antecedent', self.uiRulesCombo.currentData())
+            if self.uiAntecedentTree.topLevelItemCount() > 0:
+                self.uiAntecedentTree.setCurrentItem(self.uiAntecedentTree.topLevelItem(0))
             self.loadTree(self.uiConsequentTree, 'consequent', self.uiRulesCombo.currentData())
+            if self.uiConsequentTree.topLevelItemCount() > 0:
+                self.uiConsequentTree.setCurrentItem(self.uiConsequentTree.topLevelItem(0))
         else:
             self.uiRuleVerifiedCheck.setChecked(False);
+
+        self.onAntecedentNodeSelected()
+        self.onConsequentNodeSelected()
 
         self.uiRenameRuleButton.setEnabled(True)
         self.uiDeleteRuleButton.setEnabled(True)
@@ -876,11 +880,10 @@ class Window(QMainWindow):
         cur.close()
         return name
 
-    def fillNodeTypesCombo(self, tree, combo):
+    def fillNodeTypesCombo(self, node, combo):
         combo.blockSignals(True)
         combo.clear()
-        if tree.topLevelItemCount() != 0:
-            node = tree.currentItem()
+        if node != None:
             name = self.nodeType(node)
             if name in ('variable', 'term', 'hedge'):
                 combo.setEnabled(False)
@@ -909,18 +912,12 @@ class Window(QMainWindow):
                 else:
                     combo.setEnabled(False)
             elif name == 'term_and' or name == 'term_or':
-                if (node.childCount() < 2):
-                    combo.addItem('term', 3)
-                    combo.addItem('term_complex', 4)
-                    combo.setEnabled(True)
-                else:
-                    combo.setEnabled(False)
+                combo.addItem('term', 3)
+                combo.addItem('term_complex', 4)
+                combo.setEnabled(True)
             elif name == 'variable_and' or name == 'variable_or':
-                if (node.childCount() < 2):
-                    combo.addItem('variable_value', 5)
-                    combo.setEnabled(True)
-                else:
-                    combo.setEnabled(False)
+                combo.addItem('variable_value', 5)
+                combo.setEnabled(True)
         else:
             combo.addItem('variable_value', 5)
             combo.addItem('variable_and', 8)
@@ -930,22 +927,22 @@ class Window(QMainWindow):
         combo.blockSignals(False)
 
     def onNodeSelected(self, tree, nodeTypesCombo, nodesCombo, addNodeButton, removeNodeButton, edit):
-        self.fillNodeTypesCombo(tree, nodeTypesCombo)
+        node = tree.currentItem()
+        self.fillNodeTypesCombo(node, nodeTypesCombo)
         nodesCombo.blockSignals(True)
         nodesCombo.clear()
         nodesCombo.setCurrentIndex(-1)
         nodesCombo.setEnabled(False)
         nodesCombo.blockSignals(False)
-        # NOTE: where is it enabled afterwards?
         addNodeButton.setEnabled(False)
-        if (tree.topLevelItemCount() != 0):
-            name = self.nodeType(tree.currentItem())
-            if name == 'variable' and tree.currentItem().parent().childCount() > 1:
+        if node != None:
+            name = self.nodeType(node)
+            if name == 'variable' and node.parent().childCount() > 1:
                 removeNodeButton.setEnabled(False)
             else:
                 removeNodeButton.setEnabled(True)
             edit.setEnabled(True)
-            edit.setText(self.nodeToString(tree.currentItem()))
+            edit.setText(self.nodeToString(node))
         else:
             edit.setEnabled(False)
             edit.clear()
