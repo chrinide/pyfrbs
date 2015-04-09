@@ -670,11 +670,11 @@ class Window(QMainWindow):
                 token = '\'' + ', '.join(self.getLemmas(row[0])) + '\''
             cur.close()
         elif (name == 'variable_and'):
-            token = '%s AND %s' % (self.nodeToString(node.child(0)), self.nodeToString(node.child(1)))
+            token = '(%s) И (%s)' % (self.nodeToString(node.child(0)), self.nodeToString(node.child(1)))
         elif (name == 'variable_or'):
-            token = '%s OR %s' % (self.nodeToString(node.child(0)), self.nodeToString(node.child(1)))
+            token = '(%s) ИЛИ (%s)' % (self.nodeToString(node.child(0)), self.nodeToString(node.child(1)))
         elif (name == 'variable_value'):
-            token = '%s IS %s' % (self.nodeToString(node.child(0)), self.nodeToString(node.child(1)))
+            token = '%s ЕСТЬ %s' % (self.nodeToString(node.child(0)), self.nodeToString(node.child(1)))
         elif (name == 'term_complex'):
             token = '%s %s' % (self.nodeToString(node.child(0)), self.nodeToString(node.child(1)))
         else:
