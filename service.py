@@ -98,6 +98,12 @@ def delete_variable(variable_id):
     g.db.commit()
     return jsonify(), 200
 
+def evalNode(node_id, value, cur):
+    cur.execute('SELECT types.name FROM nodes, types WHERE nodes.type_id = types.id AND nodes.id = %s;', (node_id,))
+    node_type = cur.fetchone()[0]
+    print('type = %s, value = %s' % (node_type, value))
+    return 42
+
 @app.route('/api/tasks', methods=['POST'])
 def create_task():
 
@@ -132,22 +138,22 @@ def create_task():
 
     for rule in rules:
 
-        cur.execute('SELECT nodes.variable_id FROM nodes, closures, types, rules WHERE rules.id = %s AND closures.ancestor_id = rules.consequent_id AND nodes.id = closures.descendant_id AND nodes.type_id = types.id AND types.name = %s;', (rule, 'variable'));
-        variable = cur.fetchone()
+        cur.execute('SELECT nodes.variable_id, nodes.parent_id FROM nodes, closures, types, rules WHERE rules.id = %s AND closures.ancestor_id = rules.consequent_id AND nodes.id = closures.descendant_id AND nodes.type_id = types.id AND types.name = %s;', (rule, 'variable'));
+        output = cur.fetchone()
 
-        if request.json['output'] != variable[0]:
+        if request.json['output'] != output[0]:
             continue
 
-        cur.execute('SELECT nodes.variable_id FROM nodes, closures, types, rules WHERE rules.id = %s AND closures.ancestor_id = rules.antecedent_id AND nodes.id = closures.descendant_id AND nodes.type_id = types.id AND types.name = %s;', (rule, 'variable'));
-        variables = cur.fetchall()
+        cur.execute('SELECT nodes.variable_id, nodes.parent_id FROM nodes, closures, types, rules WHERE rules.id = %s AND closures.ancestor_id = rules.antecedent_id AND nodes.id = closures.descendant_id AND nodes.type_id = types.id AND types.name = %s;', (rule, 'variable'));
+        inputs = cur.fetchall()
 
-        if len(request.json['inputs']) != len(variables):
+        if len(request.json['inputs']) != len(inputs):
             continue
 
         match = True
         for pair in request.json['inputs']:
             found = False
-            for variable in variables:
+            for variable in inputs:
                 if pair['variable'] == variable[0]:
                     found = True
                     break
@@ -156,8 +162,23 @@ def create_task():
                 break
         if not match:
             continue
-        else:
-            count += 1
+
+        count += 1
+
+        cutoff = 1
+
+        for variable in inputs:
+
+            cur.execute('SELECT nodes.id FROM nodes, types WHERE nodes.parent_id = %s AND nodes.type_id != types.id AND types.name = %s;', (variable[1], 'variable'));
+            value = cur.fetchone()
+
+            for pair in request.json['inputs']:
+                if pair['variable'] == variable[0]:
+                    break
+
+            grade = evalNode(value, pair['value'], cur)
+            if grade < cutoff:
+                cutoff = grade
 
     cur.close()
 
