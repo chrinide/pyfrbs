@@ -101,8 +101,7 @@ def delete_variable(variable_id):
 def evalNode(node_id, value, cur):
     cur.execute('SELECT types.name FROM nodes, types WHERE nodes.type_id = types.id AND nodes.id = %s;', (node_id,))
     node_type = cur.fetchone()[0]
-    print('type = %s, value = %s' % (node_type, value))
-    return 42
+    return 1.0
 
 @app.route('/api/tasks', methods=['POST'])
 def create_task():
@@ -131,10 +130,11 @@ def create_task():
         abort(400)
 
     cur = g.db.cursor();
-    cur.execute('SELECT id FROM rules;')
+    cur.execute('SELECT id FROM rules WHERE rules.validated = True;')
     rules = cur.fetchall()
 
     count = 0
+    output_values = []
 
     for rule in rules:
 
@@ -163,8 +163,6 @@ def create_task():
         if not match:
             continue
 
-        count += 1
-
         cutoff = 1
 
         for variable in inputs:
@@ -180,9 +178,34 @@ def create_task():
             if grade < cutoff:
                 cutoff = grade
 
-    cur.close()
+        cur.execute('SELECT nodes.id FROM nodes, types WHERE nodes.parent_id = %s AND nodes.type_id != types.id AND types.name = %s;', (output[1], 'variable'));
+        value = cur.fetchone()
+
+        output_values.append([value[0], cutoff])
+
+        count += 1
 
     if count == 0:
         abort(404)
 
-    return jsonify({'output': count})
+    cur.execute('SELECT terms.points FROM variables_terms, terms WHERE variables_terms.variable_id = %s AND variables_terms.term_id = terms.id;', (request.json['output'],))
+    points = cur.fetchall()
+    arg_min = arg_max = 0.0
+    for group in points:
+        arg_min = min(arg_min, float(group[0].split(';')[0]))
+        arg_max = max(arg_max, float(group[0].split(';')[-1]))
+
+    dividend = divisor = 0.0
+    step = ((arg_max - arg_min) / 100)
+    arg = arg_min
+    while arg <= arg_max:
+        grade = 0.0
+        for value in output_values:
+            grade = max(grade, evalNode(value[0], arg, cur), value[1]) 
+        dividend += grade * arg
+        divisor += grade
+        arg += step
+
+    cur.close()
+
+    return jsonify({'output': dividend / divisor})
