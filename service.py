@@ -99,9 +99,95 @@ def delete_variable(variable_id):
     return jsonify(), 200
 
 def evalNode(node_id, value, cur):
+
     cur.execute('SELECT types.name FROM nodes, types WHERE nodes.type_id = types.id AND nodes.id = %s;', (node_id,))
     node_type = cur.fetchone()[0]
-    return 1.0
+
+    if node_type == 'term':
+
+        cur.execute("""SELECT functions.name, terms.points FROM functions, terms, nodes WHERE 
+                    functions.id = terms.function_id AND 
+                    terms.id = nodes.term_id AND 
+                    nodes.id = %s;""", (node_id,))
+        res = cur.fetchone()
+        function = res[0]
+        points = res[1].split(';')
+
+        if function == 'синглтон':
+            if value == float(points[0]):
+                return 1
+            else:
+                return 0
+        elif function == 'Z-функция':
+            if value <= float(points[0]):
+                return 1
+            elif value > float(points[0]) and value < float(points[1]):
+                return (float(points[1]) - value) / (float(points[1]) - float(points[0]))
+            elif value >= float(points[1]):
+                return 0
+        elif function == 'S-функция':
+            if value <= float(points[0]):
+                return 0
+            elif value > float(points[0]) and value < float(points[1]):
+                return (value - float(points[0])) / (float(points[1]) - float(points[0]))
+            elif value >= float(points[1]):
+                return 1
+        elif function == 'треугольник':
+            if value <= float(points[0]):
+                return 0
+            elif value > float(points[0]) and value < float(points[1]):
+                return (value - float(points[0])) / (float(points[1]) - float(points[0]))
+            elif value > float(points[1]) and value < float(points[2]):
+                return (float(points[2]) - value) / (float(points[2]) - float(points[1]))
+            elif value >= float(points[2]):
+                return 0
+        elif function == 'трапеция':
+            if value <= float(points[0]):
+                return 0
+            elif value > float(points[0]) and value < float(points[1]):
+                return (value - float(points[0])) / (float(points[1]) - float(points[0]))
+            elif value >= float(points[1]) and value <= float(points[2]):
+                return 1
+            elif value > float(points[2]) and value < float(points[3]):
+                return (float(points[3]) - value) / (float(points[3]) - float(points[2]))
+            elif value >= float(points[3]):
+                return 0
+
+    elif node_type == 'term_and':
+
+        cur.execute('SELECT id FROM nodes WHERE nodes.parent_id = %s;', (node_id,))
+        nodes = cur.fetchall()
+
+        minimum = 1
+        for node in nodes:
+            minimum = min(minimum, evalNode(node[0], value, cur))
+
+        return minimum
+
+    elif node_type == 'term_or':
+
+        cur.execute('SELECT id FROM nodes WHERE nodes.parent_id = %s;', (node_id,))
+        nodes = cur.fetchall()
+
+        maximum = 0
+        for node in nodes:
+            maximum = max(maximum, evalNode(node[0], value, cur))
+
+        return maximum
+
+    elif node_type == 'term_complex':
+
+        cur.execute("""SELECT nodes.id FROM nodes, types WHERE 
+                    nodes.type_id != types.id AND
+                    nodes.parent_id = %s AND types.name = %s;""", (node_id, 'hedge'))
+        x = evalNode(cur.fetchone()[0], value, cur)
+
+        cur.execute("""SELECT hedges.result FROM nodes, types, hedges WHERE 
+                    nodes.type_id = types.id AND
+                    nodes.hedge_id = hedges.id AND
+                    nodes.parent_id = %s AND types.name = %s;""", (node_id, 'hedge'))
+
+        return eval(cur.fetchone()[0])
 
 @app.route('/api/tasks', methods=['POST'])
 def create_task():
@@ -174,9 +260,7 @@ def create_task():
                 if pair['variable'] == variable[0]:
                     break
 
-            grade = evalNode(value, pair['value'], cur)
-            if grade < cutoff:
-                cutoff = grade
+            cutoff = min(cutoff, evalNode(value[0], pair['value'], cur))
 
         cur.execute('SELECT nodes.id FROM nodes, types WHERE nodes.parent_id = %s AND nodes.type_id != types.id AND types.name = %s;', (output[1], 'variable'));
         value = cur.fetchone()
@@ -190,7 +274,8 @@ def create_task():
 
     cur.execute('SELECT terms.points FROM variables_terms, terms WHERE variables_terms.variable_id = %s AND variables_terms.term_id = terms.id;', (request.json['output'],))
     points = cur.fetchall()
-    arg_min = arg_max = 0.0
+    arg_min = float(points[0][0].split(';')[0])
+    arg_max = float(points[0][0].split(';')[-1])
     for group in points:
         arg_min = min(arg_min, float(group[0].split(';')[0]))
         arg_max = max(arg_max, float(group[0].split(';')[-1]))
@@ -201,11 +286,11 @@ def create_task():
     while arg <= arg_max:
         grade = 0.0
         for value in output_values:
-            grade = max(grade, evalNode(value[0], arg, cur), value[1]) 
+            grade = max(grade, min(evalNode(value[0], arg, cur), value[1])) 
         dividend += grade * arg
         divisor += grade
         arg += step
 
     cur.close()
 
-    return jsonify({'output': dividend / divisor})
+    return jsonify({'output': round(dividend / divisor, 3)})
