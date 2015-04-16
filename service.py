@@ -281,7 +281,6 @@ def create_task():
         arg_max = max(arg_max, float(group[0].split(';')[-1]))
 
     dividend = divisor = 0.0
-    step = ((arg_max - arg_min) / 100)
     arg = arg_min
     while arg <= arg_max:
         grade = 0.0
@@ -289,8 +288,13 @@ def create_task():
             grade = max(grade, min(evalNode(value[0], arg, cur), value[1])) 
         dividend += grade * arg
         divisor += grade
-        arg += step
+        if arg_min == arg_max:
+            break
+        arg += ((arg_max - arg_min) / 100)
 
     cur.close()
+
+    if divisor == 0:
+        abort(401)
 
     return jsonify({'output': round(dividend / divisor, 3)})
