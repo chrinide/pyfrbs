@@ -192,30 +192,7 @@ def evalNode(node_id, value, cur):
 @app.route('/api/tasks', methods=['POST'])
 def create_task():
 
-    cur = g.db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cur.execute('SELECT id, min, max FROM variables;')
-    variables = cur.fetchall()
-    cur.close()
-
-    for pair in request.json['inputs']:
-        valid = False
-        for variable in variables:
-            if pair['variable'] == variable['id']:
-                if pair['value'] >= variable['min'] and pair['value'] <= variable['max']:
-                    valid = True
-                    break
-        if not valid:
-            abort(400)
-
-    valid = False
-    for variable in variables:
-        if request.json['output'] == variable['id']:
-            valid = True
-            break
-    if not valid:
-        abort(400)
-
-    cur = g.db.cursor();
+    cur = g.db.cursor()
     cur.execute('SELECT id FROM rules WHERE rules.validated = True;')
     rules = cur.fetchall()
 
@@ -295,6 +272,6 @@ def create_task():
     cur.close()
 
     if divisor == 0:
-        abort(401)
+        abort(400)
 
     return jsonify({'output': round(dividend / divisor, 3)})
