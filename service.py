@@ -196,27 +196,27 @@ def create_task():
     cur.execute('SELECT id FROM rules WHERE rules.validated = True;')
     rules = cur.fetchall()
 
-    count = 0
+    matched_rules = []
     output_values = []
 
     for rule in rules:
 
-        cur.execute('SELECT nodes.variable_id, nodes.parent_id FROM nodes, closures, types, rules WHERE rules.id = %s AND closures.ancestor_id = rules.consequent_id AND nodes.id = closures.descendant_id AND nodes.type_id = types.id AND types.name = %s;', (rule, 'variable'));
+        cur.execute('SELECT nodes.variable_id, nodes.parent_id FROM nodes, closures, types, rules WHERE rules.id = %s AND closures.ancestor_id = rules.consequent_id AND nodes.id = closures.descendant_id AND nodes.type_id = types.id AND types.name = %s;', (rule[0], 'variable'));
         output = cur.fetchone()
 
         if request.json['output'] != output[0]:
             continue
 
-        cur.execute('SELECT nodes.variable_id, nodes.parent_id FROM nodes, closures, types, rules WHERE rules.id = %s AND closures.ancestor_id = rules.antecedent_id AND nodes.id = closures.descendant_id AND nodes.type_id = types.id AND types.name = %s;', (rule, 'variable'));
+        cur.execute('SELECT nodes.variable_id, nodes.parent_id FROM nodes, closures, types, rules WHERE rules.id = %s AND closures.ancestor_id = rules.antecedent_id AND nodes.id = closures.descendant_id AND nodes.type_id = types.id AND types.name = %s;', (rule[0], 'variable'));
         inputs = cur.fetchall()
 
-        if len(request.json['inputs']) != len(inputs):
+        if len(request.json['inputs']) > len(inputs):
             continue
 
         match = True
-        for pair in request.json['inputs']:
+        for variable in inputs:
             found = False
-            for variable in inputs:
+            for pair in request.json['inputs']:
                 if pair['variable'] == variable[0]:
                     found = True
                     break
@@ -243,10 +243,9 @@ def create_task():
         value = cur.fetchone()
 
         output_values.append([value[0], cutoff])
+        matched_rules.append(rule[0])
 
-        count += 1
-
-    if count == 0:
+    if len(rules) == 0:
         abort(404)
 
     cur.execute('SELECT terms.points FROM variables_terms, terms WHERE variables_terms.variable_id = %s AND variables_terms.term_id = terms.id;', (request.json['output'],))
@@ -274,4 +273,4 @@ def create_task():
     if divisor == 0:
         abort(400)
 
-    return jsonify({'output': round(dividend / divisor, 3)})
+    return jsonify({'rules': matched_rules, 'output': round(dividend / divisor, 3)})
