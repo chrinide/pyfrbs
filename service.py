@@ -196,7 +196,6 @@ def create_task():
     cur.execute('SELECT id FROM rules WHERE rules.validated = True;')
     rules = cur.fetchall()
 
-    matched_rules = []
     output_values = []
 
     for rule in rules:
@@ -242,8 +241,7 @@ def create_task():
         cur.execute('SELECT nodes.id FROM nodes, types WHERE nodes.parent_id = %s AND nodes.type_id != types.id AND types.name = %s;', (output[1], 'variable'));
         value = cur.fetchone()
 
-        output_values.append([value[0], cutoff])
-        matched_rules.append(rule[0])
+        output_values.append([rule[0], value[0], cutoff])
 
     if len(rules) == 0:
         abort(404)
@@ -261,7 +259,7 @@ def create_task():
     while arg <= arg_max:
         grade = 0.0
         for value in output_values:
-            grade = max(grade, min(evalNode(value[0], arg, cur), value[1])) 
+            grade = max(grade, min(evalNode(value[1], arg, cur), value[2])) 
         dividend += grade * arg
         divisor += grade
         if arg_min == arg_max:
@@ -270,7 +268,14 @@ def create_task():
 
     cur.close()
 
+    rules = []
+    for value in output_values:
+        pair = {}
+        pair['id'] = value[0]
+        pair['cutoff'] = round(value[2], 3)
+        rules.append(pair)
+
     if divisor == 0:
         abort(400)
 
-    return jsonify({'rules': matched_rules, 'output': round(dividend / divisor, 3)})
+    return jsonify({'rules': rules, 'output': round(dividend / divisor, 3)})
