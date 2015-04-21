@@ -210,7 +210,7 @@ def create_task():
         cur.execute('SELECT nodes.variable_id, nodes.parent_id FROM nodes, closures, types, rules WHERE rules.id = %s AND closures.ancestor_id = rules.antecedent_id AND nodes.id = closures.descendant_id AND nodes.type_id = types.id AND types.name = %s;', (rule[0], 'variable'));
         inputs = cur.fetchall()
 
-        if len(request.json['inputs']) > len(inputs):
+        if len(request.json['inputs']) < len(inputs):
             continue
 
         match = True
