@@ -137,6 +137,8 @@ def evalNode(node_id, value, cur):
                 return 0
             elif value > float(points[0]) and value < float(points[1]):
                 return (value - float(points[0])) / (float(points[1]) - float(points[0]))
+            elif value == float(points[1]):
+                return 1
             elif value > float(points[1]) and value < float(points[2]):
                 return (float(points[2]) - value) / (float(points[2]) - float(points[1]))
             elif value >= float(points[2]):
