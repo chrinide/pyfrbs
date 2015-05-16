@@ -1,4 +1,3 @@
-
 INSERT INTO groups (is_variable, is_term, is_hedge) VALUES
 	(true, false, false),
 	(true, false, false),
@@ -25,13 +24,6 @@ INSERT INTO variables (name_id, name, validated, min, max) VALUES
 	(2, 'время, часы', false, 0, 24),
 	(3, 'активность', false, 0, 10);
 
-INSERT INTO functions (name) VALUES 
-	('Z-функция'),
-	('синглтон'),
-	('треугольник'),
-	('трапеция'),
-	('S-функция');
-
 INSERT INTO terms (name_id, name, validated, function_id, points) VALUES 
 	(4, 'молодой, юный', false, 4, '15;20;25;30'),
 	(5, 'поздний', false, 4, '0;1;3;4'),
@@ -47,18 +39,6 @@ INSERT INTO hedges (name_id, name, validated, result) VALUES
 
 INSERT INTO variables_hedges (variable_id, hedge_id) VALUES 
 	(1, 1);
-
-INSERT INTO types (name) VALUES 
-	('variable'),
-	('hedge'),
-	('term'),
-	('term_complex'),
-	('variable_value'),
-	('term_and'),
-	('term_or'),
-	('variable_and'),
-	('variable_or'),
-	('variable_not');
 
 INSERT INTO nodes (parent_id, type_id, variable_id, term_id, hedge_id) VALUES
 	(null, 8, null, null, null), (1, 5, null, null, null), 
