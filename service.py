@@ -98,6 +98,24 @@ def delete_variable(variable_id):
     g.db.commit()
     return jsonify(), 200
 
+@app.route('/api/rules', methods=['GET'])
+def get_rules():
+    cur = g.db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute('SELECT id, name, validated FROM rules;')
+    rules = cur.fetchall()
+    cur.close()
+    return jsonify({'rules': rules})
+
+@app.route('/api/rules/<int:rule_id>', methods=['GET'])
+def get_rule(rule_id):
+    cur = g.db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute('SELECT TOP 1 id, name, validated FROM rules WHERE id = %s;', (rule_id,))
+    rule = cur.fetchone()
+    cur.close()
+    if rule:
+        return jsonify({'rule': rule})
+    abort(404)
+
 def evalNode(node_id, value, cur):
 
     cur.execute('SELECT types.name FROM nodes, types WHERE nodes.type_id = types.id AND nodes.id = %s;', (node_id,))
