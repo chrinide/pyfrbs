@@ -42,7 +42,7 @@ def get_variables():
 @app.route('/api/variables/<int:variable_id>', methods=['GET'])
 def get_variable(variable_id):
     cur = g.db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cur.execute('SELECT TOP 1 id, name_id, name, validated, min, max FROM variables WHERE id = %s;', (variable_id,))
+    cur.execute('SELECT id, name_id, name, validated, min, max FROM variables WHERE id = %s LIMIT 1;', (variable_id,))
     variable = cur.fetchone()
     cur.close()
     if variable:
@@ -109,7 +109,7 @@ def get_rules():
 @app.route('/api/rules/<int:rule_id>', methods=['GET'])
 def get_rule(rule_id):
     cur = g.db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cur.execute('SELECT TOP 1 id, name, validated FROM rules WHERE id = %s;', (rule_id,))
+    cur.execute('SELECT id, name, validated FROM rules WHERE id = %s LIMIT 1;', (rule_id,))
     rule = cur.fetchone()
     cur.close()
     if rule:
