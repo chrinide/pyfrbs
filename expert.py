@@ -86,8 +86,6 @@ class Window(QMainWindow):
 
         self.uiRuleVerifiedCheck.stateChanged.connect(self.onRuleVerified)
         
-        self.uiNoteEdit.textEdited.connect(self.onNoteEdited)
-
         self.uiAntecedentNodeTypesCombo.currentIndexChanged.connect(self.onAntecedentNodeTypeSelected)
         self.uiAntecedentNodesCombo.currentIndexChanged.connect(self.onAntecedentNodeValueSelected)
         self.uiAddAntecedentNodeButton.clicked.connect(self.onAddAntecedentNodeClicked)
@@ -688,8 +686,6 @@ class Window(QMainWindow):
             return
 
         self.uiCommitRuleButton.setEnabled(False)
-        self.uiNoteEdit.clear()
-        self.uiNoteEdit.setEnabled(False)
         self.uiRuleVerifiedCheck.setChecked(False)
         self.uiAntecedentTree.clear()
         self.uiAntecedentEdit.clear()
@@ -716,13 +712,10 @@ class Window(QMainWindow):
 
         if (self.uiRulesCombo.currentData() != 0):
             cur = self.conn.cursor()
-            cur.execute('SELECT validated, note FROM rules WHERE id = %s;', (self.uiRulesCombo.currentData(),))
-            data = cur.fetchone()
-
-            if (data[0] == True):
+            cur.execute('SELECT validated FROM rules WHERE id = %s;', (self.uiRulesCombo.currentData(),))
+            state = cur.fetchone()
+            if (state[0] == True):
                 self.uiRuleVerifiedCheck.setChecked(True);
-
-            self.uiNoteEdit.setText(data[1])
 
             self.loadTree(self.uiAntecedentTree, 'antecedent', self.uiRulesCombo.currentData())
             if self.uiAntecedentTree.topLevelItemCount() > 0:
@@ -739,7 +732,6 @@ class Window(QMainWindow):
         self.uiRenameRuleButton.setEnabled(True)
         self.uiDeleteRuleButton.setEnabled(True)
         self.uiRuleVerifiedCheck.setEnabled(True)
-        self.uiNoteEdit.setEnabled(True)
         self.uiAntecedentTree.setEnabled(True)
         self.uiConsequentTree.setEnabled(True)
 
@@ -1024,10 +1016,6 @@ class Window(QMainWindow):
     def onRuleVerified(self):
         self.uiCommitRuleButton.setEnabled(True)
 
-    def onNoteEdited(self):
-        if self.uiAntecedentTree.topLevelItemCount() != 0 and self.uiConsequentTree.topLevelItemCount() != 0:
-            self.uiCommitRuleButton.setEnabled(True)
-
     def walkTree(self, root, cur):
         self.walkNodes(root, root, cur)
         for i in range(root.childCount()):
@@ -1047,12 +1035,12 @@ class Window(QMainWindow):
         self.walkTree(self.uiConsequentTree.topLevelItem(0), cur) 
         rule_id = self.uiRulesCombo.currentData()
         if (rule_id):
-            cur.execute('UPDATE rules SET validated = %s, name = %s, note = %s, antecedent_id = %s, consequent_id = %s WHERE id = %s;', 
-                        (self.uiRuleVerifiedCheck.isChecked(), self.uiRulesCombo.currentText(), self.uiNoteEdit.text(),
+            cur.execute('UPDATE rules SET validated = %s, name = %s, antecedent_id = %s, consequent_id = %s WHERE id = %s;', 
+                        (self.uiRuleVerifiedCheck.isChecked(), self.uiRulesCombo.currentText(), 
                          self.uiAntecedentTree.topLevelItem(0).text(1), self.uiConsequentTree.topLevelItem(0).text(1), rule_id))
         else:
-            cur.execute('INSERT INTO rules (validated, name, note, antecedent_id, consequent_id) VALUES (%s, %s, %s, %s) RETURNING id;', 
-                        (self.uiRuleVerifiedCheck.isChecked(), self.uiRulesCombo.currentText(), self.uiNoteEdit.text(), 
+            cur.execute('INSERT INTO rules (validated, name, antecedent_id, consequent_id) VALUES (%s, %s, %s, %s) RETURNING id;', 
+                        (self.uiRuleVerifiedCheck.isChecked(), self.uiRulesCombo.currentText(), 
                          self.uiAntecedentTree.topLevelItem(0).text(1), self.uiConsequentTree.topLevelItem(0).text(1)))
             rule_id = cur.fetchone()[0]
             self.uiRulesCombo.setItemData(self.uiRulesCombo.currentIndex(), rule_id)

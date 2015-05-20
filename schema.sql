@@ -81,7 +81,6 @@ CREATE TABLE closures (
 CREATE TABLE rules (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(255),
-	note VARCHAR(1024),
 	validated BOOLEAN,
 	antecedent_id INT NOT NULL REFERENCES nodes(id) ON DELETE CASCADE,
 	consequent_id INT NOT NULL REFERENCES nodes(id) ON DELETE CASCADE
