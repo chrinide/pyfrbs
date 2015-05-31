@@ -20,14 +20,14 @@ INSERT INTO synonims (group_id, lemma, grammemes, hits) VALUES
 	(7, 'не', 'част', 1);
 
 INSERT INTO variables (name_id, name, validated, min, max) VALUES 
-	(1, 'возраст, годы', false, 0, 100),
-	(2, 'время, часы', false, 0, 24),
-	(3, 'активность', false, 0, 10);
+	(1, 'возраст, годы', true, 0, 100),
+	(2, 'время, часы', true, 0, 24),
+	(3, 'активность', true, 0, 10);
 
 INSERT INTO terms (name_id, name, validated, function_id, points) VALUES 
-	(4, 'молодой, юный', false, 4, '15;20;25;30'),
-	(5, 'поздний', false, 4, '0;1;3;4'),
-	(6, 'низкий', false, 4, '0;1;2;3');
+	(4, 'молодой, юный', true, 4, '15;20;25;30'),
+	(5, 'поздний', true, 4, '0;1;3;4'),
+	(6, 'низкий', true, 4, '0;1;2;3');
 
 INSERT INTO variables_terms (variable_id, term_id) VALUES
 	(1, 1),
@@ -35,7 +35,7 @@ INSERT INTO variables_terms (variable_id, term_id) VALUES
 	(3, 3);
 
 INSERT INTO hedges (name_id, name, validated, result) VALUES 
-	(7, 'не', false, '1 - x');
+	(7, 'не', true, '1 - x');
 
 INSERT INTO variables_hedges (variable_id, hedge_id) VALUES 
 	(1, 1);
@@ -56,4 +56,4 @@ INSERT INTO closures (ancestor_id, descendant_id) VALUES
 	(10, 12), (11, 11), (12, 12);
 
 INSERT INTO rules (name, validated, antecedent_id, consequent_id) VALUES 
-	('ЕСЛИ возраст не молодой и время позднее, TO активность низкая', false, 1, 10);
+	('ЕСЛИ возраст не молодой и время позднее, TO активность низкая', true, 1, 10);
