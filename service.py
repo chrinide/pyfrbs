@@ -9,6 +9,7 @@ from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 import psycopg2
 import psycopg2.extras
+from datetime import datetime
 
 def make_json_error(ex):
     response = jsonify(message=str(ex))
@@ -68,7 +69,7 @@ def create_variable():
     cur.close()
     if variable_id:
         g.db.commit()
-        return jsonify(), 201, {'location': '/api/variables/%d' % variable_id}
+        return jsonify(), 200, {'location': '/api/variables/%d' % variable_id}
     abort(500)
 
 @app.route('/api/variables/<int:variable_id>', methods=['PUT'])
@@ -114,6 +115,31 @@ def get_rule(rule_id):
     cur.close()
     if rule:
         return jsonify({'rule': rule})
+    abort(404)
+
+@app.route('/api/tasks', methods=['GET'])
+def get_tasks():
+    cur = g.db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute('SELECT id, status, started, finished FROM tasks;')
+    tasks = cur.fetchall()
+    cur.close()
+    return jsonify({'tasks': tasks})
+
+@app.route('/api/tasks/<int:task_id>', methods=['GET'])
+def get_task(task_id):
+    cur = g.db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute('SELECT id, status, started, finished FROM tasks WHERE id = %s LIMIT 1;', (task_id,))
+    task = cur.fetchone()
+    if task:
+        cur.execute('SELECT crisps.variable_id, crisps.value, crisps.is_input FROM crisps, tasks_crisps WHERE crisps.id = tasks_crisps.crisp_id AND tasks_crisps.task_id = %s;', (task_id,))
+        task['crisps'] = cur.fetchall()
+        cur.execute('SELECT cutoffs.rule_id, cutoffs.value FROM cutoffs, tasks_cutoffs WHERE cutoffs.id = tasks_cutoffs.cutoff_id AND tasks_cutoffs.task_id = %s;', (task_id,))
+        task['cutoffs'] = cur.fetchall()
+        cur.execute('SELECT points.arg, points.grade FROM points, tasks_points WHERE points.id = tasks_points.point_id AND tasks_points.task_id = %s;', (task_id,))
+        task['points'] = cur.fetchall()
+        cur.close()
+        return jsonify({'task': task})
+    cur.close()
     abort(404)
 
 def evalNode(node_id, value, cur):
@@ -213,6 +239,18 @@ def evalNode(node_id, value, cur):
 def create_task():
 
     cur = g.db.cursor()
+    cur.execute('INSERT INTO tasks(status, started) VALUES (%s, %s) RETURNING id;', (202, datetime.now(),))
+    task = cur.fetchone()
+
+    for pair in request.json['inputs']:
+        cur.execute('INSERT INTO crisps(variable_id, value, is_input) VALUES (%s, %s, %s) RETURNING id;', (pair['variable'], pair['value'], True))
+        crisp = cur.fetchone()
+        cur.execute('INSERT INTO tasks_crisps(task_id, crisp_id) VALUES (%s, %s);', (task, crisp)) 
+
+    cur.execute('INSERT INTO crisps(variable_id, value, is_input) VALUES (%s, %s, %s) RETURNING id;', (request.json['output'], 'NaN', False))
+    crisp = cur.fetchone()
+    cur.execute('INSERT INTO tasks_crisps(task_id, crisp_id) VALUES (%s, %s);', (task, crisp)) 
+
     cur.execute('SELECT id FROM rules WHERE rules.validated = True;')
     rules = cur.fetchall()
 
@@ -264,7 +302,10 @@ def create_task():
         output_values.append([rule[0], value[0], cutoff])
 
     if len(rules) == 0:
-        abort(404)
+        cur.execute('UPDATE tasks SET status = %s, finished = %s WHERE id = %s;', (404, datetime.now(), task))
+        cur.close()
+        g.db.commit()
+        return jsonify(), 404, {'location': '/api/tasks/%d' % task}
 
     cur.execute('SELECT terms.points FROM variables_terms, terms WHERE variables_terms.variable_id = %s AND variables_terms.term_id = terms.id;', (request.json['output'],))
     points = cur.fetchall()
@@ -280,13 +321,14 @@ def create_task():
         grade = 0.0
         for value in output_values:
             grade = max(grade, min(evalNode(value[1], arg, cur), value[2])) 
+        cur.execute('INSERT INTO points(arg, grade) VALUES (%s, %s) RETURNING id;', (arg, grade))
+        point = cur.fetchone()
+        cur.execute('INSERT INTO tasks_points(task_id, point_id) VALUES (%s, %s);', (task, point))
         dividend += grade * arg
         divisor += grade
         if arg_min == arg_max:
             break
         arg += ((arg_max - arg_min) / 100)
-
-    cur.close()
 
     rules = []
     for value in output_values:
@@ -294,8 +336,18 @@ def create_task():
         pair['id'] = value[0]
         pair['cutoff'] = round(value[2], 3)
         rules.append(pair)
+        cur.execute('INSERT INTO cutoffs(rule_id, value) VALUES (%s, %s) RETURNING id;', (pair['id'], pair['cutoff']))
+        cutoff = cur.fetchone()
+        cur.execute('INSERT INTO tasks_cutoffs(task_id, cutoff_id) VALUES (%s, %s);', (task, cutoff))
 
     if divisor == 0:
-        abort(400)
+        cur.execute('UPDATE tasks SET status = %s, finished = %s WHERE id = %s;', (400, datetime.now(), task))
+        cur.close()
+        g.db.commit()
+        return jsonify(), 400, {'location': '/api/tasks/%d' % task}
 
-    return jsonify({'rules': rules, 'output': round(dividend / divisor, 3)})
+    cur.execute('UPDATE crisps SET value = %s WHERE id = %s;', (round(dividend / divisor, 3), crisp))
+    cur.execute('UPDATE tasks SET status = %s, finished = %s WHERE id = %s;', (200, datetime.now(), task))
+    cur.close()
+    g.db.commit()
+    return jsonify({'rules': rules, 'output': round(dividend / divisor, 3)}), 200, {'location': '/api/tasks/%d' % task}
