@@ -87,6 +87,50 @@ CREATE TABLE rules (
 	consequent_id INT NOT NULL REFERENCES nodes(id) ON DELETE CASCADE
 );
 
+CREATE TABLE tasks (
+	id SERIAL PRIMARY KEY,
+	status INT,
+	started TIMESTAMP,
+	finished TIMESTAMP
+);
+
+CREATE TABLE crisps (
+	id SERIAL PRIMARY KEY,
+	variable_id INT NOT NULL,
+	value REAL,
+	is_input BOOLEAN
+);
+
+CREATE TABLE tasks_crisps (
+	task_id INT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+	crisp_id INT NOT NULL REFERENCES crisps(id) ON DELETE CASCADE,
+	PRIMARY KEY (task_id, crisp_id)
+);
+
+CREATE TABLE cutoffs (
+	id SERIAL PRIMARY KEY,
+	rule_id INT NOT NULL REFERENCES rules(id) ON DELETE CASCADE,
+	value REAL
+);
+
+CREATE TABLE tasks_cutoffs (
+	task_id INT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+	cutoff_id INT NOT NULL REFERENCES cutoffs(id) ON DELETE CASCADE,
+	PRIMARY KEY (task_id, cutoff_id)
+);
+
+CREATE TABLE points (
+	id SERIAL PRIMARY KEY,
+	arg REAL,
+	grade REAL
+);
+
+CREATE TABLE tasks_points (
+	task_id INT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+	point_id INT NOT NULL REFERENCES points(id) ON DELETE CASCADE,
+	PRIMARY KEY (task_id, point_id)
+);
+
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO user1;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO user1;
 
