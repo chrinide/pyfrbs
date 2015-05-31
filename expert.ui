@@ -669,7 +669,7 @@
         <string>Правила</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
-        <item row="10" column="0" rowspan="2" colspan="4">
+        <item row="13" column="0" rowspan="2" colspan="4">
          <widget class="QTreeWidget" name="uiAntecedentTree">
           <property name="enabled">
            <bool>false</bool>
@@ -704,7 +704,7 @@
           </column>
          </widget>
         </item>
-        <item row="16" column="0" rowspan="2" colspan="4">
+        <item row="19" column="0" rowspan="2" colspan="4">
          <widget class="QTreeWidget" name="uiConsequentTree">
           <property name="enabled">
            <bool>false</bool>
@@ -739,6 +739,22 @@
           </column>
          </widget>
         </item>
+        <item row="22" column="0" colspan="5">
+         <spacer name="uiRulesSpacer5">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
         <item row="1" column="0" colspan="5">
          <widget class="QComboBox" name="uiRulesCombo">
           <property name="editable">
@@ -746,7 +762,7 @@
           </property>
          </widget>
         </item>
-        <item row="9" column="1" colspan="3">
+        <item row="12" column="1" colspan="3">
          <widget class="QComboBox" name="uiAntecedentNodesCombo">
           <property name="enabled">
            <bool>false</bool>
@@ -769,8 +785,8 @@
           </property>
          </spacer>
         </item>
-        <item row="11" column="4">
-         <spacer name="uiRulesSpacer5">
+        <item row="14" column="4">
+         <spacer name="uiRulesSpacer6">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -782,51 +798,35 @@
           </property>
          </spacer>
         </item>
-        <item row="19" column="0" colspan="5">
-         <spacer name="uiRulesSpacer4">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Fixed</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>10</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="9" column="0">
+        <item row="12" column="0">
          <widget class="QComboBox" name="uiAntecedentNodeTypesCombo">
           <property name="enabled">
            <bool>false</bool>
           </property>
          </widget>
         </item>
-        <item row="15" column="0">
-         <widget class="QComboBox" name="uiConsequentNodeTypesCombo">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="0" colspan="3">
-         <widget class="QLabel" name="uiAntecedentLabel">
-          <property name="text">
-           <string>Антецедент правила:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="15" column="1" colspan="3">
+        <item row="18" column="1" colspan="3">
          <widget class="QComboBox" name="uiConsequentNodesCombo">
           <property name="enabled">
            <bool>false</bool>
           </property>
          </widget>
         </item>
-        <item row="9" column="4">
+        <item row="18" column="0">
+         <widget class="QComboBox" name="uiConsequentNodeTypesCombo">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="0" colspan="3">
+         <widget class="QLabel" name="uiAntecedentLabel">
+          <property name="text">
+           <string>Антецедент правила:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="4">
          <widget class="QPushButton" name="uiAddAntecedentNodeButton">
           <property name="enabled">
            <bool>false</bool>
@@ -836,20 +836,30 @@
           </property>
          </widget>
         </item>
-        <item row="14" column="0" colspan="3">
+        <item row="17" column="0" colspan="3">
          <widget class="QLabel" name="uiConsequentLabel">
           <property name="text">
            <string>Консеквент правила:</string>
           </property>
          </widget>
         </item>
-        <item row="15" column="4">
+        <item row="18" column="4">
          <widget class="QPushButton" name="uiAddConsequentNodeButton">
           <property name="enabled">
            <bool>false</bool>
           </property>
           <property name="text">
            <string>Добавить</string>
+          </property>
+         </widget>
+        </item>
+        <item row="19" column="4">
+         <widget class="QPushButton" name="uiRemoveConsequentNodeButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Убрать</string>
           </property>
          </widget>
         </item>
@@ -860,7 +870,7 @@
           </property>
          </widget>
         </item>
-        <item row="20" column="0" colspan="5">
+        <item row="23" column="0" colspan="5">
          <widget class="QPushButton" name="uiCommitRuleButton">
           <property name="enabled">
            <bool>false</bool>
@@ -870,27 +880,7 @@
           </property>
          </widget>
         </item>
-        <item row="16" column="4">
-         <widget class="QPushButton" name="uiRemoveConsequentNodeButton">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Убрать</string>
-          </property>
-         </widget>
-        </item>
-        <item row="12" column="0" colspan="5">
-         <widget class="QLineEdit" name="uiAntecedentEdit">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="4">
+        <item row="13" column="4">
          <widget class="QPushButton" name="uiRemoveAntecedentNodeButton">
           <property name="enabled">
            <bool>false</bool>
@@ -900,13 +890,33 @@
           </property>
          </widget>
         </item>
-        <item row="18" column="0" colspan="5">
+        <item row="15" column="0" colspan="5">
+         <widget class="QLineEdit" name="uiAntecedentEdit">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="21" column="0" colspan="5">
          <widget class="QLineEdit" name="uiConsequentEdit">
           <property name="enabled">
            <bool>false</bool>
           </property>
           <property name="readOnly">
            <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0" colspan="5">
+         <widget class="QCheckBox" name="uiRuleVerifiedCheck">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Данное правило было проверено экспертом</string>
           </property>
          </widget>
         </item>
@@ -941,8 +951,8 @@
           </item>
          </layout>
         </item>
-        <item row="13" column="0" colspan="5">
-         <spacer name="uiRulesSpacer3">
+        <item row="16" column="0" colspan="5">
+         <spacer name="uiRulesSpacer4">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -957,8 +967,8 @@
           </property>
          </spacer>
         </item>
-        <item row="17" column="4">
-         <spacer name="uiRulesSpacer6">
+        <item row="20" column="4">
+         <spacer name="uiRulesSpacer7">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -970,18 +980,38 @@
           </property>
          </spacer>
         </item>
-        <item row="5" column="0" colspan="5">
-         <widget class="QCheckBox" name="uiRuleVerifiedCheck">
+        <item row="6" column="0" colspan="5">
+         <spacer name="uiRulesSpacer2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="8" column="0" colspan="5">
+         <widget class="QLineEdit" name="uiNoteEdit">
           <property name="enabled">
            <bool>false</bool>
           </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="uiNoteLabel">
           <property name="text">
-           <string>Данное правило было проверено экспертом</string>
+           <string>Комментарий:</string>
           </property>
          </widget>
         </item>
-        <item row="6" column="0" colspan="5">
-         <spacer name="uiRulesSpacer2">
+        <item row="9" column="0" rowspan="2" colspan="5">
+         <spacer name="uiRulesSpacer3">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -1005,6 +1035,9 @@
        <layout class="QGridLayout" name="gridLayout_6">
         <item row="1" column="0" colspan="2">
          <widget class="QTableWidget" name="uiDataTable">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="sizeAdjustPolicy">
            <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
           </property>
