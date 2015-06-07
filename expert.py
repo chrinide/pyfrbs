@@ -672,9 +672,13 @@ class Window(QMainWindow):
                 token = '\'' + ', '.join(self.getLemmas(row[0])) + '\''
             cur.close()
         elif (name == 'variable_and'):
-            token = '(%s) И (%s)' % (self.nodeToString(node.child(0)), self.nodeToString(node.child(1)))
+            token = '(%s)' % (self.nodeToString(node.child(0)))
+            for i in range(node.childCount() - 1):
+                token = '%s И (%s)' % (token, self.nodeToString(node.child(i + 1)))
         elif (name == 'variable_or'):
-            token = '(%s) ИЛИ (%s)' % (self.nodeToString(node.child(0)), self.nodeToString(node.child(1)))
+            token = '(%s)' % (self.nodeToString(node.child(0)))
+            for i in range(node.childCount() - 1):
+                token = '%s ИЛИ (%s)' % (token, self.nodeToString(node.child(i + 1)))
         elif (name == 'variable_value'):
             token = '%s ЕСТЬ %s' % (self.nodeToString(node.child(0)), self.nodeToString(node.child(1)))
         elif (name == 'term_complex'):
@@ -1051,7 +1055,7 @@ class Window(QMainWindow):
                         (self.uiRuleVerifiedCheck.isChecked(), self.uiRulesCombo.currentText(), self.uiNoteEdit.text(),
                          self.uiAntecedentTree.topLevelItem(0).text(1), self.uiConsequentTree.topLevelItem(0).text(1), rule_id))
         else:
-            cur.execute('INSERT INTO rules (validated, name, note, antecedent_id, consequent_id) VALUES (%s, %s, %s, %s) RETURNING id;', 
+            cur.execute('INSERT INTO rules (validated, name, note, antecedent_id, consequent_id) VALUES (%s, %s, %s, %s, %s) RETURNING id;', 
                         (self.uiRuleVerifiedCheck.isChecked(), self.uiRulesCombo.currentText(), self.uiNoteEdit.text(), 
                          self.uiAntecedentTree.topLevelItem(0).text(1), self.uiConsequentTree.topLevelItem(0).text(1)))
             rule_id = cur.fetchone()[0]
