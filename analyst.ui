@@ -46,7 +46,7 @@
         <string>Задачи</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_4">
-        <item row="18" column="0" colspan="3">
+        <item row="19" column="0" colspan="3">
          <widget class="QPushButton" name="uiCommitTaskButton">
           <property name="enabled">
            <bool>false</bool>
@@ -156,7 +156,7 @@
           </property>
          </widget>
         </item>
-        <item row="13" column="2">
+        <item row="14" column="2">
          <spacer name="uiTasksSpacer3">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -169,7 +169,7 @@
           </property>
          </spacer>
         </item>
-        <item row="14" column="0" colspan="3">
+        <item row="15" column="0" colspan="3">
          <spacer name="uiTasksSpacer4">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -218,17 +218,17 @@
           </property>
          </widget>
         </item>
-        <item row="15" column="0" colspan="3">
+        <item row="16" column="0" colspan="3">
          <widget class="QLabel" name="uiOutputLabel">
           <property name="text">
            <string>Выходная лингвистическая переменная:</string>
           </property>
          </widget>
         </item>
-        <item row="16" column="0" colspan="3">
+        <item row="17" column="0" colspan="3">
          <widget class="QComboBox" name="uiOutputCombo"/>
         </item>
-        <item row="17" column="0" colspan="3">
+        <item row="18" column="0" colspan="3">
          <spacer name="uiTasksSpacer5">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -244,7 +244,7 @@
           </property>
          </spacer>
         </item>
-        <item row="12" column="0" rowspan="2" colspan="2">
+        <item row="12" column="0" rowspan="3" colspan="2">
          <widget class="QTableWidget" name="uiValuesTable">
           <property name="enabled">
            <bool>false</bool>
@@ -276,6 +276,16 @@
           <attribute name="verticalHeaderVisible">
            <bool>false</bool>
           </attribute>
+         </widget>
+        </item>
+        <item row="13" column="2">
+         <widget class="QPushButton" name="uiClearValueButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Очистить</string>
+          </property>
          </widget>
         </item>
        </layout>

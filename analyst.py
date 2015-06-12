@@ -32,6 +32,8 @@ class Window(QMainWindow):
         self.uiOutputCombo.currentIndexChanged.connect(self.onOutputVariableSelected)
         self.uiValueEdit.textEdited.connect(self.onValueChanged)
         self.uiAddValueButton.clicked.connect(self.onAddValueClicked)
+        self.uiRemoveValueButton.clicked.connect(self.onRemoveValueClicked)
+        self.uiClearValueButton.clicked.connect(self.onClearValueClicked)
 
         self.uiValuesTable.clear()
         self.uiValuesTable.setRowCount(0)
@@ -112,7 +114,34 @@ class Window(QMainWindow):
         self.uiOutputCombo.setCurrentIndex(-1)
         self.uiInputCombo.removeItem(self.uiInputCombo.currentIndex())
         self.uiInputCombo.setCurrentIndex(-1)
+        self.uiRemoveValueButton.setEnabled(True)
+        self.uiClearValueButton.setEnabled(True)
+        
+        
+    def onRemoveValueClicked(self):
+        #self.uiValuesTable.takeItem(self.uiValuesTable.currentRow(),0)
+        #self.uiValuesTable.takeItem(self.uiValuesTable.currentRow(),1)
+        self.uiValuesTable.removeRow(self.uiValuesTable.currentRow())
+        if (self.uiValuesTable.rowCount() == 0):
+            self.uiRemoveValueButton.setEnabled(False)
+            self.uiClearValueButton.setEnabled(False)
     
+    def onClearValueClicked(self):
+        while (self.uiValuesTable.rowCount() > 0):
+            self.uiValuesTable.removeRow(0)
+        if (self.uiValuesTable.rowCount() == 0):
+            self.uiClearValueButton.setEnabled(False)
+            self.uiClearValueButton.setEnabled(False)    
+            
+            
+        
+        
+        
+        
+        
+        
+        
+        
     def onCommitTaskClicked(self):
         self.uiCommitTaskButton.setEnabled(False)
         data = {}
