@@ -10,9 +10,11 @@ from PyQt5.QtWidgets import QListWidgetItem
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QTableWidgetItem
 from PyQt5.QtWidgets import QGraphicsScene
+from PyQt5.QtWidgets import QGraphicsTextItem
 from PyQt5.QtCore import QPointF
 from PyQt5.QtGui import QPainterPath
 from PyQt5.QtGui import QPen
+from PyQt5.QtGui import QFont
 from PyQt5.uic import loadUi
 
 class Window(QMainWindow):
@@ -223,25 +225,48 @@ class Window(QMainWindow):
         for point in task['task']['points']:
             ymin = min(ymin, point['grade'])
             ymax = max(ymax, point['grade'])
-        marg = 25
-        xscale = (self.uiFunctionGraph.width() - marg * 2) / (xmax - xmin)
-        yscale = (self.uiFunctionGraph.height() - marg * 2) / (ymax - ymin)
+        xmarg = 40
+        ymarg = 25
+        xscale = (self.uiFunctionGraph.width() - xmarg * 2) / (xmax - xmin)
+        yscale = -1 * (self.uiFunctionGraph.height() - ymarg * 2) / (ymax - ymin)
 
-        func = QPainterPath(QPointF(marg, (task['task']['points'][0]['grade'] - ymin) * yscale + marg))
+        func = QPainterPath(QPointF(xmarg, (task['task']['points'][0]['grade'] - ymin) * yscale + ymarg))
         for point in task['task']['points']:
-            func.lineTo((point['arg'] - xmin) * xscale + marg, (point['grade'] - ymin) * yscale + marg)
+            func.lineTo((point['arg'] - xmin) * xscale + xmarg, (point['grade'] - ymin) * yscale + ymarg)
         scene.addPath(func)
 
-        scene.addLine(marg - 10, marg - 10, (xmax - xmin) * xscale + marg + 10, marg - 10)
-        scene.addLine((xmax - xmin) * xscale + marg, marg - 7, (xmax - xmin) * xscale + marg + 9, marg - 10)
-        scene.addLine((xmax - xmin) * xscale + marg, marg - 14, (xmax - xmin) * xscale + marg + 9, marg - 11)
-        scene.addLine(marg - 10, marg - 10, marg - 10, (ymax - ymin) * yscale + marg + 10)
-        scene.addLine(marg - 6, (ymax - ymin) * yscale + marg, marg - 9, (ymax - ymin) * yscale + marg + 9)
-        scene.addLine(marg - 13, (ymax - ymin) * yscale + marg, marg - 10, (ymax - ymin) * yscale + marg + 9)
+        scene.addLine(xmarg - 10, ymarg + 10, (xmax - xmin) * xscale + xmarg + 10, ymarg + 10)
+        scene.addLine((xmax - xmin) * xscale + xmarg + 8, ymarg + 8, (xmax - xmin) * xscale + xmarg + 10, ymarg + 10)
+        scene.addLine((xmax - xmin) * xscale + xmarg + 8, ymarg + 13, (xmax - xmin) * xscale + xmarg + 10, ymarg + 11)
+        scene.addLine(xmarg - 10, ymarg + 10, xmarg - 10, (ymax - ymin) * yscale + ymarg - 10)
+        scene.addLine(xmarg - 8, (ymax - ymin) * yscale + ymarg - 9, xmarg - 10, (ymax - ymin) * yscale + ymarg - 11)
+        scene.addLine(xmarg - 12, (ymax - ymin) * yscale + ymarg - 8, xmarg - 10, (ymax - ymin) * yscale + ymarg - 10)
+
+        y = ymin
+        step = (ymax - ymin) / 4
+        for i in range(5):
+            scene.addLine(xmarg - 12, (y - ymin) * yscale + ymarg, xmarg - 8, (y - ymin) * yscale + ymarg)
+            text = QGraphicsTextItem()
+            text.setPos(0, (y - ymin) * yscale + ymarg - 7)
+            text.setPlainText('%s' % format(round(y, 3), '.3f'))
+            text.setFont(QFont('Sans', 6))
+            scene.addItem(text)
+            y += step
         
+        x = xmin
+        step = (xmax - xmin) / 19
+        for i in range(20):
+            scene.addLine((x - xmin) * xscale + xmarg, ymarg + 8, (x - xmin) * xscale + xmarg, ymarg + 12)
+            text = QGraphicsTextItem()
+            text.setPos((x - xmin) * xscale + xmarg - 14, ymarg + 10)
+            text.setPlainText('%s' % format(round(x, 3), '.3f'))
+            text.setFont(QFont('Sans', 6))
+            scene.addItem(text)
+            x += step
+
         self.uiFunctionGraph.setScene(scene)
-        if not self.uiFunctionGraph.transform().isScaling():
-            self.uiFunctionGraph.scale(1, -1)
+        #if not self.uiFunctionGraph.transform().isScaling():
+        #    self.uiFunctionGraph.scale(1, -1)
         self.uiFunctionGraph.show()
         self.uiFunctionGraph.setEnabled(True)
 
