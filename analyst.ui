@@ -426,6 +426,12 @@
           <property name="interactive">
            <bool>false</bool>
           </property>
+          <property name="transformationAnchor">
+           <enum>QGraphicsView::NoAnchor</enum>
+          </property>
+          <property name="viewportUpdateMode">
+           <enum>QGraphicsView::NoViewportUpdate</enum>
+          </property>
          </widget>
         </item>
        </layout>

@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QTableWidgetItem
 from PyQt5.QtWidgets import QGraphicsScene
 from PyQt5.QtCore import QPointF
 from PyQt5.QtGui import QPainterPath
+from PyQt5.QtGui import QPen
 from PyQt5.uic import loadUi
 
 class Window(QMainWindow):
@@ -51,14 +52,17 @@ class Window(QMainWindow):
         self.task = -1
 
     def fillVariableCombo(self, combo):
+        combo.blockSignals(True)
         combo.clear()
         r = self.conn.request('GET', '/api/variables')
         data = json.loads(r.data.decode('utf-8'))
         for variable in data['variables']:
             combo.addItem(variable['name'], variable['id'])
         combo.setCurrentIndex(-1)
+        combo.blockSignals(False)
      
     def fillTaskCombo(self, combo):
+        combo.blockSignals(True)
         combo.clear()
         r = self.conn.request('GET', '/api/tasks')
         data = json.loads(r.data.decode('utf-8'))
@@ -69,6 +73,7 @@ class Window(QMainWindow):
             index = combo.findData(self.task)
             self.task = -1
         combo.setCurrentIndex(index)
+        combo.blockSignals(False)
 
     def onInputVariableSelected(self):
         self.uiRangeMinEdit.clear()
@@ -211,14 +216,32 @@ class Window(QMainWindow):
         self.uiRulesTable.setEnabled(True)
 
         scene = QGraphicsScene()
-        xscale = (self.uiFunctionGraph.width() - 30) / task['task']['points'][-1]['arg'] - task['task']['points'][0]['arg'] 
-        yscale = (self.uiFunctionGraph.height() - 30) / 1.0 * -1
-        func = QPainterPath(QPointF(task['task']['points'][0]['arg'] * xscale, task['task']['points'][0]['grade'] * yscale))
+        xmin = task['task']['points'][0]['arg']
+        xmax = task['task']['points'][-1]['arg']
+        ymin = 1.0
+        ymax = 0.0
         for point in task['task']['points']:
-            func.lineTo(point['arg'] * xscale, point['grade'] * yscale);
+            ymin = min(ymin, point['grade'])
+            ymax = max(ymax, point['grade'])
+        marg = 25
+        xscale = (self.uiFunctionGraph.width() - marg * 2) / (xmax - xmin)
+        yscale = (self.uiFunctionGraph.height() - marg * 2) / (ymax - ymin)
+
+        func = QPainterPath(QPointF(marg, (task['task']['points'][0]['grade'] - ymin) * yscale + marg))
+        for point in task['task']['points']:
+            func.lineTo((point['arg'] - xmin) * xscale + marg, (point['grade'] - ymin) * yscale + marg)
         scene.addPath(func)
-        #scene.addLine(0, 0, self.uiFunctionGraph.width(), self.uiFunctionGraph.height())
+
+        scene.addLine(marg - 10, marg - 10, (xmax - xmin) * xscale + marg + 10, marg - 10)
+        scene.addLine((xmax - xmin) * xscale + marg, marg - 7, (xmax - xmin) * xscale + marg + 9, marg - 10)
+        scene.addLine((xmax - xmin) * xscale + marg, marg - 14, (xmax - xmin) * xscale + marg + 9, marg - 11)
+        scene.addLine(marg - 10, marg - 10, marg - 10, (ymax - ymin) * yscale + marg + 10)
+        scene.addLine(marg - 6, (ymax - ymin) * yscale + marg, marg - 9, (ymax - ymin) * yscale + marg + 9)
+        scene.addLine(marg - 13, (ymax - ymin) * yscale + marg, marg - 10, (ymax - ymin) * yscale + marg + 9)
+        
         self.uiFunctionGraph.setScene(scene)
+        if not self.uiFunctionGraph.transform().isScaling():
+            self.uiFunctionGraph.scale(1, -1)
         self.uiFunctionGraph.show()
         self.uiFunctionGraph.setEnabled(True)
 

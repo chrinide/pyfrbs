@@ -18,4 +18,4 @@ if __name__ == '__main__':
     app.config['database'] = opts.database
     app.config['username'] = opts.username
     app.config['password'] = opts.password
-    app.run(host=opts.bind_to.split(':')[0], port=int(opts.bind_to.split(':')[1]), debug=True)
+    app.run(host=opts.bind_to.split(':')[0], port=int(opts.bind_to.split(':')[1]), debug=False)
