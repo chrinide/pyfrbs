@@ -264,6 +264,20 @@ class Window(QMainWindow):
             scene.addItem(text)
             x += step
 
+        for crisp in task['task']['crisps']:
+            if not crisp['is_input']:
+                x = crisp['value']
+                break
+
+        dividend = divisor = 0.0
+        for point in task['task']['points']:
+            dividend += point['arg'] * point['grade']
+            divisor += point['arg']
+        y = round(dividend / divisor, 3)
+
+        scene.addLine((x - xmin) * xscale + xmarg - 3, (y - ymin) * yscale + ymarg + 3, (x - xmin) * xscale + xmarg + 3, (y - ymin) * yscale + ymarg - 3)
+        scene.addLine((x - xmin) * xscale + xmarg + 3, (y - ymin) * yscale + ymarg + 4, (x - xmin) * xscale + xmarg - 3, (y - ymin) * yscale + ymarg - 2)
+
         self.uiFunctionGraph.setScene(scene)
         #if not self.uiFunctionGraph.transform().isScaling():
         #    self.uiFunctionGraph.scale(1, -1)
