@@ -351,3 +351,36 @@ def create_task():
     cur.close()
     g.db.commit()
     return jsonify({'rules': rules, 'output': round(dividend / divisor, 3)}), 200, {'location': '/api/tasks/%d' % task}
+
+@app.route('/api/rules/<int:rule_id>/variables/<int:variable_id>', methods=['GET'])
+def get_rule_variable(rule_id, variable_id):
+
+    cur = g.db.cursor()
+    cur.execute('SELECT nodes.parent_id FROM nodes, closures, types, rules WHERE rules.id = %s AND closures.ancestor_id IN (rules.antecedent_id, rules.consequent_id) AND nodes.id = closures.descendant_id AND nodes.type_id = types.id AND types.name = %s AND nodes.variable_id = %s LIMIT 1;', (rule_id, 'variable', variable_id));
+    res = cur.fetchone()
+    if not res:
+        abort(404)
+
+    cur.execute('SELECT nodes.id FROM nodes, types WHERE nodes.parent_id = %s AND nodes.type_id != types.id AND types.name = %s LIMIT 1;', (res[0], 'variable'));
+    node_id = cur.fetchone()[0]
+
+    cur.execute('SELECT terms.points FROM variables_terms, terms WHERE variables_terms.variable_id = %s AND variables_terms.term_id = terms.id;', (variable_id,))
+    res = cur.fetchall()
+    arg_min = float(res[0][0].split(';')[0])
+    arg_max = float(res[0][0].split(';')[-1])
+    for row in res:
+        arg_min = min(arg_min, float(row[0].split(';')[0]))
+        arg_max = max(arg_max, float(row[0].split(';')[-1]))
+
+    points = []
+    arg = arg_min
+    while arg <= arg_max:
+        point = {}
+        point['arg'] = arg
+        point['grade'] = evalNode(node_id, arg, cur)
+        points.append(point)
+        if arg_min == arg_max:
+            break
+        arg += ((arg_max - arg_min) / 100)
+
+    return jsonify({'points': points}), 200
