@@ -352,8 +352,10 @@ def create_task():
     g.db.commit()
     return jsonify({'rules': rules, 'output': round(dividend / divisor, 3)}), 200, {'location': '/api/tasks/%d' % task}
 
-@app.route('/api/rules/<int:rule_id>/variables/<int:variable_id>', methods=['GET'])
-def get_rule_variable(rule_id, variable_id):
+@app.route('/api/rules/<int:rule_id>/variables/<int:variable_id>/<float:value>', methods=['GET'])
+def get_rule_variable(rule_id, variable_id, value):
+
+    print(request.args['value'])
 
     cur = g.db.cursor()
     cur.execute('SELECT nodes.parent_id FROM nodes, closures, types, rules WHERE rules.id = %s AND closures.ancestor_id IN (rules.antecedent_id, rules.consequent_id) AND nodes.id = closures.descendant_id AND nodes.type_id = types.id AND types.name = %s AND nodes.variable_id = %s LIMIT 1;', (rule_id, 'variable', variable_id));
@@ -372,8 +374,8 @@ def get_rule_variable(rule_id, variable_id):
         arg_min = min(arg_min, float(row[0].split(';')[0]))
         arg_max = max(arg_max, float(row[0].split(';')[-1]))
    
-    arg_min = min(arg_min, request.args['value'])
-    arg_max = max(arg_max, request.args['value'])
+    arg_min = min(arg_min, value)
+    arg_max = max(arg_max, value)
 
     points = []
     arg = arg_min
@@ -386,8 +388,8 @@ def get_rule_variable(rule_id, variable_id):
             break
         arg += ((arg_max - arg_min) / 100)
 
-    value = evalNode(node_id, request.args['value'], cur) 
+    grade = evalNode(node_id, value, cur) 
 
     cur.close()
 
-    return jsonify({'points': points, 'value': value}), 200
+    return jsonify({'points': points, 'grade': grade}), 200
