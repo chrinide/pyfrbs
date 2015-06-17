@@ -371,6 +371,9 @@ def get_rule_variable(rule_id, variable_id):
     for row in res:
         arg_min = min(arg_min, float(row[0].split(';')[0]))
         arg_max = max(arg_max, float(row[0].split(';')[-1]))
+   
+    arg_min = min(arg_min, request.args['value'])
+    arg_max = max(arg_max, request.args['value'])
 
     points = []
     arg = arg_min
@@ -383,4 +386,8 @@ def get_rule_variable(rule_id, variable_id):
             break
         arg += ((arg_max - arg_min) / 100)
 
-    return jsonify({'points': points}), 200
+    value = evalNode(node_id, request.args['value'], cur) 
+
+    cur.close()
+
+    return jsonify({'points': points, 'value': value}), 200
