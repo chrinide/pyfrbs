@@ -48,7 +48,10 @@ class Window(QMainWindow):
         # Initialize results tab
 
         self.uiTaskCombo.currentIndexChanged.connect(self.onTaskChanged)
-    
+        
+        self.uiVariablesTable.currentItemChanged.connect(self.drawRuleVariable)
+        self.uiRulesTable.currentItemChanged.connect(self.drawRuleVariable)
+
         self.uiTabs.setCurrentIndex(0)
         self.uiTabs.currentChanged.connect(self.onTabChanged)
         self.task = -1
@@ -162,76 +165,21 @@ class Window(QMainWindow):
         self.task = r.headers['Location'].split('/')[-1]
         self.uiTabs.setCurrentIndex(1)
 
-    def onTaskChanged(self):
-        self.uiVariablesTable.clear()
-        self.uiVariablesTable.setEnabled(False)
-        self.uiRulesTable.clear()
-        self.uiRulesTable.setEnabled(False)
-        if self.uiFunctionGraph.scene():
-            self.uiFunctionGraph.scene().clear()
-        self.uiFunctionGraph.setEnabled(False)
+    def drawGraph(self, data, points):
 
-        if self.uiTaskCombo.currentIndex() == -1:
-            return
+        xmin = data['xmin']
+        xmax = data['xmax']
+        ymin = data['ymin']
+        ymax = data['ymax']
+        xmarg = data['xmarg']
+        ymarg = data['xmarg']
+        xscale = data['xscale']
+        yscale = data['yscale']
 
-        r = self.conn.request('GET', '/api/tasks/%s' % self.uiTaskCombo.currentData())
-        task = json.loads(r.data.decode('utf-8'))
-        self.uiVariablesTable.clear()
-        self.uiVariablesTable.setRowCount(len(task['task']['crisps']))
-        self.uiVariablesTable.setColumnCount(3)
-        self.uiVariablesTable.setHorizontalHeaderLabels(('Имя', 'Значение', 'Входная'))
-        self.uiVariablesTable.setSortingEnabled(False)
-        i = 0
-        for crisp in task['task']['crisps']:
-            r = self.conn.request('GET', '/api/variables/%s' % crisp['variable_id'])
-            variable = json.loads(r.data.decode('utf-8'))
-            item = QTableWidgetItem('%s' % variable['variable']['name'])
-            self.uiVariablesTable.setItem(i, 0, item)
-            item = QTableWidgetItem('%s' % crisp['value'])
-            self.uiVariablesTable.setItem(i, 1, item)
-            item = QTableWidgetItem('%s' % crisp['is_input'])
-            self.uiVariablesTable.setItem(i, 2, item)
-            i += 1
-        self.uiVariablesTable.setSortingEnabled(True)
-        self.uiVariablesTable.sortByColumn(2, 1)
-        for i in range(self.uiVariablesTable.columnCount()):
-            self.uiVariablesTable.setColumnWidth(i, self.uiVariablesTable.width() / self.uiVariablesTable.columnCount() - 1)
-        self.uiVariablesTable.setEnabled(True)
+        scene = self.uiFunctionGraph.scene()
 
-        self.uiRulesTable.clear()
-        self.uiRulesTable.setRowCount(len(task['task']['cutoffs']))
-        self.uiRulesTable.setColumnCount(2)
-        self.uiRulesTable.setHorizontalHeaderLabels(('Название', 'Уровень отсечения'))
-        self.uiRulesTable.setSortingEnabled(False)
-        i = 0
-        for cutoff in task['task']['cutoffs']:
-            r = self.conn.request('GET', '/api/rules/%s' % cutoff['rule_id'])
-            rule = json.loads(r.data.decode('utf-8'))
-            item = QTableWidgetItem('%s' % rule['rule']['name'])
-            self.uiRulesTable.setItem(i, 0, item)
-            item = QTableWidgetItem('%s' % cutoff['value'])
-            self.uiRulesTable.setItem(i, 1, item)
-            i += 1
-        self.uiRulesTable.setSortingEnabled(True)
-        for i in range(self.uiRulesTable.columnCount()):
-            self.uiRulesTable.setColumnWidth(i, self.uiRulesTable.width() / self.uiRulesTable.columnCount() - 1)
-        self.uiRulesTable.setEnabled(True)
-
-        scene = QGraphicsScene()
-        xmin = task['task']['points'][0]['arg']
-        xmax = task['task']['points'][-1]['arg']
-        ymin = 1.0
-        ymax = 0.0
-        for point in task['task']['points']:
-            ymin = min(ymin, point['grade'])
-            ymax = max(ymax, point['grade'])
-        xmarg = 40
-        ymarg = 25
-        xscale = (self.uiFunctionGraph.width() - xmarg * 2) / (xmax - xmin)
-        yscale = -1 * (self.uiFunctionGraph.height() - ymarg * 2) / (ymax - ymin)
-
-        func = QPainterPath(QPointF(xmarg, (task['task']['points'][0]['grade'] - ymin) * yscale + ymarg))
-        for point in task['task']['points']:
+        func = QPainterPath(QPointF(xmarg, (points[0]['grade'] - ymin) * yscale + ymarg))
+        for point in points:
             func.lineTo((point['arg'] - xmin) * xscale + xmarg, (point['grade'] - ymin) * yscale + ymarg)
         scene.addPath(func)
 
@@ -264,24 +212,160 @@ class Window(QMainWindow):
             scene.addItem(text)
             x += step
 
+    def drawPoint(self, data, x, y):
+
+        xmin = data['xmin']
+        xmax = data['xmax']
+        ymin = data['ymin']
+        ymax = data['ymax']
+        xmarg = data['xmarg']
+        ymarg = data['xmarg']
+        xscale = data['xscale']
+        yscale = data['yscale']
+
+        scene = self.uiFunctionGraph.scene()
+
+        scene.addLine(xmarg, (y - ymin) * yscale + ymarg, (xmax - xmin) * xscale + xmarg, (y - ymin) * yscale + ymarg, QPen(Qt.DashLine))
+        scene.addLine((x - xmin) * xscale + xmarg, ymarg, (x - xmin) * xscale + xmarg, (ymax - ymin) * yscale + ymarg, QPen(Qt.DashLine))
+
+    def prepareView(self, points, x):
+        xmin = points[0]['arg']
+        xmax = points[-1]['arg']
+        ymin = 1.0
+        ymax = 0.0
+        for point in points:
+            ymin = min(ymin, point['grade'])
+            ymax = max(ymax, point['grade'])
+        xmin = min(xmin, x)
+        xmax = max(xmax, x)
+        xmarg = 40
+        ymarg = 25
+        xscale = (self.uiFunctionGraph.width() - xmarg * 2) / (xmax - xmin)
+        yscale = -1 * (self.uiFunctionGraph.height() - ymarg * 2) / (ymax - ymin)
+        return {
+            'xmin': xmin,
+            'xmax': xmax,
+            'ymin': ymin,
+            'ymax': ymax,
+            'xmarg': xmarg,
+            'ymarg': ymarg,
+            'xscale': xscale,
+            'yscale': yscale
+        }
+
+    def onTaskChanged(self):
+        self.uiVariablesTable.clear()
+        self.uiVariablesTable.setEnabled(False)
+        self.uiRulesTable.clear()
+        self.uiRulesTable.setEnabled(False)
+        if not self.uiFunctionGraph.scene():
+            self.uiFunctionGraph.setScene(QGraphicsScene())
+        self.uiFunctionGraph.scene().clear()
+        self.uiFunctionGraph.show()
+        self.uiFunctionGraph.setEnabled(False)
+
+        if self.uiTaskCombo.currentIndex() == -1:
+            return
+
+        r = self.conn.request('GET', '/api/tasks/%s' % self.uiTaskCombo.currentData())
+        task = json.loads(r.data.decode('utf-8'))
+        self.uiVariablesTable.clear()
+        self.uiVariablesTable.setRowCount(len(task['task']['crisps']))
+        self.uiVariablesTable.setColumnCount(3)
+        self.uiVariablesTable.setHorizontalHeaderLabels(('Имя', 'Значение', 'Входная'))
+        self.uiVariablesTable.setSortingEnabled(False)
+        i = 0
+        for crisp in task['task']['crisps']:
+            r = self.conn.request('GET', '/api/variables/%s' % crisp['variable_id'])
+            variable = json.loads(r.data.decode('utf-8'))
+            item = QTableWidgetItem('%s' % variable['variable']['name'])
+            item.setData(Qt.UserRole, crisp['variable_id'])
+            self.uiVariablesTable.setItem(i, 0, item)
+            item = QTableWidgetItem('%s' % crisp['value'])
+            self.uiVariablesTable.setItem(i, 1, item)
+            item = QTableWidgetItem('%s' % crisp['is_input'])
+            self.uiVariablesTable.setItem(i, 2, item)
+            i += 1
+        self.uiVariablesTable.setSortingEnabled(True)
+        self.uiVariablesTable.sortByColumn(2, 1)
+        for i in range(self.uiVariablesTable.columnCount()):
+            self.uiVariablesTable.setColumnWidth(i, self.uiVariablesTable.width() / self.uiVariablesTable.columnCount() - 1)
+        self.uiVariablesTable.setEnabled(True)
+
+        self.uiRulesTable.clear()
+        self.uiRulesTable.setRowCount(len(task['task']['cutoffs']))
+        self.uiRulesTable.setColumnCount(2)
+        self.uiRulesTable.setHorizontalHeaderLabels(('Название', 'Уровень отсечения'))
+        self.uiRulesTable.setSortingEnabled(False)
+        i = 0
+        for cutoff in task['task']['cutoffs']:
+            r = self.conn.request('GET', '/api/rules/%s' % cutoff['rule_id'])
+            rule = json.loads(r.data.decode('utf-8'))
+            item = QTableWidgetItem('%s' % rule['rule']['name'])
+            item.setData(Qt.UserRole, cutoff['rule_id'])
+            self.uiRulesTable.setItem(i, 0, item)
+            item = QTableWidgetItem('%s' % cutoff['value'])
+            self.uiRulesTable.setItem(i, 1, item)
+            i += 1
+        self.uiRulesTable.setSortingEnabled(True)
+        for i in range(self.uiRulesTable.columnCount()):
+            self.uiRulesTable.setColumnWidth(i, self.uiRulesTable.width() / self.uiRulesTable.columnCount() - 1)
+        self.uiRulesTable.setEnabled(True)
+
+        if task['task']['status'] != 200:
+            return
+
         for crisp in task['task']['crisps']:
             if not crisp['is_input']:
                 x = crisp['value']
                 break
 
+        data = self.prepareView(task['task']['points'], x)
+
+        self.drawGraph(data, task['task']['points'])
+
         dividend = divisor = 0.0
         for point in task['task']['points']:
-            dividend += point['arg'] * point['grade']
-            divisor += point['arg']
+            dividend += (point['arg'] - data['xmin']) * point['grade']
+            divisor += (point['arg'] - data['xmin'])
         y = round(dividend / divisor, 3)
 
-        scene.addLine((x - xmin) * xscale + xmarg - 3, (y - ymin) * yscale + ymarg + 3, (x - xmin) * xscale + xmarg + 3, (y - ymin) * yscale + ymarg - 3)
-        scene.addLine((x - xmin) * xscale + xmarg + 3, (y - ymin) * yscale + ymarg + 4, (x - xmin) * xscale + xmarg - 3, (y - ymin) * yscale + ymarg - 2)
+        self.drawPoint(data, x, y)
 
-        self.uiFunctionGraph.setScene(scene)
-        #if not self.uiFunctionGraph.transform().isScaling():
-        #    self.uiFunctionGraph.scale(1, -1)
-        self.uiFunctionGraph.show()
+        self.uiFunctionGraph.update()
+        self.uiFunctionGraph.setEnabled(True)
+
+    def drawRuleVariable(self):
+
+        if self.uiRulesTable.currentRow() == -1 or self.uiVariablesTable.currentRow() == -1:
+            return
+
+        self.uiFunctionGraph.scene().clear()
+        self.uiFunctionGraph.update()
+        self.uiFunctionGraph.setEnabled(False)
+
+        rule_id = self.uiRulesTable.item(self.uiRulesTable.currentRow(), 0).data(Qt.UserRole)
+        variable_id = self.uiVariablesTable.item(self.uiVariablesTable.currentRow(), 0).data(Qt.UserRole)
+        task_id = self.uiTaskCombo.currentData()
+
+        r = self.conn.request('GET', '/api/tasks/%s' % task_id)
+        task = json.loads(r.data.decode('utf-8'))
+        for crisp in task['task']['crisps']:
+            if crisp['variable_id'] == variable_id:
+                x = crisp['value']
+                break
+
+        r = self.conn.request('GET', '/api/rules/%s/variables/%s/%s' % (rule_id, variable_id, x))
+        if r.status != 200:
+            return
+        res = json.loads(r.data.decode('utf-8'))
+
+        data = self.prepareView(res['points'], x)
+
+        self.drawGraph(data, res['points'])
+        self.drawPoint(data, x, res['grade'])
+
+        self.uiFunctionGraph.update()
         self.uiFunctionGraph.setEnabled(True)
 
     def onTabChanged(self):
