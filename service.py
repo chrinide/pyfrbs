@@ -355,8 +355,6 @@ def create_task():
 @app.route('/api/rules/<int:rule_id>/variables/<int:variable_id>/<float:value>', methods=['GET'])
 def get_rule_variable(rule_id, variable_id, value):
 
-    print(request.args['value'])
-
     cur = g.db.cursor()
     cur.execute('SELECT nodes.parent_id FROM nodes, closures, types, rules WHERE rules.id = %s AND closures.ancestor_id IN (rules.antecedent_id, rules.consequent_id) AND nodes.id = closures.descendant_id AND nodes.type_id = types.id AND types.name = %s AND nodes.variable_id = %s LIMIT 1;', (rule_id, 'variable', variable_id));
     res = cur.fetchone()
