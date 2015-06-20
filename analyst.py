@@ -48,7 +48,8 @@ class Window(QMainWindow):
         # Initialize results tab
 
         self.uiTaskCombo.currentIndexChanged.connect(self.onTaskChanged)
-        
+        self.uiClearButton.clicked.connect(self.clearTasks)
+
         self.uiVariablesTable.currentItemChanged.connect(self.drawRuleVariable)
         self.uiRulesTable.currentItemChanged.connect(self.drawRuleVariable)
 
@@ -66,19 +67,25 @@ class Window(QMainWindow):
         combo.setCurrentIndex(-1)
         combo.blockSignals(False)
      
-    def fillTaskCombo(self, combo):
-        combo.blockSignals(True)
-        combo.clear()
-        r = self.conn.request('GET', '/api/tasks')
-        data = json.loads(r.data.decode('utf-8'))
-        for task in data['tasks']:
-            combo.addItem('%s [%s] (%s - %s)' % (task['id'], task['status'], task['started'], task['finished']), task['id'])
+    def fillTaskCombo(self):
+
+        self.uiClearButton.setEnabled(False)
+        self.uiTaskCombo.blockSignals(True)
+        self.uiTaskCombo.clear()
         index = -1
-        if self.task != -1:
-            index = combo.findData(self.task)
-            self.task = -1
-        combo.setCurrentIndex(index)
-        combo.blockSignals(False)
+
+        r = self.conn.request('GET', '/api/tasks')
+        if r.status == 200:
+            data = json.loads(r.data.decode('utf-8'))
+            for task in data['tasks']:
+                self.uiTaskCombo.addItem('%s [%s] (%s - %s)' % (task['id'], task['status'], task['started'], task['finished']), task['id'])
+            if self.task != -1:
+                index = self.uiTaskCombo.findData(self.task)
+                self.task = -1
+            self.uiClearButton.setEnabled(True)
+
+        self.uiTaskCombo.blockSignals(False)
+        self.uiTaskCombo.setCurrentIndex(index)
 
     def onInputVariableSelected(self):
         self.uiRangeMinEdit.clear()
@@ -368,6 +375,14 @@ class Window(QMainWindow):
         self.uiFunctionGraph.update()
         self.uiFunctionGraph.setEnabled(True)
 
+    def clearTasks(self):
+
+        r = self.conn.request('DELETE', '/api/tasks')
+        self.fillTaskCombo()
+
     def onTabChanged(self):
-        if (self.uiTabs.currentIndex() == 1):
-            self.fillTaskCombo(self.uiTaskCombo)
+
+        if self.uiTabs.currentIndex() == 0:
+            self.task = self.uiTaskCombo.currentData()
+        elif self.uiTabs.currentIndex() == 1:
+            self.fillTaskCombo()

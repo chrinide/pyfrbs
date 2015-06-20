@@ -123,7 +123,9 @@ def get_tasks():
     cur.execute('SELECT id, status, started, finished FROM tasks;')
     tasks = cur.fetchall()
     cur.close()
-    return jsonify({'tasks': tasks})
+    if tasks:
+        return jsonify({'tasks': tasks})
+    abort(404)
 
 @app.route('/api/tasks/<int:task_id>', methods=['GET'])
 def get_task(task_id):
@@ -351,6 +353,14 @@ def create_task():
     cur.close()
     g.db.commit()
     return jsonify({'rules': rules, 'output': round(dividend / divisor, 3)}), 200, {'location': '/api/tasks/%d' % task}
+
+@app.route('/api/tasks', methods=['DELETE'])
+def delete_tasks():
+    cur = g.db.cursor()
+    cur.execute('DELETE FROM tasks;')
+    cur.close()
+    g.db.commit()
+    return jsonify(), 200
 
 @app.route('/api/rules/<int:rule_id>/variables/<int:variable_id>/<string:svalue>', methods=['GET'])
 def get_rule_variable(rule_id, variable_id, svalue):

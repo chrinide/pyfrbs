@@ -295,7 +295,14 @@
         <string>Результаты</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_6">
-        <item row="2" column="0" colspan="2">
+        <item row="16" column="0">
+         <widget class="QLabel" name="uiFunctionLabel">
+          <property name="text">
+           <string>Функция принадлежности:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0" colspan="2">
          <spacer name="uiResultsSpacer1">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -311,7 +318,7 @@
           </property>
          </spacer>
         </item>
-        <item row="8" column="0" colspan="2">
+        <item row="15" column="0" colspan="2">
          <spacer name="uiResultsSpacer3">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -334,14 +341,14 @@
           </property>
          </widget>
         </item>
-        <item row="6" column="0" colspan="2">
+        <item row="13" column="0" colspan="2">
          <widget class="QLabel" name="uiRulesLabel">
           <property name="text">
            <string>Правила:</string>
           </property>
          </widget>
         </item>
-        <item row="5" column="0" colspan="2">
+        <item row="12" column="0" colspan="2">
          <spacer name="uiResultsSpacer2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -357,61 +364,14 @@
           </property>
          </spacer>
         </item>
-        <item row="1" column="0" colspan="2">
-         <widget class="QComboBox" name="uiTaskCombo"/>
-        </item>
-        <item row="3" column="0" colspan="2">
+        <item row="10" column="0" colspan="2">
          <widget class="QLabel" name="uiVariablesLabel">
           <property name="text">
            <string>Переменные:</string>
           </property>
          </widget>
         </item>
-        <item row="9" column="0">
-         <widget class="QLabel" name="uiFunctionLabel">
-          <property name="text">
-           <string>Функция принадлежности:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0" colspan="2">
-         <widget class="QTableWidget" name="uiVariablesTable">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="editTriggers">
-           <set>QAbstractItemView::NoEditTriggers</set>
-          </property>
-          <property name="alternatingRowColors">
-           <bool>true</bool>
-          </property>
-          <property name="selectionMode">
-           <enum>QAbstractItemView::SingleSelection</enum>
-          </property>
-          <property name="selectionBehavior">
-           <enum>QAbstractItemView::SelectRows</enum>
-          </property>
-          <attribute name="horizontalHeaderCascadingSectionResizes">
-           <bool>true</bool>
-          </attribute>
-          <attribute name="horizontalHeaderHighlightSections">
-           <bool>false</bool>
-          </attribute>
-          <attribute name="verticalHeaderVisible">
-           <bool>false</bool>
-          </attribute>
-          <attribute name="verticalHeaderDefaultSectionSize">
-           <number>20</number>
-          </attribute>
-          <attribute name="verticalHeaderMinimumSectionSize">
-           <number>10</number>
-          </attribute>
-         </widget>
-        </item>
-        <item row="7" column="0" colspan="2">
+        <item row="14" column="0" colspan="2">
          <widget class="QTableWidget" name="uiRulesTable">
           <property name="enabled">
            <bool>false</bool>
@@ -448,7 +408,44 @@
           </attribute>
          </widget>
         </item>
-        <item row="10" column="0" colspan="2">
+        <item row="11" column="0" colspan="2">
+         <widget class="QTableWidget" name="uiVariablesTable">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::SingleSelection</enum>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+          <attribute name="horizontalHeaderCascadingSectionResizes">
+           <bool>true</bool>
+          </attribute>
+          <attribute name="horizontalHeaderHighlightSections">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="verticalHeaderDefaultSectionSize">
+           <number>20</number>
+          </attribute>
+          <attribute name="verticalHeaderMinimumSectionSize">
+           <number>10</number>
+          </attribute>
+         </widget>
+        </item>
+        <item row="17" column="0" colspan="2">
          <widget class="QGraphicsView" name="uiFunctionGraph">
           <property name="enabled">
            <bool>false</bool>
@@ -469,6 +466,33 @@
            <enum>QGraphicsView::NoViewportUpdate</enum>
           </property>
          </widget>
+        </item>
+        <item row="2" column="0" rowspan="4" colspan="2">
+         <layout class="QHBoxLayout" name="uiTaskLayout">
+          <item>
+           <widget class="QComboBox" name="uiTaskCombo">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="uiClearButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Очистить</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
