@@ -84,8 +84,9 @@ class Window(QMainWindow):
                 self.task = -1
             self.uiClearButton.setEnabled(True)
 
-        self.uiTaskCombo.blockSignals(False)
         self.uiTaskCombo.setCurrentIndex(index)
+        self.uiTaskCombo.blockSignals(False)
+        self.onTaskChanged()
 
     def onInputVariableSelected(self):
         self.uiRangeMinEdit.clear()
@@ -261,9 +262,14 @@ class Window(QMainWindow):
         }
 
     def onTaskChanged(self):
+
         self.uiVariablesTable.clear()
+        self.uiVariablesTable.setRowCount(0)
+        self.uiVariablesTable.setColumnCount(0)
         self.uiVariablesTable.setEnabled(False)
         self.uiRulesTable.clear()
+        self.uiRulesTable.setRowCount(0)
+        self.uiRulesTable.setColumnCount(0)
         self.uiRulesTable.setEnabled(False)
         if not self.uiFunctionGraph.scene():
             self.uiFunctionGraph.setScene(QGraphicsScene())
