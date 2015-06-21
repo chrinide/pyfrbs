@@ -355,6 +355,44 @@ class Window(QMainWindow):
             if not index.row() in rows:
                 rows.append(index.row())
 
+        if self.uiVariablesTable.currentRow() != -1:
+
+            variable_id = self.uiVariablesTable.item(self.uiVariablesTable.currentRow(), 0).data(Qt.UserRole)
+
+            for row in range(self.uiRulesTable.rowCount()):
+
+                bold = False
+
+                if self.uiVariablesTable.item(self.uiVariablesTable.currentRow(), 2).text() == 'True':
+
+                    rule_id = self.uiRulesTable.item(row, 0).data(Qt.UserRole)
+
+                    x = None
+                    for crisp in task['task']['crisps']:
+                        if crisp['variable_id'] == variable_id:
+                            x = crisp['value']
+                            break
+
+                    r = self.conn.request('GET', '/api/rules/%s/variables/%s/%s' % (rule_id, variable_id, x))
+
+                    if r.status != 200:
+                        continue
+
+                    grade = json.loads(r.data.decode('utf-8'))['grade']
+
+                    cutoff = None
+                    for rule in task['task']['cutoffs']:
+                        if rule['rule_id'] == rule_id:
+                            cutoff = rule['value']
+                            break
+
+                    bold = cutoff == round(grade, 3)
+                    
+                item = self.uiRulesTable.item(row, 1) 
+                font = QFont(item.font())
+                font.setBold(bold)
+                item.setFont(font)
+
         if self.uiVariablesTable.currentRow() != -1 and len(rows) > 0:
     
             variable_id = self.uiVariablesTable.item(self.uiVariablesTable.currentRow(), 0).data(Qt.UserRole)
@@ -365,6 +403,7 @@ class Window(QMainWindow):
 
                 rule_id = self.uiRulesTable.item(row, 0).data(Qt.UserRole)
 
+                x = None
                 for crisp in task['task']['crisps']:
                     if crisp['variable_id'] == variable_id:
                         x = crisp['value']
