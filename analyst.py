@@ -50,8 +50,8 @@ class Window(QMainWindow):
         self.uiTaskCombo.currentIndexChanged.connect(self.onTaskChanged)
         self.uiClearButton.clicked.connect(self.clearTasks)
 
-        self.uiVariablesTable.currentItemChanged.connect(self.drawRuleVariable)
-        self.uiRulesTable.currentItemChanged.connect(self.drawRuleVariable)
+        self.uiVariablesTable.itemSelectionChanged.connect(self.drawSelected)
+        self.uiRulesTable.itemSelectionChanged.connect(self.drawSelected)
 
         self.uiTabs.setCurrentIndex(0)
         self.uiTabs.currentChanged.connect(self.onTabChanged)
@@ -173,7 +173,7 @@ class Window(QMainWindow):
         self.task = r.headers['Location'].split('/')[-1]
         self.uiTabs.setCurrentIndex(1)
 
-    def drawGraph(self, data, points):
+    def drawAxis(self, data, points):
 
         xmin = data['xmin']
         xmax = data['xmax']
@@ -185,11 +185,6 @@ class Window(QMainWindow):
         yscale = data['yscale']
 
         scene = self.uiFunctionGraph.scene()
-
-        func = QPainterPath(QPointF(xmarg, (points[0]['grade'] - ymin) * yscale + ymarg))
-        for point in points:
-            func.lineTo((point['arg'] - xmin) * xscale + xmarg, (point['grade'] - ymin) * yscale + ymarg)
-        scene.addPath(func)
 
         scene.addLine(xmarg - 10, ymarg + 10, (xmax - xmin) * xscale + xmarg + 10, ymarg + 10)
         scene.addLine((xmax - xmin) * xscale + xmarg + 8, ymarg + 8, (xmax - xmin) * xscale + xmarg + 10, ymarg + 10)
@@ -219,6 +214,24 @@ class Window(QMainWindow):
             text.setFont(QFont('Sans', 6))
             scene.addItem(text)
             x += step
+
+    def drawGraph(self, data, points):
+
+        xmin = data['xmin']
+        xmax = data['xmax']
+        ymin = data['ymin']
+        ymax = data['ymax']
+        xmarg = data['xmarg']
+        ymarg = data['xmarg']
+        xscale = data['xscale']
+        yscale = data['yscale']
+
+        scene = self.uiFunctionGraph.scene()
+
+        func = QPainterPath(QPointF(xmarg, (points[0]['grade'] - ymin) * yscale + ymarg))
+        for point in points:
+            func.lineTo((point['arg'] - xmin) * xscale + xmarg, (point['grade'] - ymin) * yscale + ymarg)
+        scene.addPath(func)
 
     def drawPoint(self, data, x, y):
 
@@ -324,59 +337,76 @@ class Window(QMainWindow):
         for i in range(self.uiRulesTable.columnCount()):
             self.uiRulesTable.setColumnWidth(i, self.uiRulesTable.width() / self.uiRulesTable.columnCount() - 1)
         self.uiRulesTable.setEnabled(True)
+        
+        self.drawSelected()
 
-        if task['task']['status'] != 200:
-            return
-
-        for crisp in task['task']['crisps']:
-            if not crisp['is_input']:
-                x = crisp['value']
-                break
-
-        data = self.prepareView(task['task']['points'], x)
-
-        self.drawGraph(data, task['task']['points'])
-
-        dividend = divisor = 0.0
-        for point in task['task']['points']:
-            dividend += (point['arg'] - data['xmin']) * point['grade']
-            divisor += (point['arg'] - data['xmin'])
-        y = round(dividend / divisor, 3)
-
-        self.drawPoint(data, x, y)
-
-        self.uiFunctionGraph.update()
-        self.uiFunctionGraph.setEnabled(True)
-
-    def drawRuleVariable(self):
-
-        if self.uiRulesTable.currentRow() == -1 or self.uiVariablesTable.currentRow() == -1:
-            return
+    def drawSelected(self):
 
         self.uiFunctionGraph.scene().clear()
         self.uiFunctionGraph.update()
         self.uiFunctionGraph.setEnabled(False)
 
-        rule_id = self.uiRulesTable.item(self.uiRulesTable.currentRow(), 0).data(Qt.UserRole)
-        variable_id = self.uiVariablesTable.item(self.uiVariablesTable.currentRow(), 0).data(Qt.UserRole)
         task_id = self.uiTaskCombo.currentData()
-
         r = self.conn.request('GET', '/api/tasks/%s' % task_id)
         task = json.loads(r.data.decode('utf-8'))
-        for crisp in task['task']['crisps']:
-            if crisp['variable_id'] == variable_id:
-                x = crisp['value']
-                break
 
-        r = self.conn.request('GET', '/api/rules/%s/variables/%s/%s' % (rule_id, variable_id, x))
-        if r.status != 200:
-            return
-        res = json.loads(r.data.decode('utf-8'))
+        rows = []
+        for index in self.uiRulesTable.selectedIndexes():
+            if not index.row() in rows:
+                rows.append(index.row())
 
-        data = self.prepareView(res['points'], x)
+        if self.uiVariablesTable.currentRow() != -1 and len(rows) > 0:
+    
+            variable_id = self.uiVariablesTable.item(self.uiVariablesTable.currentRow(), 0).data(Qt.UserRole)
 
-        self.drawGraph(data, res['points'])
-        self.drawPoint(data, x, res['grade'])
+            need_axis = True
+
+            for row in rows:
+
+                rule_id = self.uiRulesTable.item(row, 0).data(Qt.UserRole)
+
+                for crisp in task['task']['crisps']:
+                    if crisp['variable_id'] == variable_id:
+                        x = crisp['value']
+                        break
+
+                r = self.conn.request('GET', '/api/rules/%s/variables/%s/%s' % (rule_id, variable_id, x))
+                if r.status != 200:
+                    return
+                res = json.loads(r.data.decode('utf-8'))
+
+                data = self.prepareView(res['points'], x)
+
+                if need_axis:
+                    self.drawAxis(data, res['points'])
+                    need_axis = False
+
+                self.drawGraph(data, res['points'])
+                self.drawPoint(data, x, res['grade'])
+
+        else:
+
+            if task['task']['status'] != 200:
+                return
+
+            x = None
+            for crisp in task['task']['crisps']:
+                if not crisp['is_input']:
+                    x = crisp['value']
+                    break
+
+            data = self.prepareView(task['task']['points'], x)
+
+            self.drawAxis(data, task['task']['points'])
+            self.drawGraph(data, task['task']['points'])
+
+            dividend = divisor = 0.0
+            for point in task['task']['points']:
+                dividend += (point['arg'] - data['xmin']) * point['grade']
+                divisor += (point['arg'] - data['xmin'])
+            y = round(dividend / divisor, 3)
+
+            self.drawPoint(data, x, y)
 
         self.uiFunctionGraph.update()
         self.uiFunctionGraph.setEnabled(True)
